@@ -2,6 +2,7 @@
   --bg: #0B0B17;
   --text: #f4f4f5;
   --light-text: #a6abb3;
+  --mainfont: Arial, Helvetica, sans-serif;
 }
 
 html,
@@ -25,8 +26,8 @@ header {
 .nav-link {
   margin-right: 35px;
   color: var(--light-text);
-  font-size: 20px;
-  font-family: Arial, Helvetica, sans-serif;
+  font-size: 18px;
+  font-family: var(--mainfont);
   text-decoration: none;
 }
 
@@ -34,6 +35,47 @@ header {
   color: var(--text);
 }
 
-.nav-link-active {
+/* Footer */
+footer {
+  margin-top: 100px;
+  margin-bottom: 100px;
+  font-family: var(--mainfont);
+  color: var(--light-text);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.footerText {
+  font-size: 13px;
+}
+
+.footerTextLink {
+  text-decoration: none;
+  color: var(--light-text);
+}
+
+.footerTextLink:hover {
+  color: var(--text);
+}
+
+#footerTextLinkPrivacy {
+  text-decoration: none;
+  color: var(--light-text);
+  font-weight: bold;
+} 
+
+#footerTextLinkPrivacy:hover {
+  color: var(--text);
+}
+
+.footerIcons a{
+  text-decoration: none;
+  color: var(--light-text);
+  margin-left: 25px;
+  font-size: 1.2rem;
+}
+
+.footerIcons a:hover {
   color: var(--text);
 }

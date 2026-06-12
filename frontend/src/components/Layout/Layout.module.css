@@ -1,0 +1,15 @@
+.layout-shell {
+  min-height: 100svh;
+  background: var(--bg);
+  display: flex;
+  justify-content: center;
+}
+
+.layout-frame {
+  width: 100%;
+  max-width: 750px;
+  min-height: 100svh;
+  border-inline: 1px solid rgba(255, 255, 255, 0.15);
+  display: flex;
+  flex-direction: column;
+}

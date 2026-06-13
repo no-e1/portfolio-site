@@ -26,7 +26,7 @@ header {
 .nav-link {
   margin-right: 35px;
   color: var(--light-text);
-  font-size: 18px;
+  font-size: 1.2rem;
   font-family: var(--mainfont);
   text-decoration: none;
 }
@@ -47,7 +47,7 @@ footer {
 }
 
 .footerText {
-  font-size: 13px;
+  font-size: 0.9rem;
 }
 
 .footerTextLink {
@@ -73,7 +73,7 @@ footer {
   text-decoration: none;
   color: var(--light-text);
   margin-left: 25px;
-  font-size: 1.2rem;
+  font-size: 1.25rem;
 }
 
 .footerIcons a:hover {

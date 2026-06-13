@@ -1,0 +1,16 @@
+.title {
+    font-size: 3rem;
+    font-family: var(--mainfont)
+}
+
+.projectGrid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+}
+
+@media (max-width: 650px) {
+  .projectGrid {
+    grid-template-columns: 1fr;
+  }
+}

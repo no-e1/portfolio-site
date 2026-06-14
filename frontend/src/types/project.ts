@@ -1,5 +1,5 @@
 export type ProjectMedia = {
-  type: "image" | "video" | "gif";
+  type: "image" | "gif";
   src: string;
 };
 

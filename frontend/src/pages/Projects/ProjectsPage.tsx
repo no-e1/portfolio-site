@@ -1,8 +1,11 @@
 import type { Project } from "../../types/project"; //import types as long as projects are stored in frontend
 import styles from "./ProjectsPage.module.css";
 
-import portfolioCover from "../../assets/projects/portfolio-cover.png"; //import assets
+import portfolioCover from "../../assets/projects/portfolio-cover.png";
+import portfolioCode from "../../assets/projects/portfolio-code.png"; //import assets
 import { ProjectCard } from "../../components/Projects/ProjectCard/ProjectCard";
+import { ProjectModal } from "../../components/Projects/ProjectModal/ProjectModal";
+import { useState } from "react";
 
 
 //provisorische projekte
@@ -21,7 +24,7 @@ const projects: Project[] = [
     media: [
       {
         type: "image",
-        src: portfolioCover,
+        src: portfolioCode,
       },
       {
         type: "image",
@@ -56,7 +59,7 @@ const projects: Project[] = [
     tags: ["React", "TypeScript", "Web"],
     coverMedia: {
       type: "image",
-      src: portfolioCover,
+      src: portfolioCode,
     },
     media: [
       {
@@ -90,15 +93,24 @@ const projects: Project[] = [
 
 
 export function ProjectsPage() {
+
+  const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   return (
     <section>
         <h1 className={styles.title}>meine Projekte</h1>
         
         <div className={styles.projectGrid}>
             {projects.map((project) => (
-                <ProjectCard key={project.id} project={project} />
+                <ProjectCard key={project.id} project={project} onOpen={() => setSelectedProject(project)} />
             ))}
         </div>
+
+        {selectedProject && (
+          <ProjectModal
+            project={selectedProject}
+            onClose={() => setSelectedProject(null)}
+          />
+        )}
     </section>
   );
 }

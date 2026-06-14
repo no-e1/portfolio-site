@@ -6,6 +6,7 @@ import { FaFilePdf, FaGithub, FaGlobe } from "react-icons/fa";
 
 type ProjectCardProps = {
   project: Project;
+  onOpen: () => void;
 };
 
 const linkIcons = {
@@ -14,12 +15,20 @@ const linkIcons = {
     document: FaFilePdf,
 };
 
-export function ProjectCard({ project }: ProjectCardProps) {
+export function ProjectCard({ project, onOpen }: ProjectCardProps) {
     return (
         <article className={styles.card}>
             <img
                 className={styles.image}
                 src={project.coverMedia.src}
+                onClick={onOpen}
+                role="button"
+                tabIndex={0}
+                onKeyDown={(event) => {
+                    if (event.key === "Enter" || event.key === " ") {
+                    onOpen();
+                    }
+                }}
             />
 
             <div className={styles.content}>

@@ -1,6 +1,6 @@
 .title {
-    font-size: 3rem;
-    font-family: var(--mainfont)
+    font-size: var(--hfontsize);
+    font-family: var(--hfontfam);
 }
 
 .projectGrid {

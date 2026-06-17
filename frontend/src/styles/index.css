@@ -2,7 +2,9 @@
   --bg: #0B0B17;
   --text: #f4f4f5;
   --light-text: #a6abb3;
-  --mainfont: Arial, Helvetica, sans-serif;
+  --mainfont: Arial, Helvetica, sans-serif, system-ui;
+  --hfontfam: "Fredericka the Great", monospace, cursive, system-ui ;
+  --hfontsize: 3rem;
 }
 
 html,
@@ -66,16 +68,5 @@ footer {
 } 
 
 #footerTextLinkPrivacy:hover {
-  color: var(--text);
-}
-
-.footerIcons a{
-  text-decoration: none;
-  color: var(--light-text);
-  margin-left: 25px;
-  font-size: 1.25rem;
-}
-
-.footerIcons a:hover {
   color: var(--text);
 }

@@ -1,0 +1,13 @@
+.home {
+    font-family: var(--mainfont);
+}
+
+.mainheader {
+    font-family: var(--hfontfam);
+    font-size: var(--hfontsize);
+}
+
+.subheader {
+    font-size: 1.2rem;
+    margin-top: -2rem;
+}

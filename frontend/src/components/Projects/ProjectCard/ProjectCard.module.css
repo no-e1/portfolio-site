@@ -1,19 +1,19 @@
 .card {
-    border: 1px solid var(--light-text);
-    border-radius: 25px;
-    overflow: hidden;
-    min-height: 260px;
-    display: flex;
-    flex-direction: column;
+  border: 1px solid var(--light-text);
+  border-radius: 25px;
+  overflow: hidden;
+  min-height: 260px;
+  display: flex;
+  flex-direction: column;
 }
 
 .card:hover {
-    background-color: #0a0a1a;
-    border: 1px solid white;
+  background-color: #0a0a1a;
+  border: 1px solid white;
 }
 
 .image {
-    display: block;
+  display: block;
   max-width: calc(100% - 2rem);
   max-height: 150px;
   width: auto;
@@ -25,10 +25,10 @@
 }
 
 .content {
-    padding: 1rem;
-    flex: 1;
-    display: flex;
-    flex-direction: column;
+  padding: 1rem;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
 }
 
 .period {

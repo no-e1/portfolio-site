@@ -1,5 +1,7 @@
+import styles from "./AboutPage.module.css"
+
 export function AboutPage() {
     return (
-        <h1>about me</h1>
+        <h1 className={styles.title}>about me</h1>
     );
 }

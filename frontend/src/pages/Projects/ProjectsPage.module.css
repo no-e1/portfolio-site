@@ -9,6 +9,15 @@
     gap: 1.5rem;
 }
 
+.loadMore {
+    height: 1px;
+}
+
+.status {
+    margin: 1.5rem 0;
+    text-align: center;
+}
+
 @media (max-width: 650px) {
   .projectGrid {
     grid-template-columns: 1fr;

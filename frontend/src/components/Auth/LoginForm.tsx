@@ -1,12 +1,63 @@
 import { useState, type FormEvent } from "react";
+import { ApiError } from "../../api/api-client";
+import { login } from "../../api/auth.api";
+import { getAccessToken, saveAuthSession } from "../../auth/auth-session";
 import styles from "./LoginForm.module.css";
 
 export function LoginForm() {
-  const [error, setError] = useState("");
+  const [credentialsError, setCredentialsError] = useState(false);
+  const [serviceError, setServiceError] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(
+    () => getAccessToken() !== null,
+  );
 
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    setError("Benutzername oder Passwort ist falsch.");
+    const form = event.currentTarget;
+    const formData = new FormData(form);
+    const username = formData.get("username");
+    const password = formData.get("password");
+
+    if (typeof username !== "string" || typeof password !== "string") {
+      return;
+    }
+
+    setCredentialsError(false);
+    setServiceError(false);
+    setIsSubmitting(true);
+
+    try {
+      const loginResponse = await login({
+        username: username.trim(),
+        password,
+      });
+
+      saveAuthSession(loginResponse);
+      form.reset();
+      setIsAuthenticated(true);
+    } catch (loginError) {
+      if (loginError instanceof ApiError && loginError.status === 401) {
+        setCredentialsError(true);
+      } else {
+        setServiceError(true);
+      }
+    } finally {
+      setIsSubmitting(false);
+    }
+  }
+
+  if (isAuthenticated) {
+    return (
+      <section className={styles.card} aria-labelledby="login-title">
+        <h2 id="login-title" className={styles.title}>
+          login
+        </h2>
+        <p className={styles.success} role="status">
+          Sie sind angemeldet.
+        </p>
+      </section>
+    );
   }
 
   return (
@@ -28,8 +79,10 @@ export function LoginForm() {
             type="text"
             name="username"
             autoComplete="username"
-            aria-invalid={Boolean(error)}
-            aria-describedby={error ? "login-error" : undefined}
+            maxLength={50}
+            aria-invalid={credentialsError}
+            aria-describedby={credentialsError ? "login-error" : undefined}
+            disabled={isSubmitting}
             required
           />
         </label>
@@ -41,20 +94,32 @@ export function LoginForm() {
             type="password"
             name="password"
             autoComplete="current-password"
-            aria-invalid={Boolean(error)}
-            aria-describedby={error ? "login-error" : undefined}
+            maxLength={255}
+            aria-invalid={credentialsError}
+            aria-describedby={credentialsError ? "login-error" : undefined}
+            disabled={isSubmitting}
             required
           />
         </label>
 
-        {error && (
+        {credentialsError && (
           <p id="login-error" className={styles.error} role="alert">
-            {error}
+            Benutzername oder Passwort ist falsch.
           </p>
         )}
 
-        <button className={styles.submitButton} type="submit">
-          login
+        {serviceError && (
+          <p className={styles.error} role="alert">
+            Der Login ist momentan nicht verfügbar.
+          </p>
+        )}
+
+        <button
+          className={styles.submitButton}
+          type="submit"
+          disabled={isSubmitting}
+        >
+          {isSubmitting ? "Anmeldung..." : "login"}
         </button>
       </form>
     </section>

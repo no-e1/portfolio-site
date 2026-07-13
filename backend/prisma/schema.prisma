@@ -1,0 +1,128 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+enum ProjectMediaType {
+  image
+  gif
+}
+
+enum ProjectLinkType {
+  website
+  github
+  document
+}
+
+model User {
+  id           Int      @id @default(autoincrement())
+  username     String   @unique @db.VarChar(50)
+  passwordHash String   @db.VarChar(255)
+  isActive     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+}
+
+model Project {
+  id               Int              @id @default(autoincrement())
+  slug             String           @unique @db.VarChar(191)
+  title            String           @db.VarChar(160)
+  shortDescription String           @db.Text
+  longDescription  String           @db.LongText
+  period           String           @db.VarChar(120)
+  coverType        ProjectMediaType
+  coverSrc         String           @db.VarChar(2048)
+  sortOrder        Int              @default(0)
+  isPublished      Boolean          @default(false)
+  createdAt        DateTime         @default(now())
+  updatedAt        DateTime         @updatedAt
+
+  tags  ProjectTag[]
+  media ProjectMedia[]
+  links ProjectLink[]
+
+  @@index([isPublished, sortOrder])
+}
+
+model ProjectTag {
+  id        Int    @id @default(autoincrement())
+  projectId Int
+  label     String @db.VarChar(60)
+  sortOrder Int    @default(0)
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@unique([projectId, label])
+  @@index([projectId, sortOrder])
+}
+
+model ProjectMedia {
+  id        Int              @id @default(autoincrement())
+  projectId Int
+  type      ProjectMediaType
+  src       String           @db.VarChar(2048)
+  alt       String?          @db.VarChar(255)
+  sortOrder Int              @default(0)
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@index([projectId, sortOrder])
+}
+
+model ProjectLink {
+  id        Int             @id @default(autoincrement())
+  projectId Int
+  type      ProjectLinkType
+  label     String          @db.VarChar(80)
+  href      String          @db.VarChar(2048)
+  sortOrder Int             @default(0)
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@index([projectId, sortOrder])
+}
+
+model AboutPage {
+  id          Int            @id @default(autoincrement())
+  title       String         @db.VarChar(160)
+  intro       String?        @db.Text
+  isPublished Boolean        @default(false)
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+  sections    AboutSection[]
+}
+
+model AboutSection {
+  id          Int    @id @default(autoincrement())
+  aboutPageId Int
+  heading     String @db.VarChar(160)
+  body        String @db.LongText
+  sortOrder   Int    @default(0)
+
+  aboutPage AboutPage @relation(fields: [aboutPageId], references: [id], onDelete: Cascade)
+
+  @@index([aboutPageId, sortOrder])
+}
+
+model Document {
+  id          Int      @id @default(autoincrement())
+  slug        String   @unique @db.VarChar(191)
+  title       String   @db.VarChar(160)
+  description String?  @db.Text
+  body        String   @db.LongText
+  sortOrder   Int      @default(0)
+  isPublished Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([isPublished, sortOrder])
+}

@@ -1,0 +1,90 @@
+.card {
+  width: min(100%, 420px);
+  margin: 2rem auto 0;
+  padding: 2rem;
+  box-sizing: border-box;
+  border: 1px solid var(--light-text);
+  border-radius: 18px;
+  font-family: var(--mainfont);
+}
+
+.intro {
+  margin-bottom: 1.75rem;
+}
+
+.title {
+  margin: 0 0 0.5rem;
+  font-size: 1.5rem;
+}
+
+.description {
+  margin: 0;
+  color: var(--light-text);
+  line-height: 1.5;
+}
+
+.form {
+  display: grid;
+  gap: 1.25rem;
+}
+
+.field {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.label {
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.input {
+  width: 100%;
+  padding: 0.8rem 0.9rem;
+  box-sizing: border-box;
+  border: 1px solid var(--light-text);
+  border-radius: 8px;
+  outline: none;
+  background: transparent;
+  color: var(--text);
+  font: inherit;
+}
+
+.input:focus {
+  border-color: var(--text);
+  box-shadow: 0 0 0 3px rgba(244, 244, 245, 0.12);
+}
+
+.error {
+  margin: 0;
+  color: #ff8a8a;
+  font-size: 0.9rem;
+  line-height: 1.4;
+}
+
+.submitButton {
+  padding: 0.8rem 1rem;
+  border: 1px solid var(--text);
+  border-radius: 8px;
+  background: var(--text);
+  color: var(--bg);
+  cursor: pointer;
+  font: inherit;
+  font-weight: 700;
+}
+
+.submitButton:hover {
+  background: var(--light-text);
+  border-color: var(--light-text);
+}
+
+.submitButton:focus-visible {
+  outline: 3px solid rgba(244, 244, 245, 0.35);
+  outline-offset: 3px;
+}
+
+@media (max-width: 520px) {
+  .card {
+    padding: 1.5rem;
+  }
+}

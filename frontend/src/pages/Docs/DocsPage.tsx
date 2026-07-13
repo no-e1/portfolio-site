@@ -1,7 +1,11 @@
+import { LoginForm } from "../../components/Auth/LoginForm"
 import styles from "./DocsPage.module.css"
 
 export function DocsPage() {
     return (
-        <h1 className={styles.title}>docs</h1>
+        <section>
+            <h1 className={styles.title}>Dokumente</h1>
+            <LoginForm />
+        </section>
     );
 }

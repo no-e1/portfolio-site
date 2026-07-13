@@ -2,9 +2,9 @@ import { NavLink } from "react-router-dom";
 
 const navItems = [
     { to: "/", label: "home", end: true},
-    { to: "/about", label: "about me"},
-    { to: "/projects", label: "projects"},
-    { to: "/docs", label: "docs"},
+    { to: "/projects", label: "projekte"},
+    { to: "/about", label: "über mich"},
+    { to: "/docs", label: "dokumente"},
 ];
 
 export default function Header() {

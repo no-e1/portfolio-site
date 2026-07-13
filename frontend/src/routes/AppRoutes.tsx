@@ -12,8 +12,8 @@ export function AppRoutes() {
       <Routes>
         <Route element={<Layout />}>
           <Route index element={<HomePage />} />
-          <Route path="about" element={<AboutPage />} />
           <Route path="projects" element={<ProjectsPage />} />
+          <Route path="about" element={<AboutPage />} />
           <Route path="docs" element={<DocsPage />} />
           <Route path="privacy" element={<PrivacyPage />} />
         </Route>

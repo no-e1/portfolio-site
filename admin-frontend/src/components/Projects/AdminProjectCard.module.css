@@ -1,0 +1,175 @@
+.card {
+  min-width: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--light-text);
+  border-radius: 25px;
+}
+
+.card:hover {
+  border-color: var(--text);
+  background: #0a0a1a;
+}
+
+.mediaFrame {
+  position: relative;
+  min-height: 182px;
+  padding: 1rem;
+  display: grid;
+  place-items: center;
+}
+
+.image {
+  display: block;
+  max-width: 100%;
+  height: 150px;
+  border: 1px solid var(--light-text);
+  border-radius: 8px;
+  object-fit: contain;
+}
+
+.status {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  padding: 0.3rem 0.55rem;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+.published {
+  background: #b8f7ce;
+  color: #0b3b1c;
+}
+
+.draft {
+  background: #e0e0e5;
+  color: #30303a;
+}
+
+.content {
+  padding: 1rem;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.period,
+.description {
+  color: var(--light-text);
+}
+
+.period {
+  margin: 0 0 0.5rem;
+  font-size: 0.85rem;
+}
+
+.title {
+  margin: 0 0 0.5rem;
+  font-size: 1.5rem;
+}
+
+.description {
+  margin: 0 0 1rem;
+  line-height: 1.45;
+}
+
+.tags {
+  margin-bottom: 1rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.tag {
+  padding: 0.25rem 0.55rem;
+  border-radius: 999px;
+  background: rgba(166, 171, 179, 0.16);
+  font-size: 0.8rem;
+}
+
+.links {
+  margin-bottom: 1rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+}
+
+.links a {
+  padding: 0.45rem 0.65rem;
+  border-radius: 7px;
+  background: var(--text);
+  color: var(--bg);
+  font-size: 0.82rem;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.links a:hover {
+  background: var(--light-text);
+}
+
+.actions {
+  margin-top: auto;
+  display: flex;
+  gap: 0.6rem;
+}
+
+.primaryAction,
+.secondaryAction,
+.deleteAction {
+  padding: 0.65rem 0.8rem;
+  border-radius: 7px;
+  cursor: pointer;
+  font-weight: 700;
+}
+
+.primaryAction {
+  border: 1px solid var(--text);
+  background: var(--text);
+  color: var(--bg);
+}
+
+.secondaryAction {
+  border: 1px solid var(--light-text);
+  background: transparent;
+  color: var(--text);
+}
+
+.deleteAction {
+  border: 1px solid #ff8a8a;
+  background: transparent;
+  color: #ff8a8a;
+}
+
+.primaryAction:hover,
+.secondaryAction:hover:not(:disabled),
+.deleteAction:hover:not(:disabled) {
+  border-color: var(--light-text);
+  background: var(--light-text);
+  color: var(--bg);
+}
+
+.secondaryAction:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+
+.deleteAction:hover:not(:disabled) {
+  border-color: #ff8a8a;
+  background: #ff8a8a;
+  color: #260909;
+}
+
+.deleteAction:disabled {
+  cursor: wait;
+  opacity: 0.45;
+}
+
+@media (max-width: 420px) {
+  .actions {
+    flex-direction: column;
+  }
+}

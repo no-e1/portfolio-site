@@ -1,0 +1,87 @@
+.backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  padding: 1.5rem;
+  display: grid;
+  place-items: center;
+  background: rgba(0, 0, 0, 0.78);
+}
+
+.dialog {
+  width: min(100%, 430px);
+  padding: 1.75rem;
+  border: 1px solid var(--light-text);
+  border-radius: 16px;
+  background: var(--surface);
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.45);
+}
+
+.dialog h2 {
+  margin: 0 0 0.65rem;
+  font-family: var(--hfontfam);
+  font-size: 1.65rem;
+  font-weight: 400;
+}
+
+.dialog p {
+  margin: 0;
+  color: var(--light-text);
+  line-height: 1.55;
+}
+
+.actions {
+  margin-top: 1.5rem;
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.65rem;
+}
+
+.cancelButton,
+.confirmButton {
+  padding: 0.75rem 0.95rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 700;
+}
+
+.cancelButton {
+  border: 1px solid var(--light-text);
+  background: transparent;
+  color: var(--text);
+}
+
+.confirmButton {
+  border: 1px solid var(--text);
+  background: var(--text);
+  color: var(--bg);
+}
+
+.dangerButton {
+  border-color: #ff8a8a;
+  background: #ff8a8a;
+  color: #260909;
+}
+
+.cancelButton:hover,
+.confirmButton:hover {
+  border-color: var(--light-text);
+  background: var(--light-text);
+  color: var(--bg);
+}
+
+.cancelButton:focus-visible,
+.confirmButton:focus-visible {
+  outline: 3px solid rgba(244, 244, 245, 0.3);
+  outline-offset: 3px;
+}
+
+@media (max-width: 440px) {
+  .actions {
+    flex-direction: column-reverse;
+  }
+
+  .actions button {
+    width: 100%;
+  }
+}

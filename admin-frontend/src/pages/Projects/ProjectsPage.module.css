@@ -1,0 +1,99 @@
+.page {
+  margin-top: clamp(2.5rem, 4vh, 7rem);
+}
+
+.pageHeader {
+  margin-bottom: 3rem;
+  display: flex;
+  align-items: flex-start;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.pageHeader h1 {
+  margin: 0 0 0.4rem;
+  font-family: var(--hfontfam);
+  font-size: clamp(2.25rem, 4vw, 3rem);
+  font-weight: 400;
+}
+
+.addButton,
+.retryButton {
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--text);
+  border-radius: 8px;
+  background: var(--text);
+  color: var(--bg);
+  cursor: pointer;
+  font-weight: 700;
+}
+
+.addButton:hover,
+.retryButton:hover {
+  border-color: var(--light-text);
+  background: var(--light-text);
+}
+
+.projectGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.5rem;
+}
+
+.projectGroups {
+  display: grid;
+  gap: 3.5rem;
+}
+
+.projectGroup h2 {
+  margin: 0 0 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  font-size: 1.35rem;
+}
+
+.projectGroup h2 span {
+  min-width: 1.6rem;
+  padding: 0.2rem 0.45rem;
+  border-radius: 999px;
+  background: rgba(166, 171, 179, 0.16);
+  color: var(--light-text);
+  font-size: 0.75rem;
+  text-align: center;
+}
+
+.emptyGroup {
+  margin: 0;
+  padding: 1.5rem;
+  border: 1px dashed rgba(166, 171, 179, 0.5);
+  border-radius: 12px;
+  color: var(--light-text);
+}
+
+.status {
+  margin: 3rem 0;
+  display: grid;
+  justify-items: center;
+  gap: 1rem;
+  color: var(--light-text);
+  text-align: center;
+}
+
+.status p {
+  margin: 0;
+}
+
+.error {
+  margin: 0 0 1.5rem;
+  padding: 0.8rem 1rem;
+  border: 1px solid var(--error);
+  border-radius: 8px;
+  color: var(--error);
+}
+
+@media (max-width: 650px) {
+  .projectGrid {
+    grid-template-columns: 1fr;
+  }
+}

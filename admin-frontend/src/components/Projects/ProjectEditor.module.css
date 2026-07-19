@@ -1,0 +1,408 @@
+.backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  padding: 2rem;
+  overflow-y: auto;
+  background: rgba(0, 0, 0, 0.72);
+}
+
+.modal {
+  width: min(900px, 100%);
+  margin: 0 auto;
+  padding: 2rem;
+  border: 1px solid var(--light-text);
+  border-radius: 18px;
+  background: var(--bg);
+}
+
+.headingRow,
+.formActions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.title {
+  margin: 0;
+  font-family: var(--hfontfam);
+  font-size: clamp(1.8rem, 5vw, 2.5rem);
+  font-weight: 400;
+}
+
+.projectStatus {
+  padding: 0.35rem 0.65rem;
+  border-radius: 999px;
+  background: rgba(166, 171, 179, 0.18);
+  color: var(--light-text);
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.form {
+  margin-top: 2rem;
+  display: grid;
+  gap: 1.5rem;
+}
+
+.section {
+  min-width: 0;
+  margin: 0;
+  padding: 1.25rem;
+  display: grid;
+  gap: 1rem;
+  border: 1px solid rgba(166, 171, 179, 0.55);
+  border-radius: 12px;
+}
+
+.section legend {
+  padding: 0 0.45rem;
+  font-size: 1.05rem;
+  font-weight: 700;
+}
+
+.sectionAction {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.twoColumns,
+.mediaSection {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.field,
+.fileField {
+  display: grid;
+  gap: 0.45rem;
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.field input,
+.field textarea,
+.linkRow input,
+.linkRow select,
+.reorderRow input {
+  width: 100%;
+  padding: 0.75rem 0.85rem;
+  border: 1px solid var(--light-text);
+  border-radius: 8px;
+  outline: none;
+  background: transparent;
+  color: var(--text);
+}
+
+.field textarea {
+  resize: vertical;
+  line-height: 1.5;
+}
+
+.field input:focus,
+.field textarea:focus,
+.linkRow input:focus,
+.linkRow select:focus,
+.reorderRow input:focus {
+  border-color: var(--text);
+  box-shadow: 0 0 0 3px rgba(244, 244, 245, 0.12);
+}
+
+.rows {
+  display: grid;
+  gap: 0.65rem;
+}
+
+.reorderRow {
+  min-width: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto auto;
+  gap: 0.45rem;
+}
+
+.linkRow {
+  min-width: 0;
+  display: grid;
+  grid-template-columns: 120px minmax(120px, 0.7fr) minmax(180px, 1.3fr);
+  gap: 0.55rem;
+}
+
+.selectWrapper {
+  position: relative;
+}
+
+.selectWrapper::after {
+  content: "⌄";
+  position: absolute;
+  top: 50%;
+  right: 0.85rem;
+  color: var(--light-text);
+  font-size: 1rem;
+  pointer-events: none;
+  transform: translateY(-58%);
+}
+
+.selectWrapper select {
+  height: 100%;
+  padding-right: 2.3rem;
+  appearance: none;
+  background: var(--surface);
+  color: var(--text);
+  color-scheme: dark;
+  cursor: pointer;
+}
+
+.selectWrapper option {
+  background: var(--surface);
+  color: var(--text);
+}
+
+.rowActions {
+  grid-column: 1 / -1;
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.45rem;
+}
+
+.reorderRow button,
+.rowActions button,
+.selectedFile button,
+.smallButton {
+  padding: 0.55rem 0.65rem;
+  border: 1px solid var(--light-text);
+  border-radius: 7px;
+  background: transparent;
+  color: var(--text);
+  cursor: pointer;
+}
+
+.reorderRow button:hover:not(:disabled),
+.rowActions button:hover:not(:disabled),
+.selectedFile button:hover,
+.smallButton:hover:not(:disabled) {
+  border-color: var(--text);
+  background: rgba(244, 244, 245, 0.1);
+}
+
+.reorderRow button:disabled,
+.rowActions button:disabled,
+.smallButton:disabled {
+  cursor: not-allowed;
+  opacity: 0.35;
+}
+
+.mediaSection h3 {
+  margin: 0 0 0.75rem;
+  font-size: 0.95rem;
+}
+
+.currentCover {
+  width: 100%;
+  height: 150px;
+  margin-bottom: 0.75rem;
+  border-radius: 8px;
+  object-fit: contain;
+  background: var(--surface);
+}
+
+.currentMedia {
+  margin-bottom: 0.75rem;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.4rem;
+}
+
+.mediaThumbnail {
+  position: relative;
+}
+
+.mediaThumbnail img {
+  width: 100%;
+  aspect-ratio: 1;
+  display: block;
+  border-radius: 6px;
+  object-fit: cover;
+}
+
+.mediaThumbnail button {
+  position: absolute;
+  top: 0.3rem;
+  right: 0.3rem;
+  width: 1.8rem;
+  height: 1.8rem;
+  padding: 0;
+  border: 1px solid var(--text);
+  border-radius: 999px;
+  background: rgba(11, 11, 23, 0.88);
+  color: var(--text);
+  cursor: pointer;
+  font-size: 1.15rem;
+  line-height: 1;
+}
+
+.mediaThumbnail button:hover {
+  background: var(--text);
+  color: var(--bg);
+}
+
+.pendingDeletion {
+  margin-bottom: 0.75rem;
+  padding: 0.65rem 0.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  border: 1px solid rgba(166, 171, 179, 0.45);
+  border-radius: 7px;
+  color: var(--light-text);
+  font-size: 0.82rem;
+}
+
+.pendingDeletion button {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--text);
+  cursor: pointer;
+  font-weight: 700;
+}
+
+.fileField input {
+  max-width: 100%;
+  color: var(--light-text);
+  font-weight: 400;
+}
+
+.selectedFile {
+  margin-top: 0.6rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  color: var(--light-text);
+  font-size: 0.85rem;
+}
+
+.fileName {
+  min-width: 0;
+  align-self: center;
+  overflow: hidden;
+  color: var(--light-text);
+  font-size: 0.85rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.hint {
+  margin: 0;
+  color: var(--light-text);
+  font-size: 0.85rem;
+  line-height: 1.45;
+}
+
+.checkbox {
+  margin-top: 0.75rem;
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  color: var(--light-text);
+  font-size: 0.88rem;
+}
+
+.error {
+  margin: 0;
+  padding: 0.8rem 1rem;
+  border: 1px solid var(--error);
+  border-radius: 8px;
+  color: var(--error);
+  line-height: 1.4;
+}
+
+.formActions {
+  justify-content: flex-end;
+  flex-wrap: wrap;
+}
+
+.cancelButton,
+.secondarySave,
+.publishButton {
+  padding: 0.8rem 1rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 700;
+}
+
+.cancelButton,
+.secondarySave {
+  border: 1px solid var(--light-text);
+  background: transparent;
+  color: var(--text);
+}
+
+.publishButton {
+  border: 1px solid var(--text);
+  background: var(--text);
+  color: var(--bg);
+}
+
+.cancelButton:hover:not(:disabled),
+.secondarySave:hover:not(:disabled) {
+  border-color: var(--text);
+  background: rgba(244, 244, 245, 0.1);
+}
+
+.publishButton:hover:not(:disabled) {
+  border-color: var(--light-text);
+  background: var(--light-text);
+}
+
+.cancelButton:disabled,
+.secondarySave:disabled,
+.publishButton:disabled {
+  cursor: wait;
+  opacity: 0.6;
+}
+
+@media (max-width: 700px) {
+  .backdrop {
+    padding: 0;
+  }
+
+  .modal {
+    min-height: 100svh;
+    padding: 1.25rem;
+    border: 0;
+    border-radius: 0;
+  }
+
+  .twoColumns,
+  .mediaSection,
+  .linkRow {
+    grid-template-columns: 1fr;
+  }
+
+  .headingRow {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}
+
+@media (max-width: 480px) {
+  .section {
+    padding: 1rem;
+  }
+
+  .reorderRow {
+    grid-template-columns: minmax(0, 1fr) auto auto;
+  }
+
+  .reorderRow button:last-child {
+    grid-column: 1 / -1;
+  }
+
+  .formActions > * {
+    width: 100%;
+  }
+}

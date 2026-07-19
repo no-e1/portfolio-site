@@ -2,6 +2,8 @@ import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import { AdminLayout } from "../components/Layout/AdminLayout";
 import { LoginPage } from "../pages/Login/LoginPage";
 import { DashboardPage } from "../pages/Dashboard/DashboardPage";
+import { ProjectsPage } from "../pages/Projects/ProjectsPage";
+import { UsersPage } from "../pages/Users/UsersPage";
 import { ProtectedRoute } from "./ProtectedRoute";
 
 type AppRoutesProps = {
@@ -30,7 +32,8 @@ export function AppRoutes({ accessToken, onLogin, onLogout }: AppRoutesProps) {
         <Route element={<ProtectedRoute isAuthenticated={isAuthenticated} />}>
           <Route element={<AdminLayout onLogout={onLogout} />}>
             <Route index element={<DashboardPage />} />
-            {}
+            <Route path="users" element={<UsersPage />} />
+            <Route path="projects" element={<ProjectsPage />} />
           </Route>
         </Route>
 

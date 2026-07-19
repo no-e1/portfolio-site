@@ -36,6 +36,9 @@ async function bootstrap() {
   app.useStaticAssets(resolve(process.cwd(), 'uploads'), {
     prefix: '/uploads/',
   });
+  adminApp.useStaticAssets(resolve(process.cwd(), 'uploads'), {
+    prefix: '/uploads/',
+  });
 
   await Promise.all([
     app.listen(process.env.PORT ?? 3000),

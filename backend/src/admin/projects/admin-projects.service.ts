@@ -10,7 +10,7 @@ import { randomUUID } from 'crypto';
 import { mkdir, unlink, writeFile } from 'fs/promises';
 import { resolve, sep } from 'path';
 import { PrismaService } from '../../prisma/prisma.service';
-import type { ProjectResponse } from '../../projects/project-response.type';
+import type { AdminProjectResponse } from './admin-project-response.type';
 import { CreateProjectDto } from './dto/create-project.dto';
 import { UpdateProjectDto } from './dto/update-project.dto';
 import type {
@@ -36,12 +36,15 @@ type StoredProjectFile = {
 
 const PROJECT_RESPONSE_SELECT = {
   id: true,
+  slug: true,
   title: true,
   shortDescription: true,
   longDescription: true,
   period: true,
   coverType: true,
   coverSrc: true,
+  sortOrder: true,
+  isPublished: true,
   tags: {
     orderBy: [{ sortOrder: 'asc' }, { id: 'asc' }],
     select: { label: true },
@@ -66,14 +69,23 @@ export class AdminProjectsService {
 
   constructor(private readonly prisma: PrismaService) {}
 
+  async findAll(): Promise<AdminProjectResponse[]> {
+    const projects = await this.prisma.project.findMany({
+      orderBy: [{ sortOrder: 'asc' }, { id: 'asc' }],
+      select: PROJECT_RESPONSE_SELECT,
+    });
+
+    return projects.map((project) => this.toProjectResponse(project));
+  }
+
   async create(
     createProjectDto: CreateProjectDto,
     files: ProjectUploadFiles | undefined,
-  ): Promise<ProjectResponse> {
+  ): Promise<AdminProjectResponse> {
     const coverFile = files?.cover?.[0];
 
     if (!coverFile) {
-      throw new BadRequestException('Ein Cover-Bild ist erforderlich.');
+      throw new BadRequestException('Cover-Image required');
     }
 
     const uploadedFiles = [coverFile, ...(files?.media ?? [])];
@@ -136,7 +148,7 @@ export class AdminProjectsService {
         error instanceof Prisma.PrismaClientKnownRequestError &&
         error.code === 'P2002'
       ) {
-        throw new ConflictException('Der Projekt-Slug existiert bereits.');
+        throw new ConflictException('This slug already exists');
       }
 
       throw error;
@@ -147,7 +159,7 @@ export class AdminProjectsService {
     id: number,
     updateProjectDto: UpdateProjectDto,
     files: ProjectUploadFiles | undefined,
-  ): Promise<ProjectResponse> {
+  ): Promise<AdminProjectResponse> {
     this.ensureValidId(id);
 
     const existingProject = await this.prisma.project.findUnique({
@@ -163,13 +175,13 @@ export class AdminProjectsService {
     });
 
     if (!existingProject) {
-      throw new NotFoundException('Projekt nicht gefunden.');
+      throw new NotFoundException('Project not found');
     }
 
     const coverFile = files?.cover?.[0];
     const mediaFiles = files?.media ?? [];
-    const shouldReplaceMedia =
-      updateProjectDto.replaceMedia === true || files?.media !== undefined;
+    const shouldReplaceMedia = updateProjectDto.replaceMedia === true;
+    const hasMediaChanges = shouldReplaceMedia || mediaFiles.length > 0;
     const hasScalarChanges = [
       updateProjectDto.slug,
       updateProjectDto.title,
@@ -184,11 +196,11 @@ export class AdminProjectsService {
       updateProjectDto.tags !== undefined ||
       updateProjectDto.links !== undefined ||
       coverFile !== undefined ||
-      shouldReplaceMedia;
+      hasMediaChanges;
 
     if (!hasChanges) {
       throw new BadRequestException(
-        'Mindestens eine Projektänderung ist erforderlich.',
+        'Nothing has changed',
       );
     }
 
@@ -217,8 +229,15 @@ export class AdminProjectsService {
       );
       const finalAdditionalMedia = shouldReplaceMedia
         ? storedMedia
-        : retainedMedia;
-      const shouldUpdateMedia = storedCover !== undefined || shouldReplaceMedia;
+        : [...retainedMedia, ...storedMedia];
+
+      if (finalAdditionalMedia.length > 10) {
+        throw new BadRequestException(
+          'Max 10 detail-images per project',
+        );
+      }
+
+      const shouldUpdateMedia = storedCover !== undefined || hasMediaChanges;
       const data: Prisma.ProjectUpdateInput = {};
 
       if (updateProjectDto.slug !== undefined) {
@@ -402,9 +421,12 @@ export class AdminProjectsService {
     return storedFile;
   }
 
-  private toProjectResponse(project: ProjectResponseRecord): ProjectResponse {
+  private toProjectResponse(
+    project: ProjectResponseRecord,
+  ): AdminProjectResponse {
     return {
       id: project.id,
+      slug: project.slug,
       title: project.title,
       shortDescription: project.shortDescription,
       longDescription: project.longDescription,
@@ -416,6 +438,8 @@ export class AdminProjectsService {
       },
       media: project.media,
       links: project.links,
+      sortOrder: project.sortOrder,
+      isPublished: project.isPublished,
     };
   }
 

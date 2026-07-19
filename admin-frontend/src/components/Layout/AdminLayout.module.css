@@ -1,0 +1,38 @@
+.shell {
+  min-height: 100svh;
+  display: flex;
+  justify-content: center;
+  background: var(--bg);
+}
+
+.frame {
+  width: calc(100% - 2rem);
+  max-width: 750px;
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+}
+
+.content {
+  flex: 1;
+}
+
+.footer {
+  margin: 6.25rem 0;
+  color: var(--light-text);
+  font-size: 0.9rem;
+}
+
+.footer p {
+  margin: 0;
+}
+
+@media (max-width: 520px) {
+  .frame {
+    width: calc(100% - 1.5rem);
+  }
+
+  .footer {
+    margin: 4rem 0;
+  }
+}

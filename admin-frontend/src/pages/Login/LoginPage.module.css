@@ -1,0 +1,13 @@
+.page {
+  width: calc(100% - 2rem);
+  max-width: 750px;
+  min-height: 100svh;
+  margin: 0 auto;
+  padding: 1.875rem 0;
+}
+
+@media (max-width: 520px) {
+  .page {
+    width: calc(100% - 1.5rem);
+  }
+}

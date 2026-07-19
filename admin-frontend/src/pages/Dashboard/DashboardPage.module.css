@@ -1,0 +1,17 @@
+.page {
+  margin-top: clamp(2.5rem, 4vh, 7rem);
+}
+
+.page h1 {
+  margin: 0 0 0.75rem;
+  font-family: var(--hfontfam);
+  font-size: clamp(2.25rem, 4vw, 3rem);
+  font-weight: 400;
+}
+
+.page p {
+  max-width: 38rem;
+  margin: 0;
+  color: var(--light-text);
+  line-height: 1.6;
+}

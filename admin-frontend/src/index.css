@@ -1,0 +1,42 @@
+:root {
+  --bg: #0b0b17;
+  --surface: #111120;
+  --text: #f4f4f5;
+  --light-text: #a6abb3;
+  --error: #ff8a8a;
+  --mainfont: Arial, Helvetica, sans-serif, system-ui;
+  --hfontfam: "Calistoga", monospace, cursive, system-ui;
+
+  color: var(--text);
+  background: var(--bg);
+  font-family: var(--mainfont);
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+html,
+body,
+#root {
+  min-height: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+}
+
+button,
+input {
+  font: inherit;
+}
+
+button {
+  color: inherit;
+}
+
+* {
+  box-sizing: border-box;
+}

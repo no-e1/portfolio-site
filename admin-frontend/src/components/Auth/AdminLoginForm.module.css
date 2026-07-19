@@ -1,0 +1,101 @@
+.card {
+  width: min(100%, 420px);
+  margin: clamp(2.5rem, 10vh, 7rem) auto 0;
+  padding: 2rem;
+  border: 1px solid var(--light-text);
+  border-radius: 18px;
+  background: var(--surface);
+}
+
+.intro {
+  margin-bottom: 1.75rem;
+}
+
+.title {
+  margin: 0 0 0.5rem;
+  font-family: var(--mainfont);
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+.description {
+  margin: 0;
+  color: var(--light-text);
+  line-height: 1.5;
+}
+
+.form,
+.field {
+  display: grid;
+}
+
+.form {
+  gap: 1.25rem;
+}
+
+.field {
+  gap: 0.5rem;
+}
+
+.label {
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.input {
+  width: 100%;
+  padding: 0.8rem 0.9rem;
+  border: 1px solid var(--light-text);
+  border-radius: 8px;
+  outline: none;
+  background: transparent;
+  color: var(--text);
+}
+
+.input:focus {
+  border-color: var(--text);
+  box-shadow: 0 0 0 3px rgba(244, 244, 245, 0.12);
+}
+
+.input:disabled {
+  opacity: 0.65;
+}
+
+.error {
+  margin: 0;
+  color: var(--error);
+  font-size: 0.9rem;
+  line-height: 1.4;
+}
+
+.submitButton {
+  padding: 0.8rem 1rem;
+  border: 1px solid var(--text);
+  border-radius: 8px;
+  background: var(--text);
+  color: var(--bg);
+  cursor: pointer;
+  font-weight: 700;
+}
+
+.submitButton:hover:not(:disabled) {
+  border-color: var(--light-text);
+  background: var(--light-text);
+}
+
+.submitButton:disabled {
+  cursor: wait;
+  opacity: 0.65;
+}
+
+.submitButton:focus-visible {
+  outline: 3px solid rgba(244, 244, 245, 0.35);
+  outline-offset: 3px;
+}
+
+@media (max-width: 520px) {
+  .card {
+    margin-top: 1.5rem;
+    padding: 1.5rem;
+  }
+}

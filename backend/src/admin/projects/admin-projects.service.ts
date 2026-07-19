@@ -51,7 +51,7 @@ const PROJECT_RESPONSE_SELECT = {
   },
   media: {
     orderBy: [{ sortOrder: 'asc' }, { id: 'asc' }],
-    select: { type: true, src: true },
+    select: { id: true, type: true, src: true },
   },
   links: {
     orderBy: [{ sortOrder: 'asc' }, { id: 'asc' }],
@@ -199,9 +199,7 @@ export class AdminProjectsService {
       hasMediaChanges;
 
     if (!hasChanges) {
-      throw new BadRequestException(
-        'Nothing has changed',
-      );
+      throw new BadRequestException('Nothing has changed');
     }
 
     const storedFiles: StoredProjectFile[] = [];
@@ -232,9 +230,7 @@ export class AdminProjectsService {
         : [...retainedMedia, ...storedMedia];
 
       if (finalAdditionalMedia.length > 10) {
-        throw new BadRequestException(
-          'Max 10 detail-images per project',
-        );
+        throw new BadRequestException('Max 10 detail-images per project');
       }
 
       const shouldUpdateMedia = storedCover !== undefined || hasMediaChanges;
@@ -325,14 +321,14 @@ export class AdminProjectsService {
         error instanceof Prisma.PrismaClientKnownRequestError &&
         error.code === 'P2002'
       ) {
-        throw new ConflictException('Der Projekt-Slug existiert bereits.');
+        throw new ConflictException('This slug already exists');
       }
 
       if (
         error instanceof Prisma.PrismaClientKnownRequestError &&
         error.code === 'P2025'
       ) {
-        throw new NotFoundException('Projekt nicht gefunden.');
+        throw new NotFoundException('Project not found');
       }
 
       throw error;
@@ -355,7 +351,7 @@ export class AdminProjectsService {
         error instanceof Prisma.PrismaClientKnownRequestError &&
         error.code === 'P2025'
       ) {
-        throw new NotFoundException('Projekt nicht gefunden.');
+        throw new NotFoundException('Project not found');
       }
 
       throw error;
@@ -368,6 +364,7 @@ export class AdminProjectsService {
     const project = await this.prisma.project.findUnique({
       where: { id },
       select: {
+        isPublished: true,
         coverSrc: true,
         media: {
           select: { src: true },
@@ -376,7 +373,13 @@ export class AdminProjectsService {
     });
 
     if (!project) {
-      throw new NotFoundException('Projekt nicht gefunden.');
+      throw new NotFoundException('Project not found');
+    }
+
+    if (project.isPublished) {
+      throw new BadRequestException(
+        'Published projects must be unpublished before deletion.',
+      );
     }
 
     try {
@@ -386,7 +389,7 @@ export class AdminProjectsService {
         error instanceof Prisma.PrismaClientKnownRequestError &&
         error.code === 'P2025'
       ) {
-        throw new NotFoundException('Projekt nicht gefunden.');
+        throw new NotFoundException('Project not found');
       }
 
       throw error;
@@ -405,9 +408,56 @@ export class AdminProjectsService {
     return { id, deleted: true };
   }
 
+  async removeMedia(
+    projectId: number,
+    mediaId: number,
+  ): Promise<AdminProjectResponse> {
+    this.ensureValidId(projectId);
+    this.ensureValidId(mediaId);
+
+    const media = await this.prisma.projectMedia.findFirst({
+      where: { id: mediaId, projectId },
+      select: {
+        src: true,
+        project: {
+          select: { coverSrc: true },
+        },
+      },
+    });
+
+    if (!media) {
+      throw new NotFoundException('Project-image not found');
+    }
+
+    if (media.src === media.project.coverSrc) {
+      throw new BadRequestException(
+        "Coverimage can't be deleted",
+      );
+    }
+
+    await this.prisma.projectMedia.delete({ where: { id: mediaId } });
+
+    const project = await this.prisma.project.findUnique({
+      where: { id: projectId },
+      select: PROJECT_RESPONSE_SELECT,
+    });
+
+    if (!project) {
+      throw new NotFoundException('Project not found');
+    }
+
+    const storedPath = this.resolveStoredSource(media.src);
+
+    if (storedPath) {
+      await this.removeFiles([storedPath]);
+    }
+
+    return this.toProjectResponse(project);
+  }
+
   private ensureValidId(id: number): void {
     if (id < 1) {
-      throw new NotFoundException('Projekt nicht gefunden.');
+      throw new NotFoundException('Project not found');
     }
   }
 
@@ -449,7 +499,7 @@ export class AdminProjectsService {
     const extension = FILE_EXTENSION_BY_MIME_TYPE[uploadedFile.mimetype];
 
     if (!extension) {
-      throw new BadRequestException('Nicht unterstütztes Bildformat.');
+      throw new BadRequestException('Imagetype not supported');
     }
 
     const fileName = `${randomUUID()}${extension}`;
@@ -490,7 +540,7 @@ export class AdminProjectsService {
 
         if (error.code !== 'ENOENT') {
           this.logger.warn(
-            `Datei konnte nicht gelöscht werden: ${paths[index]}`,
+            `Wasn't able to delete file: ${paths[index]}`,
           );
         }
       }

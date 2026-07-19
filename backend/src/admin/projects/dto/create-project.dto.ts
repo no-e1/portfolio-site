@@ -1,5 +1,5 @@
 import { ProjectLinkType } from '@prisma/client';
-import { Transform, Type } from 'class-transformer';
+import { plainToInstance, Transform, Type } from 'class-transformer';
 import {
   ArrayMaxSize,
   IsArray,
@@ -25,6 +25,16 @@ function parseJson(value: unknown): unknown {
   } catch {
     return value;
   }
+}
+
+export function parseProjectLinks(value: unknown): unknown {
+  const parsedValue = parseJson(value);
+
+  if (!Array.isArray(parsedValue)) {
+    return parsedValue;
+  }
+
+  return parsedValue.map((link) => plainToInstance(CreateProjectLinkDto, link));
 }
 
 function trimString(value: unknown): unknown {
@@ -124,7 +134,7 @@ export class CreateProjectDto {
   tags?: string[];
 
   @IsOptional()
-  @Transform(({ value }) => parseJson(value))
+  @Transform(({ value }) => parseProjectLinks(value))
   @IsArray()
   @ArrayMaxSize(10)
   @ValidateNested({ each: true })

@@ -37,7 +37,7 @@ function projectImageFileFilter(
   callback: (error: Error | null, acceptFile: boolean) => void,
 ): void {
   if (!ALLOWED_IMAGE_MIME_TYPES.has(file.mimetype)) {
-    callback(new BadRequestException('Nicht unterstütztes Bildformat.'), false);
+    callback(new BadRequestException('Imagetype not supported'), false);
     return;
   }
 
@@ -99,5 +99,13 @@ export class AdminProjectsController {
     @Param('id', ParseIntPipe) id: number,
   ): Promise<{ id: number; deleted: true }> {
     return this.adminProjectsService.remove(id);
+  }
+
+  @Delete(':id/media/:mediaId')
+  removeMedia(
+    @Param('id', ParseIntPipe) id: number,
+    @Param('mediaId', ParseIntPipe) mediaId: number,
+  ): Promise<AdminProjectResponse> {
+    return this.adminProjectsService.removeMedia(id, mediaId);
   }
 }

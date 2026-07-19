@@ -12,7 +12,7 @@ import {
   Min,
   ValidateNested,
 } from 'class-validator';
-import { CreateProjectLinkDto } from './create-project.dto';
+import { CreateProjectLinkDto, parseProjectLinks } from './create-project.dto';
 
 function parseJson(value: unknown): unknown {
   if (typeof value !== 'string') {
@@ -111,7 +111,7 @@ export class UpdateProjectDto {
   tags?: string[];
 
   @IsOptional()
-  @Transform(({ value }) => parseJson(value))
+  @Transform(({ value }) => parseProjectLinks(value))
   @IsArray()
   @ArrayMaxSize(10)
   @ValidateNested({ each: true })

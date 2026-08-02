@@ -1,0 +1,147 @@
+.backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1500;
+  padding: 1.5rem;
+  display: grid;
+  place-items: center;
+  background: rgba(0, 0, 0, 0.78);
+}
+
+.dialog {
+  width: min(100%, 520px);
+  padding: 1.75rem;
+  border: 1px solid var(--light-text);
+  border-radius: 16px;
+  background: var(--surface);
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.45);
+}
+
+.header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.header h2 {
+  margin: 0;
+  font-family: var(--hfontfam);
+  font-size: 1.65rem;
+  font-weight: 400;
+}
+
+.header p {
+  margin: 0.35rem 0 0;
+  color: var(--light-text);
+}
+
+.closeButton {
+  width: 2.25rem;
+  height: 2.25rem;
+  border: 1px solid var(--light-text);
+  border-radius: 999px;
+  background: transparent;
+  cursor: pointer;
+  font-size: 1.35rem;
+  line-height: 1;
+}
+
+.form {
+  margin-top: 1.5rem;
+  display: grid;
+  gap: 1.2rem;
+}
+
+.field {
+  display: grid;
+  gap: 0.45rem;
+  color: var(--light-text);
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.field input {
+  width: 100%;
+  min-width: 0;
+  padding: 0.8rem 0.9rem;
+  border: 1px solid rgba(166, 171, 179, 0.55);
+  border-radius: 8px;
+  background: var(--bg);
+  color: var(--text);
+}
+
+.passwordField {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+}
+
+.passwordField input {
+  border-radius: 8px 0 0 8px;
+}
+
+.passwordField button {
+  padding: 0.75rem;
+  border: 1px solid rgba(166, 171, 179, 0.55);
+  border-left: 0;
+  border-radius: 0 8px 8px 0;
+  background: transparent;
+  cursor: pointer;
+}
+
+.field input:focus,
+.passwordField button:focus-visible,
+.closeButton:focus-visible,
+.actions button:focus-visible {
+  outline: 3px solid rgba(244, 244, 245, 0.28);
+  outline-offset: 2px;
+}
+
+.error {
+  margin: 0;
+  padding: 0.8rem 1rem;
+  border: 1px solid var(--error);
+  border-radius: 8px;
+  color: var(--error);
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.65rem;
+}
+
+.cancelButton,
+.saveButton {
+  padding: 0.75rem 0.95rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 700;
+}
+
+.cancelButton {
+  border: 1px solid var(--light-text);
+  background: transparent;
+}
+
+.saveButton {
+  border: 1px solid var(--text);
+  background: var(--text);
+  color: var(--bg);
+}
+
+button:disabled,
+input:disabled {
+  cursor: not-allowed;
+  opacity: 0.58;
+}
+
+@media (max-width: 440px) {
+  .actions {
+    flex-direction: column-reverse;
+  }
+
+  .actions button {
+    width: 100%;
+  }
+}

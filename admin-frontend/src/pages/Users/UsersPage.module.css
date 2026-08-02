@@ -1,0 +1,274 @@
+.page {
+  margin-top: clamp(2.5rem, 4vh, 7rem);
+}
+
+.pageHeader {
+  margin-bottom: 3rem;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1.5rem;
+}
+
+.pageHeader h1 {
+  margin: 0 0 0.4rem;
+  font-family: var(--hfontfam);
+  font-size: clamp(2.25rem, 4vw, 3rem);
+  font-weight: 400;
+}
+
+.pageHeader p {
+  margin: 0;
+  color: var(--light-text);
+}
+
+.addButton,
+.retryButton {
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--text);
+  border-radius: 8px;
+  background: var(--text);
+  color: var(--bg);
+  cursor: pointer;
+  font-weight: 700;
+}
+
+.addButton {
+  margin-top: 0.75rem;
+}
+
+.addButton:hover,
+.retryButton:hover {
+  border-color: var(--light-text);
+  background: var(--light-text);
+}
+
+.tableWrapper {
+  overflow: hidden;
+  border: 1px solid rgba(166, 171, 179, 0.3);
+  border-radius: 14px;
+  background: var(--surface);
+}
+
+.table {
+  width: 100%;
+  table-layout: fixed;
+  border-collapse: collapse;
+}
+
+.table th,
+.table td {
+  padding: 0.65rem 1rem;
+  border-bottom: 1px solid rgba(166, 171, 179, 0.2);
+  overflow-wrap: anywhere;
+  text-align: left;
+  vertical-align: middle;
+}
+
+.table th {
+  padding-block: 0.8rem;
+  color: var(--light-text);
+  font-size: 0.76rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.table th:nth-child(1) {
+  width: 20%;
+}
+
+.table th:nth-child(2) {
+  width: 14%;
+}
+
+.table th:nth-child(3) {
+  width: 10%;
+}
+
+.table th:nth-child(4) {
+  width: 23%;
+}
+
+.table th:nth-child(5) {
+  width: 25%;
+}
+
+.table th:nth-child(6) {
+  width: 8%;
+}
+
+.table tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.table tbody tr:hover {
+  background: rgba(166, 171, 179, 0.045);
+}
+
+.username {
+  font-weight: 700;
+}
+
+.statusBadge {
+  display: inline-flex;
+  padding: 0.3rem 0.55rem;
+  border: 1px solid;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.active {
+  border-color: #70d69d;
+  color: #70d69d;
+}
+
+.inactive {
+  border-color: var(--light-text);
+  color: var(--light-text);
+}
+
+.date {
+  color: var(--light-text);
+  font-size: 0.86rem;
+}
+
+.loginCount {
+  padding-left: 0.5rem !important;
+  overflow-wrap: normal !important;
+  font-variant-numeric: tabular-nums;
+  text-align: left !important;
+  white-space: nowrap;
+  word-break: normal;
+}
+
+.actionsHeading,
+.menuCell {
+  overflow-wrap: normal !important;
+  text-align: right !important;
+}
+
+.menuButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 2.5rem;
+  height: 2rem;
+  padding: 0 0.55rem;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  background: transparent;
+  cursor: pointer;
+  color: var(--light-text);
+  font-size: 1.35rem;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.menuButton:hover,
+.menuButton[aria-expanded="true"] {
+  border-color: var(--light-text);
+  background: rgba(166, 171, 179, 0.12);
+  color: var(--text);
+}
+
+.actionsRow td {
+  padding: 0.45rem 1rem;
+  background: rgba(166, 171, 179, 0.055);
+}
+
+.rowActions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+}
+
+.actionsLabel {
+  margin-right: auto;
+  color: var(--light-text);
+  font-size: 0.82rem;
+}
+
+.rowActions button {
+  padding: 0.38rem 0.6rem;
+  border: 1px solid var(--light-text);
+  border-radius: 7px;
+  background: transparent;
+  cursor: pointer;
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.rowActions button:hover:not(:disabled) {
+  background: var(--light-text);
+  color: var(--bg);
+}
+
+.rowActions .deleteButton {
+  border-color: var(--error);
+  color: var(--error);
+}
+
+.rowActions .deleteButton:hover:not(:disabled) {
+  background: var(--error);
+  color: #260909;
+}
+
+.rowActions button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.visuallyHidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.empty,
+.status {
+  margin: 3rem 0;
+  padding: 1.5rem;
+  color: var(--light-text);
+  text-align: center;
+}
+
+.empty {
+  border: 1px dashed rgba(166, 171, 179, 0.5);
+  border-radius: 12px;
+}
+
+.status {
+  display: grid;
+  justify-items: center;
+  gap: 1rem;
+}
+
+.status p {
+  margin: 0;
+}
+
+.error {
+  margin: 0 0 1.5rem;
+  padding: 0.8rem 1rem;
+  border: 1px solid var(--error);
+  border-radius: 8px;
+  color: var(--error);
+}
+
+@media (max-width: 650px) {
+  .pageHeader {
+    flex-direction: column;
+  }
+
+  .addButton {
+    margin-top: 0;
+  }
+}

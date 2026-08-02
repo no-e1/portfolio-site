@@ -42,6 +42,22 @@ export class AuthService {
       throw new UnauthorizedException(INVALID_CREDENTIALS);
     }
 
+    const updatedUsers = await this.prisma.user.updateMany({
+      where: {
+        id: user.id,
+        isActive: true,
+      },
+      data: {
+        loginCount: {
+          increment: 1,
+        },
+      },
+    });
+
+    if (updatedUsers.count !== 1) {
+      throw new UnauthorizedException(INVALID_CREDENTIALS);
+    }
+
     const expiresIn = 3600;
     const accessToken = await this.jwtService.signAsync(
       {

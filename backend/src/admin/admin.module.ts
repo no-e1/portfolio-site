@@ -10,6 +10,8 @@ import {
   ADMIN_TOKEN_EXPIRES_IN,
 } from './auth/admin.constants';
 import { AdminJwtAuthGuard } from './auth/admin-jwt-auth.guard';
+import { AdminDocumentsController } from './documents/admin-documents.controller';
+import { AdminDocumentsService } from './documents/admin-documents.service';
 import { AdminProjectsController } from './projects/admin-projects.controller';
 import { AdminProjectsService } from './projects/admin-projects.service';
 import { AdminUsersController } from './users/admin-users.controller';
@@ -33,12 +35,14 @@ import { AdminUsersService } from './users/admin-users.service';
   ],
   controllers: [
     AdminAuthController,
+    AdminDocumentsController,
     AdminUsersController,
     AdminProjectsController,
   ],
   providers: [
     AdminAuthService,
     AdminJwtAuthGuard,
+    AdminDocumentsService,
     AdminUsersService,
     AdminProjectsService,
   ],

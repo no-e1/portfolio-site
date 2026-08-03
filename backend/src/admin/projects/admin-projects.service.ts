@@ -5,11 +5,12 @@ import {
   Logger,
   NotFoundException,
 } from '@nestjs/common';
-import { Prisma, ProjectMediaType } from '@prisma/client';
+import { Prisma, ProjectLinkType, ProjectMediaType } from '@prisma/client';
 import { randomUUID } from 'crypto';
 import { mkdir, unlink, writeFile } from 'fs/promises';
 import { resolve, sep } from 'path';
 import { PrismaService } from '../../prisma/prisma.service';
+import { AdminDocumentsService } from '../documents/admin-documents.service';
 import type { AdminProjectResponse } from './admin-project-response.type';
 import { CreateProjectDto } from './dto/create-project.dto';
 import { UpdateProjectDto } from './dto/update-project.dto';
@@ -67,7 +68,10 @@ type ProjectResponseRecord = Prisma.ProjectGetPayload<{
 export class AdminProjectsService {
   private readonly logger = new Logger(AdminProjectsService.name);
 
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly adminDocumentsService: AdminDocumentsService,
+  ) {}
 
   async findAll(): Promise<AdminProjectResponse[]> {
     const projects = await this.prisma.project.findMany({
@@ -170,6 +174,9 @@ export class AdminProjectsService {
         media: {
           orderBy: [{ sortOrder: 'asc' }, { id: 'asc' }],
           select: { type: true, src: true },
+        },
+        links: {
+          select: { type: true, href: true },
         },
       },
     });
@@ -313,6 +320,23 @@ export class AdminProjectsService {
 
       await this.removeFiles(stalePaths);
 
+      if (updateProjectDto.links !== undefined) {
+        const retainedLinks = new Set(
+          updateProjectDto.links.map((link) => link.href),
+        );
+        const removedDocumentLinks = existingProject.links
+          .filter(
+            (link) =>
+              link.type === ProjectLinkType.document &&
+              !retainedLinks.has(link.href),
+          )
+          .map((link) => link.href);
+
+        await this.adminDocumentsService.removeUnreferencedLinks(
+          removedDocumentLinks,
+        );
+      }
+
       return this.toProjectResponse(project);
     } catch (error) {
       await this.removeFiles(storedFiles.map((file) => file.fullPath));
@@ -369,6 +393,10 @@ export class AdminProjectsService {
         media: {
           select: { src: true },
         },
+        links: {
+          where: { type: ProjectLinkType.document },
+          select: { href: true },
+        },
       },
     });
 
@@ -404,6 +432,9 @@ export class AdminProjectsService {
       .filter((path): path is string => path !== undefined);
 
     await this.removeFiles(storedPaths);
+    await this.adminDocumentsService.removeUnreferencedLinks(
+      project.links.map((link) => link.href),
+    );
 
     return { id, deleted: true };
   }
@@ -430,9 +461,7 @@ export class AdminProjectsService {
     }
 
     if (media.src === media.project.coverSrc) {
-      throw new BadRequestException(
-        "Coverimage can't be deleted",
-      );
+      throw new BadRequestException("Coverimage can't be deleted");
     }
 
     await this.prisma.projectMedia.delete({ where: { id: mediaId } });
@@ -539,9 +568,7 @@ export class AdminProjectsService {
         const error = result.reason as NodeJS.ErrnoException;
 
         if (error.code !== 'ENOENT') {
-          this.logger.warn(
-            `Wasn't able to delete file: ${paths[index]}`,
-          );
+          this.logger.warn(`Wasn't able to delete file: ${paths[index]}`);
         }
       }
     });

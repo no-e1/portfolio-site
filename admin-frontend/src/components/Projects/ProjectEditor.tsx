@@ -6,6 +6,12 @@ import {
   type FormEvent,
 } from "react";
 import { ApiError } from "../../api/api-client";
+import {
+  deleteAdminDocument,
+  getAdminDocuments,
+  uploadAdminDocument,
+  type AdminDocument,
+} from "../../api/admin-documents.api";
 import { ConfirmDialog } from "../ConfirmDialog/ConfirmDialog";
 import type {
   AdminProject,
@@ -23,6 +29,8 @@ const ACCEPTED_MEDIA_TYPES = new Set([
 ]);
 const MAX_FILE_SIZE = 5 * 1024 * 1024;
 const MAX_MEDIA_FILES = 10;
+const MAX_PDF_FILE_SIZE = 10 * 1024 * 1024;
+const DOCUMENT_UPLOAD_PREFIX = "/uploads/documents/";
 
 type ProjectEditorProps = {
   project: AdminProject | null;
@@ -107,6 +115,20 @@ function getFileIdentity(file: File): string {
   return `${file.name}-${file.size}-${file.lastModified}-${file.type}`;
 }
 
+function isManagedDocumentLink(link: ProjectLink): boolean {
+  return (
+    link.type === "document" && link.href.startsWith(DOCUMENT_UPLOAD_PREFIX)
+  );
+}
+
+function formatFileSize(size: number): string {
+  if (size < 1024 * 1024) {
+    return `${Math.max(1, Math.round(size / 1024))} KB`;
+  }
+
+  return `${(size / (1024 * 1024)).toFixed(1)} MB`;
+}
+
 export function ProjectEditor({
   project,
   onCancel,
@@ -114,11 +136,23 @@ export function ProjectEditor({
 }: ProjectEditorProps) {
   const [value, setValue] = useState(() => createInitialValue(project));
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isUploadingAbstract, setIsUploadingAbstract] = useState(false);
+  const [deletingDocumentFileName, setDeletingDocumentFileName] = useState<
+    string | null
+  >(null);
+  const [documents, setDocuments] = useState<AdminDocument[]>([]);
+  const [documentsLoadError, setDocumentsLoadError] = useState(false);
+  const [documentsRequestVersion, setDocumentsRequestVersion] = useState(0);
+  const [pendingDeleteDocument, setPendingDeleteDocument] =
+    useState<AdminDocument | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [pendingAction, setPendingAction] =
     useState<PendingEditorAction>(null);
   const isNewProject = project === null;
   const canPublish = isNewProject || !project.isPublished;
+  const isBusy =
+    isSubmitting || isUploadingAbstract || deletingDocumentFileName !== null;
+  const projectAbstract = value.links.find(isManagedDocumentLink);
 
   const existingDetailMedia = useMemo(() => {
     if (!project) {
@@ -146,7 +180,7 @@ export function ProjectEditor({
     document.body.style.overflow = "hidden";
 
     function handleKeyDown(event: KeyboardEvent) {
-      if (event.key === "Escape" && !isSubmitting) {
+      if (event.key === "Escape" && !isBusy) {
         if (pendingAction) {
           setPendingAction(null);
         } else {
@@ -161,7 +195,28 @@ export function ProjectEditor({
       document.body.style.overflow = previousOverflow;
       document.removeEventListener("keydown", handleKeyDown);
     };
-  }, [isSubmitting, pendingAction, requestCancel]);
+  }, [isBusy, pendingAction, requestCancel]);
+
+  useEffect(() => {
+    const abortController = new AbortController();
+
+    async function loadDocuments() {
+      setDocumentsLoadError(false);
+
+      try {
+        setDocuments(await getAdminDocuments(abortController.signal));
+      } catch (loadError) {
+        if (loadError instanceof Error && loadError.name === "AbortError") {
+          return;
+        }
+
+        setDocumentsLoadError(true);
+      }
+    }
+
+    void loadDocuments();
+    return () => abortController.abort();
+  }, [documentsRequestVersion]);
 
   function updateTag(index: number, tag: string) {
     setValue((current) => ({
@@ -245,6 +300,134 @@ export function ProjectEditor({
     }));
   }
 
+  async function handleAbstractSelection(files: FileList | null) {
+    const file = files?.[0];
+
+    if (!file) {
+      return;
+    }
+
+    if (file.type !== "application/pdf" || !file.name.toLowerCase().endsWith(".pdf")) {
+      setError("Only PDF documents are supported.");
+      return;
+    }
+
+    if (file.size > MAX_PDF_FILE_SIZE) {
+      setError("The project abstract must not exceed 10 MB.");
+      return;
+    }
+
+    if (!projectAbstract && value.links.length >= 10) {
+      setError("Remove a link before adding the project abstract.");
+      return;
+    }
+
+    setError(null);
+    setIsUploadingAbstract(true);
+
+    try {
+      const uploadedDocument = await uploadAdminDocument(file);
+
+      setValue((current) => {
+        const abstractIndex = current.links.findIndex(isManagedDocumentLink);
+        const abstractLink: ProjectLink = {
+          type: "document",
+          label:
+            abstractIndex === -1 ? "" : current.links[abstractIndex].label,
+          href: uploadedDocument.link,
+        };
+
+        if (abstractIndex === -1) {
+          return {
+            ...current,
+            links: [...current.links, abstractLink],
+          };
+        }
+
+        return {
+          ...current,
+          links: current.links.map((link, index) =>
+            index === abstractIndex ? abstractLink : link,
+          ),
+        };
+      });
+      setDocumentsRequestVersion((version) => version + 1);
+    } catch (uploadError) {
+      setError(
+        uploadError instanceof ApiError
+          ? uploadError.message
+          : "The project abstract could not be uploaded.",
+      );
+    } finally {
+      setIsUploadingAbstract(false);
+    }
+  }
+
+  async function handleRemoveLink(index: number) {
+    const link = value.links[index];
+
+    if (!link) {
+      return;
+    }
+
+    const isExistingProjectDocument =
+      isManagedDocumentLink(link) &&
+      project?.links.some(
+        (projectLink) => projectLink.href === link.href,
+      ) === true;
+
+    if (isManagedDocumentLink(link) && !isExistingProjectDocument) {
+      const fileName = link.href.slice(DOCUMENT_UPLOAD_PREFIX.length);
+      setError(null);
+      setDeletingDocumentFileName(fileName);
+
+      try {
+        await deleteAdminDocument(fileName);
+        setDocuments((current) =>
+          current.filter((document) => document.link !== link.href),
+        );
+      } catch (deleteError) {
+        setError(
+          deleteError instanceof ApiError
+            ? deleteError.message
+            : "The PDF could not be deleted.",
+        );
+        setDeletingDocumentFileName(null);
+        return;
+      }
+
+      setDeletingDocumentFileName(null);
+    }
+
+    setValue((current) => ({
+      ...current,
+      links: current.links.filter(
+        (_, currentIndex) => currentIndex !== index,
+      ),
+    }));
+  }
+
+  async function handleDeleteDocument(document: AdminDocument) {
+    setPendingDeleteDocument(null);
+    setError(null);
+    setDeletingDocumentFileName(document.fileName);
+
+    try {
+      await deleteAdminDocument(document.fileName);
+      setDocuments((current) =>
+        current.filter((item) => item.fileName !== document.fileName),
+      );
+    } catch (deleteError) {
+      setError(
+        deleteError instanceof ApiError
+          ? deleteError.message
+          : "The PDF could not be deleted.",
+      );
+    } finally {
+      setDeletingDocumentFileName(null);
+    }
+  }
+
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const submitEvent = event.nativeEvent as SubmitEvent;
@@ -323,7 +506,7 @@ export function ProjectEditor({
         </div>
 
         <form className={styles.form} onSubmit={handleSubmit}>
-          <fieldset className={styles.section} disabled={isSubmitting}>
+          <fieldset className={styles.section} disabled={isBusy}>
             <legend>Basic details</legend>
             <div className={styles.twoColumns}>
               <label className={styles.field}>
@@ -422,7 +605,7 @@ export function ProjectEditor({
             </label>
           </fieldset>
 
-          <fieldset className={styles.section} disabled={isSubmitting}>
+          <fieldset className={styles.section} disabled={isBusy}>
             <legend>Tags</legend>
             <div className={styles.sectionAction}>
               <button
@@ -497,8 +680,136 @@ export function ProjectEditor({
             </div>
           </fieldset>
 
-          <fieldset className={styles.section} disabled={isSubmitting}>
+          <fieldset className={styles.section} disabled={isBusy}>
             <legend>Links</legend>
+            <div className={styles.documentUpload}>
+              <div>
+                <h3>Project abstract</h3>
+                <p className={styles.hint}>
+                  Upload a PDF to create a directly accessible document link.
+                </p>
+                {projectAbstract && (
+                  <a
+                    className={styles.documentLink}
+                    href={projectAbstract.href}
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    open current PDF
+                  </a>
+                )}
+              </div>
+              <label
+                className={`${styles.uploadButton} ${
+                  isUploadingAbstract ? styles.uploadButtonDisabled : ""
+                }`}
+              >
+                {isUploadingAbstract
+                  ? "uploading..."
+                  : projectAbstract
+                    ? "replace PDF"
+                    : "upload PDF"}
+                <input
+                  className={styles.hiddenFileInput}
+                  type="file"
+                  accept=".pdf,application/pdf"
+                  disabled={isBusy}
+                  onChange={(event) => {
+                    const files = event.currentTarget.files;
+                    void handleAbstractSelection(files);
+                    event.currentTarget.value = "";
+                  }}
+                />
+              </label>
+            </div>
+
+            <div className={styles.documentLibrary}>
+              <div className={styles.documentLibraryHeader}>
+                <h3>Uploaded PDFs</h3>
+                <button
+                  className={styles.smallButton}
+                  type="button"
+                  onClick={() =>
+                    setDocumentsRequestVersion((version) => version + 1)
+                  }
+                >
+                  refresh
+                </button>
+              </div>
+
+              {documentsLoadError && (
+                <p className={styles.hint} role="alert">
+                  Uploaded PDFs could not be loaded.
+                </p>
+              )}
+
+              {!documentsLoadError && documents.length === 0 && (
+                <p className={styles.hint}>No PDFs uploaded.</p>
+              )}
+
+              {documents.length > 0 && (
+                <div className={styles.documentList}>
+                  {documents.map((document) => {
+                    const isUsedInEditor = value.links.some(
+                      (link) => link.href === document.link,
+                    );
+                    const isReferenced = document.references.length > 0;
+                    const cannotDelete = isUsedInEditor || isReferenced;
+
+                    return (
+                      <div
+                        className={styles.documentRow}
+                        key={document.fileName}
+                      >
+                        <div className={styles.documentDetails}>
+                          <a
+                            href={document.link}
+                            target="_blank"
+                            rel="noreferrer"
+                            title={document.fileName}
+                          >
+                            {document.fileName}
+                          </a>
+                          <span>
+                            {formatFileSize(document.size)} · {" "}
+                            {new Intl.DateTimeFormat("de-CH", {
+                              dateStyle: "medium",
+                              timeStyle: "short",
+                            }).format(new Date(document.uploadedAt))}
+                          </span>
+                          {isReferenced && (
+                            <span>
+                              Used by {document.references
+                                .map((reference) => reference.projectTitle)
+                                .join(", ")}
+                            </span>
+                          )}
+                          {!isReferenced && isUsedInEditor && (
+                            <span>Used by the current unsaved project.</span>
+                          )}
+                        </div>
+                        <button
+                          className={styles.documentDeleteButton}
+                          type="button"
+                          disabled={cannotDelete || isBusy}
+                          title={
+                            cannotDelete
+                              ? "Remove the document link from its project first."
+                              : "Delete PDF permanently"
+                          }
+                          onClick={() => setPendingDeleteDocument(document)}
+                        >
+                          {deletingDocumentFileName === document.fileName
+                            ? "deleting..."
+                            : "delete"}
+                        </button>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+
             <div className={styles.sectionAction}>
               <button
                 className={styles.smallButton}
@@ -590,14 +901,7 @@ export function ProjectEditor({
                     </button>
                     <button
                       type="button"
-                      onClick={() =>
-                        setValue((current) => ({
-                          ...current,
-                          links: current.links.filter(
-                            (_, currentIndex) => currentIndex !== index,
-                          ),
-                        }))
-                      }
+                      onClick={() => void handleRemoveLink(index)}
                     >
                       remove
                     </button>
@@ -607,7 +911,7 @@ export function ProjectEditor({
             </div>
           </fieldset>
 
-          <fieldset className={styles.section} disabled={isSubmitting}>
+          <fieldset className={styles.section} disabled={isBusy}>
             <legend>Media</legend>
             <div className={styles.mediaSection}>
               <div>
@@ -814,7 +1118,7 @@ export function ProjectEditor({
               className={styles.cancelButton}
               type="button"
               onClick={requestCancel}
-              disabled={isSubmitting}
+              disabled={isBusy}
             >
               cancel
             </button>
@@ -822,7 +1126,7 @@ export function ProjectEditor({
               className={styles.secondarySave}
               type="submit"
               data-intent="save"
-              disabled={isSubmitting}
+              disabled={isBusy}
             >
               {isSubmitting ? "saving..." : "save"}
             </button>
@@ -831,7 +1135,7 @@ export function ProjectEditor({
                 className={styles.publishButton}
                 type="submit"
                 data-intent="publish"
-                disabled={isSubmitting}
+                disabled={isBusy}
               >
                 {isSubmitting ? "saving..." : "save + publish"}
               </button>
@@ -845,6 +1149,17 @@ export function ProjectEditor({
           {...EDITOR_CONFIRMATIONS[pendingAction]}
           onConfirm={confirmPendingAction}
           onCancel={() => setPendingAction(null)}
+        />
+      )}
+
+      {pendingDeleteDocument && (
+        <ConfirmDialog
+          title="Delete PDF?"
+          message={`${pendingDeleteDocument.fileName} will be permanently deleted.`}
+          confirmLabel="delete PDF"
+          tone="danger"
+          onConfirm={() => void handleDeleteDocument(pendingDeleteDocument)}
+          onCancel={() => setPendingDeleteDocument(null)}
         />
       )}
     </div>

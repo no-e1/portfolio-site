@@ -1,4 +1,5 @@
 {
   "editor.formatOnSave": false,
-  "prettier.enable": false
+  "prettier.enable": false,
+  "prisma.pinToPrisma6": true
 }

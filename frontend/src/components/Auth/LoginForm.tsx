@@ -1,16 +1,18 @@
 import { useState, type FormEvent } from "react";
 import { ApiError } from "../../api/api-client";
 import { login } from "../../api/auth.api";
-import { getAccessToken, saveAuthSession } from "../../auth/auth-session";
+import { saveAuthSession } from "../../auth/auth-session";
 import styles from "./LoginForm.module.css";
 
-export function LoginForm() {
+type LoginFormProps = {
+  onLogin: () => void;
+};
+
+
+export function LoginForm({ onLogin }: LoginFormProps) {
   const [credentialsError, setCredentialsError] = useState(false);
   const [serviceError, setServiceError] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isAuthenticated, setIsAuthenticated] = useState(
-    () => getAccessToken() !== null,
-  );
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -35,7 +37,7 @@ export function LoginForm() {
 
       saveAuthSession(loginResponse);
       form.reset();
-      setIsAuthenticated(true);
+      onLogin();
     } catch (loginError) {
       if (loginError instanceof ApiError && loginError.status === 401) {
         setCredentialsError(true);
@@ -47,18 +49,6 @@ export function LoginForm() {
     }
   }
 
-  if (isAuthenticated) {
-    return (
-      <section className={styles.card} aria-labelledby="login-title">
-        <h2 id="login-title" className={styles.title}>
-          login
-        </h2>
-        <p className={styles.success} role="status">
-          Sie sind angemeldet.
-        </p>
-      </section>
-    );
-  }
 
   return (
     <section className={styles.card} aria-labelledby="login-title">
@@ -110,7 +100,7 @@ export function LoginForm() {
 
         {serviceError && (
           <p className={styles.error} role="alert">
-            Der Login ist momentan nicht verfügbar.
+            Login ist momentan nicht verfügbar.
           </p>
         )}
 

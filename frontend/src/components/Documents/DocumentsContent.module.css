@@ -1,0 +1,270 @@
+.content {
+  margin-top: 2.5rem;
+  display: grid;
+  gap: 1.4rem;
+}
+
+.toolbar {
+  padding-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  border-bottom: 1px solid rgba(166, 171, 179, 0.25);
+}
+
+.toolbar p {
+  margin: 0;
+  color: var(--light-text);
+  font-size: 0.95rem;
+}
+
+.documentGroups,
+.documentGroup,
+.documentList {
+  display: grid;
+}
+
+.documentGroups {
+  gap: 2.25rem;
+}
+
+.documentGroup {
+  gap: 0.85rem;
+}
+
+.documentGroup > h2 {
+  margin: 0;
+  font-family: var(--hfontfam);
+  font-size: 1.45rem;
+  font-weight: 400;
+}
+
+.documentList {
+  gap: 0.75rem;
+}
+
+.documentCard {
+  min-width: 0;
+  padding: 1rem;
+  display: grid;
+  grid-template-columns: 3.25rem minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 1rem;
+  border: 1px solid rgba(166, 171, 179, 0.32);
+  border-radius: 12px;
+  background: rgba(166, 171, 179, 0.035);
+  transition:
+    border-color 160ms ease,
+    background 160ms ease,
+    transform 160ms ease;
+}
+
+.documentCard:hover {
+  border-color: rgba(244, 244, 245, 0.5);
+  background: rgba(166, 171, 179, 0.07);
+  transform: translateY(-1px);
+}
+
+.pdfBadge {
+  width: 3.25rem;
+  height: 3.65rem;
+  display: grid;
+  place-items: center;
+  position: relative;
+  color: var(--text);
+}
+
+.pdfBadge svg {
+  width: 100%;
+  height: 100%;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.25;
+}
+
+.pdfBadge span {
+  position: absolute;
+  bottom: 0.48rem;
+  padding: 0.08rem 0.25rem;
+  background: var(--bg);
+  font-size: 0.55rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+}
+
+.documentDetails {
+  min-width: 0;
+}
+
+.documentDetails h3 {
+  margin: 0;
+  overflow-wrap: anywhere;
+  font-size: 1.08rem;
+  line-height: 1.3;
+}
+
+.documentDetails p {
+  margin: 0.35rem 0 0;
+  overflow: hidden;
+  color: var(--light-text);
+  font-size: 0.85rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.metadata {
+  margin-top: 0.5rem;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.4rem 0.75rem;
+  color: var(--light-text);
+  font-size: 0.78rem;
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.actions button,
+.primaryButton {
+  min-height: 2.65rem;
+  padding: 0.62rem 0.8rem;
+  border: 1px solid rgba(166, 171, 179, 0.65);
+  border-radius: 8px;
+  background: transparent;
+  color: var(--text);
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.88rem;
+  font-weight: 700;
+}
+
+.primaryButton {
+  border-color: var(--text);
+  background: var(--text);
+  color: var(--bg);
+}
+
+.actions button:hover:not(:disabled) {
+  border-color: var(--text);
+  background: rgba(244, 244, 245, 0.1);
+}
+
+.primaryButton:hover:not(:disabled) {
+  border-color: var(--light-text);
+  background: var(--light-text);
+}
+
+.actions .downloadButton {
+  width: 2.65rem;
+  min-width: 2.65rem;
+  padding: 0;
+  display: grid;
+  place-items: center;
+  border-color: var(--text);
+  background: var(--text);
+  color: var(--bg);
+}
+
+.actions .downloadButton:hover:not(:disabled) {
+  border-color: var(--light-text);
+  background: var(--light-text);
+  color: var(--bg);
+}
+
+.downloadButton svg {
+  width: 1.2rem;
+  height: 1.2rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.8;
+}
+
+.loadingDots {
+  line-height: 1;
+  transform: translateY(-0.18rem);
+}
+
+.actions button:disabled,
+.primaryButton:disabled {
+  cursor: wait;
+  opacity: 0.55;
+}
+
+.actions button:focus-visible,
+.primaryButton:focus-visible {
+  outline: 3px solid rgba(244, 244, 245, 0.25);
+  outline-offset: 3px;
+}
+
+.status {
+  margin: 3rem 0;
+  display: grid;
+  justify-items: center;
+  gap: 1rem;
+  color: var(--light-text);
+  text-align: center;
+}
+
+.status p,
+.empty {
+  margin: 0;
+}
+
+.empty {
+  padding: 1.5rem;
+  border: 1px dashed rgba(166, 171, 179, 0.5);
+  border-radius: 12px;
+  color: var(--light-text);
+}
+
+.error {
+  margin: 0;
+  padding: 0.8rem 1rem;
+  border: 1px solid #ff8a8a;
+  border-radius: 8px;
+  color: #ff8a8a;
+}
+
+@media (max-width: 650px) {
+  .toolbar {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .documentCard {
+    grid-template-columns: 2.8rem minmax(0, 1fr);
+  }
+
+  .pdfBadge {
+    width: 2.8rem;
+    height: 3.2rem;
+  }
+
+  .actions {
+    grid-column: 1 / -1;
+    justify-content: flex-end;
+  }
+}
+
+@media (max-width: 420px) {
+  .documentCard {
+    padding: 0.85rem;
+  }
+
+  .actions {
+    justify-content: stretch;
+  }
+
+  .actions button:first-child {
+    flex: 1;
+  }
+}

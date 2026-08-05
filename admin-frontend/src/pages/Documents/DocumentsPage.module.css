@@ -33,6 +33,10 @@
   font-weight: 700;
 }
 
+.addButton {
+  margin-top: 0.75rem;
+}
+
 .addButton:hover,
 .retryButton:hover {
   border-color: var(--light-text);
@@ -154,6 +158,7 @@
   }
 
   .addButton {
+    margin-top: 0;
     align-self: flex-start;
   }
 

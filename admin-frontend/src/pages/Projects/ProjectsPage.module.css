@@ -6,7 +6,7 @@
   margin-bottom: 3rem;
   display: flex;
   align-items: flex-start;
-  flex-direction: column;
+  justify-content: space-between;
   gap: 1rem;
 }
 
@@ -26,6 +26,10 @@
   color: var(--bg);
   cursor: pointer;
   font-weight: 700;
+}
+
+.addButton {
+  margin-top: 0.75rem;
 }
 
 .addButton:hover,
@@ -93,6 +97,14 @@
 }
 
 @media (max-width: 650px) {
+  .pageHeader {
+    flex-direction: column;
+  }
+
+  .addButton {
+    margin-top: 0;
+  }
+
   .projectGrid {
     grid-template-columns: 1fr;
   }

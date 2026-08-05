@@ -14,6 +14,8 @@ import {
 import { AdminJwtAuthGuard } from './auth/admin-jwt-auth.guard';
 import { AdminDocumentsController } from './documents/admin-documents.controller';
 import { AdminDocumentsService } from './documents/admin-documents.service';
+import { AdminPrivateDocumentsController } from './private-documents/admin-private-documents.controller';
+import { AdminPrivateDocumentsService } from './private-documents/admin-private-documents.service';
 import { AdminProjectsController } from './projects/admin-projects.controller';
 import { AdminProjectsService } from './projects/admin-projects.service';
 import { AdminUsersController } from './users/admin-users.controller';
@@ -39,6 +41,7 @@ import { AdminUsersService } from './users/admin-users.service';
     AdminAboutController,
     AdminAuthController,
     AdminDocumentsController,
+    AdminPrivateDocumentsController,
     AdminUsersController,
     AdminProjectsController,
   ],
@@ -47,6 +50,7 @@ import { AdminUsersService } from './users/admin-users.service';
     AdminAuthService,
     AdminJwtAuthGuard,
     AdminDocumentsService,
+    AdminPrivateDocumentsService,
     AdminUsersService,
     AdminProjectsService,
   ],

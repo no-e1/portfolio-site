@@ -112,12 +112,12 @@ model AboutPage {
 }
 
 model AboutSection {
-  id           Int   @id @default(autoincrement())
+  id           Int    @id @default(autoincrement())
   aboutPageId  Int
   heading      String @db.VarChar(160)
   body         String @db.LongText
   technologies Json?
-  sortOrder    Int   @default(0)
+  sortOrder    Int    @default(0)
 
   aboutPage AboutPage @relation(fields: [aboutPageId], references: [id], onDelete: Cascade)
 
@@ -136,4 +136,16 @@ model Document {
   updatedAt   DateTime @updatedAt
 
   @@index([isPublished, sortOrder])
+}
+
+model PrivateDocument {
+  id           Int      @id @default(autoincrement())
+  title        String   @db.VarChar(160)
+  storageName  String   @unique @db.VarChar(255)
+  originalName String   @db.VarChar(255)
+  mimeType     String   @default("application/pdf") @db.VarChar(100)
+  size         Int
+  createdAt    DateTime @default(now())
+
+  @@index([createdAt])
 }

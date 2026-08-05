@@ -112,11 +112,12 @@ model AboutPage {
 }
 
 model AboutSection {
-  id          Int    @id @default(autoincrement())
-  aboutPageId Int
-  heading     String @db.VarChar(160)
-  body        String @db.LongText
-  sortOrder   Int    @default(0)
+  id           Int   @id @default(autoincrement())
+  aboutPageId  Int
+  heading      String @db.VarChar(160)
+  body         String @db.LongText
+  technologies Json?
+  sortOrder    Int   @default(0)
 
   aboutPage AboutPage @relation(fields: [aboutPageId], references: [id], onDelete: Cascade)
 

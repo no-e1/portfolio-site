@@ -2,6 +2,8 @@ import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
 import { PrismaModule } from '../prisma/prisma.module';
+import { AdminAboutController } from './about/admin-about.controller';
+import { AdminAboutService } from './about/admin-about.service';
 import { AdminAuthController } from './auth/admin-auth.controller';
 import { AdminAuthService } from './auth/admin-auth.service';
 import {
@@ -34,12 +36,14 @@ import { AdminUsersService } from './users/admin-users.service';
     }),
   ],
   controllers: [
+    AdminAboutController,
     AdminAuthController,
     AdminDocumentsController,
     AdminUsersController,
     AdminProjectsController,
   ],
   providers: [
+    AdminAboutService,
     AdminAuthService,
     AdminJwtAuthGuard,
     AdminDocumentsService,

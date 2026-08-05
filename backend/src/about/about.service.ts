@@ -54,7 +54,7 @@ export class AboutService {
     });
 
     if (!page) {
-      throw new NotFoundException('About content is not available.');
+      throw new NotFoundException('Der Über-mich-Inhalt ist nicht verfügbar.');
     }
 
     return toAboutResponse(page);

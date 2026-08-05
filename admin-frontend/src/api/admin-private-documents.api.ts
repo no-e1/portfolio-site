@@ -1,4 +1,7 @@
-import type { PrivateDocument } from "../types/private-document";
+import type {
+  PrivateDocument,
+  PrivateDocumentType,
+} from "../types/private-document";
 import { adminApiBlobRequest, adminApiRequest } from "./api-client";
 
 const PRIVATE_DOCUMENTS_PATH = "/admin/private-documents";
@@ -10,10 +13,12 @@ export function getPrivateDocuments(
 }
 
 export function uploadPrivateDocument(
+  type: PrivateDocumentType,
   title: string,
   document: File,
 ): Promise<PrivateDocument> {
   const formData = new FormData();
+  formData.set("type", type);
   formData.set("title", title);
   formData.set("document", document);
 

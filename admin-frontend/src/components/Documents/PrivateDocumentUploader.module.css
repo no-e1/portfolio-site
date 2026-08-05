@@ -44,7 +44,8 @@
   font-weight: 700;
 }
 
-.field input {
+.field input,
+.field select {
   width: 100%;
   min-width: 0;
   padding: 0.8rem 0.9rem;
@@ -55,7 +56,8 @@
   color: var(--text);
 }
 
-.field input:focus {
+.field input:focus,
+.field select:focus {
   border-color: var(--text);
   box-shadow: 0 0 0 3px rgba(244, 244, 245, 0.12);
 }
@@ -119,7 +121,8 @@
 
 .cancelButton:disabled,
 .uploadButton:disabled,
-.field input:disabled {
+.field input:disabled,
+.field select:disabled {
   cursor: not-allowed;
   opacity: 0.55;
 }

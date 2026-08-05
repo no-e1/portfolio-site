@@ -8,13 +8,13 @@ import {
 import { ApiError } from "../../api/api-client";
 import { ConfirmDialog } from "../../components/ConfirmDialog/ConfirmDialog";
 import { PrivateDocumentUploader } from "../../components/Documents/PrivateDocumentUploader";
-import type { PrivateDocument } from "../../types/private-document";
+import {
+  PRIVATE_DOCUMENT_TYPES,
+  PRIVATE_DOCUMENT_TYPE_LABELS,
+  type PrivateDocument,
+  type PrivateDocumentType,
+} from "../../types/private-document";
 import styles from "./DocumentsPage.module.css";
-
-const dateFormatter = new Intl.DateTimeFormat("de-CH", {
-  dateStyle: "medium",
-  timeStyle: "short",
-});
 
 function formatFileSize(bytes: number): string {
   if (bytes < 1024 * 1024) {
@@ -22,6 +22,14 @@ function formatFileSize(bytes: number): string {
   }
 
   return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+}
+
+function sortDocuments(documents: PrivateDocument[]): PrivateDocument[] {
+  return [...documents].sort(
+    (first, second) =>
+      PRIVATE_DOCUMENT_TYPES.indexOf(first.type) -
+        PRIVATE_DOCUMENT_TYPES.indexOf(second.type) || first.id - second.id,
+  );
 }
 
 export function DocumentsPage() {
@@ -44,7 +52,11 @@ export function DocumentsPage() {
       setLoadError(null);
 
       try {
-        setDocuments(await getPrivateDocuments(abortController.signal));
+        setDocuments(
+          sortDocuments(
+            await getPrivateDocuments(abortController.signal),
+          ),
+        );
       } catch (error) {
         if (error instanceof Error && error.name === "AbortError") {
           return;
@@ -62,12 +74,19 @@ export function DocumentsPage() {
     return () => abortController.abort();
   }, [requestVersion]);
 
-  async function handleUpload(title: string, document: File) {
-    const uploadedDocument = await uploadPrivateDocument(title, document);
-    setDocuments((currentDocuments) => [
-      uploadedDocument,
-      ...currentDocuments,
-    ]);
+  async function handleUpload(
+    type: PrivateDocumentType,
+    title: string,
+    document: File,
+  ) {
+    const uploadedDocument = await uploadPrivateDocument(
+      type,
+      title,
+      document,
+    );
+    setDocuments((currentDocuments) =>
+      sortDocuments([uploadedDocument, ...currentDocuments]),
+    );
     setShowUploader(false);
   }
 
@@ -183,8 +202,8 @@ export function DocumentsPage() {
                   <h2>{document.title}</h2>
                   <p className={styles.fileName}>{document.originalName}</p>
                   <p className={styles.metadata}>
+                    <span>{PRIVATE_DOCUMENT_TYPE_LABELS[document.type]}</span>
                     <span>{formatFileSize(document.size)}</span>
-                    <span>{dateFormatter.format(new Date(document.createdAt))}</span>
                   </p>
                 </div>
                 <div className={styles.actions}>
@@ -212,6 +231,11 @@ export function DocumentsPage() {
 
       {showUploader && (
         <PrivateDocumentUploader
+          unavailableTypes={documents
+            .filter(
+              (document) => document.type !== "uekCompetenceRecord",
+            )
+            .map((document) => document.type)}
           onUpload={handleUpload}
           onCancel={() => setShowUploader(false)}
         />

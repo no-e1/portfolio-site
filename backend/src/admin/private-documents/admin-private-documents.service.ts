@@ -1,12 +1,13 @@
 import {
   BadRequestException,
+  ConflictException,
   Injectable,
   InternalServerErrorException,
   Logger,
   NotFoundException,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import type { PrivateDocument } from '@prisma/client';
+import { PrivateDocumentType, type PrivateDocument } from '@prisma/client';
 import { randomUUID } from 'crypto';
 import { createReadStream, type ReadStream } from 'fs';
 import { lstat, mkdir, rename, unlink, writeFile } from 'fs/promises';
@@ -15,6 +16,12 @@ import { PrismaService } from '../../prisma/prisma.service';
 
 const PDF_SIGNATURE = Buffer.from('%PDF-');
 const STORED_PDF_FILE_NAME = /^[0-9a-f-]{36}\.pdf$/;
+const DOCUMENT_TYPE_ORDER: Record<PrivateDocumentType, number> = {
+  [PrivateDocumentType.gibbCertificate]: 0,
+  [PrivateDocumentType.bwdCertificate]: 1,
+  [PrivateDocumentType.secondarySchoolCertificate]: 2,
+  [PrivateDocumentType.uekCompetenceRecord]: 3,
+};
 
 export type UploadedPrivateDocumentFile = {
   buffer: Buffer;
@@ -25,11 +32,11 @@ export type UploadedPrivateDocumentFile = {
 
 export type AdminPrivateDocumentResponse = {
   id: number;
+  type: PrivateDocumentType;
   title: string;
   originalName: string;
   mimeType: string;
   size: number;
-  createdAt: Date;
 };
 
 export type PrivateDocumentFile = AdminPrivateDocumentResponse & {
@@ -58,13 +65,16 @@ export class AdminPrivateDocumentsService {
 
   async findAll(): Promise<AdminPrivateDocumentResponse[]> {
     const documents = await this.prisma.privateDocument.findMany({
-      orderBy: [{ createdAt: 'desc' }, { id: 'desc' }],
+      orderBy: [{ createdAt: 'asc' }, { id: 'asc' }],
     });
 
-    return documents.map((document) => this.toResponse(document));
+    return this.sortDocuments(documents).map((document) =>
+      this.toResponse(document),
+    );
   }
 
   async uploadPdf(
+    type: PrivateDocumentType,
     title: string,
     document: UploadedPrivateDocumentFile | undefined,
   ): Promise<AdminPrivateDocumentResponse> {
@@ -78,6 +88,22 @@ export class AdminPrivateDocumentsService {
       throw new BadRequestException('file is not a valid PDF');
     }
 
+    const isSingleDocumentType =
+      type !== PrivateDocumentType.uekCompetenceRecord;
+
+    if (isSingleDocumentType) {
+      const existingDocument = await this.prisma.privateDocument.findFirst({
+        where: { type },
+        select: { id: true },
+      });
+
+      if (existingDocument) {
+        throw new ConflictException(
+          'A private document of this type already exists.',
+        );
+      }
+    }
+
     await mkdir(this.storageDirectory, { recursive: true });
 
     const storageName = `${randomUUID()}.pdf`;
@@ -88,6 +114,7 @@ export class AdminPrivateDocumentsService {
     try {
       const createdDocument = await this.prisma.privateDocument.create({
         data: {
+          type,
           title,
           storageName,
           originalName: this.normalizeOriginalName(document.originalname),
@@ -231,14 +258,23 @@ export class AdminPrivateDocumentsService {
     }
   }
 
+  private sortDocuments(documents: PrivateDocument[]): PrivateDocument[] {
+    return [...documents].sort(
+      (first, second) =>
+        DOCUMENT_TYPE_ORDER[first.type] - DOCUMENT_TYPE_ORDER[second.type] ||
+        first.createdAt.getTime() - second.createdAt.getTime() ||
+        first.id - second.id,
+    );
+  }
+
   private toResponse(document: PrivateDocument): AdminPrivateDocumentResponse {
     return {
       id: document.id,
+      type: document.type,
       title: document.title,
       originalName: document.originalName,
       mimeType: document.mimeType,
       size: document.size,
-      createdAt: document.createdAt,
     };
   }
 }

@@ -24,6 +24,13 @@ enum ProjectLinkType {
   document
 }
 
+enum PrivateDocumentType {
+  gibbCertificate
+  bwdCertificate
+  secondarySchoolCertificate
+  uekCompetenceRecord
+}
+
 model User {
   id           Int      @id @default(autoincrement())
   username     String   @unique @db.VarChar(50)
@@ -139,13 +146,14 @@ model Document {
 }
 
 model PrivateDocument {
-  id           Int      @id @default(autoincrement())
-  title        String   @db.VarChar(160)
-  storageName  String   @unique @db.VarChar(255)
-  originalName String   @db.VarChar(255)
-  mimeType     String   @default("application/pdf") @db.VarChar(100)
+  id           Int                 @id @default(autoincrement())
+  type         PrivateDocumentType @default(uekCompetenceRecord)
+  title        String              @db.VarChar(160)
+  storageName  String              @unique @db.VarChar(255)
+  originalName String              @db.VarChar(255)
+  mimeType     String              @default("application/pdf") @db.VarChar(100)
   size         Int
-  createdAt    DateTime @default(now())
+  createdAt    DateTime            @default(now())
 
   @@index([createdAt])
 }

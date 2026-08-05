@@ -4,20 +4,26 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import type { PrivateDocument } from '@prisma/client';
+import { PrivateDocumentType, type PrivateDocument } from '@prisma/client';
 import { createReadStream, type ReadStream } from 'fs';
 import { lstat } from 'fs/promises';
 import { basename, extname, isAbsolute, resolve, sep } from 'path';
 import { PrismaService } from '../prisma/prisma.service';
 
 const STORED_PDF_FILE_NAME = /^[0-9a-f-]{36}\.pdf$/;
+const DOCUMENT_TYPE_ORDER: Record<PrivateDocumentType, number> = {
+  [PrivateDocumentType.gibbCertificate]: 0,
+  [PrivateDocumentType.bwdCertificate]: 1,
+  [PrivateDocumentType.secondarySchoolCertificate]: 2,
+  [PrivateDocumentType.uekCompetenceRecord]: 3,
+};
 
 export type DocumentResponse = {
   id: number;
+  type: PrivateDocumentType;
   title: string;
   originalName: string;
   size: number;
-  createdAt: Date;
   viewPath: string;
   downloadPath: string;
 };
@@ -55,10 +61,12 @@ export class DocsService {
 
   async findAll(): Promise<DocumentResponse[]> {
     const documents = await this.prisma.privateDocument.findMany({
-      orderBy: [{ createdAt: 'desc' }, { id: 'desc' }],
+      orderBy: [{ createdAt: 'asc' }, { id: 'asc' }],
     });
 
-    return documents.map((document) => this.toResponse(document));
+    return this.sortDocuments(documents).map((document) =>
+      this.toResponse(document),
+    );
   }
 
   async getFile(id: number): Promise<StoredDocumentFile> {
@@ -81,7 +89,7 @@ export class DocsService {
     const usedNames = new Set<string>();
 
     return Promise.all(
-      documents.map(async (document) => {
+      this.sortDocuments(documents).map(async (document) => {
         const fullPath = this.resolveStoredPath(document.storageName);
         await this.getFileSize(fullPath);
 
@@ -90,6 +98,9 @@ export class DocsService {
           archiveName: this.createUniqueArchiveName(
             document.originalName,
             document.id,
+            document.type === PrivateDocumentType.uekCompetenceRecord
+              ? 'uek_kompetenznachweise'
+              : undefined,
             usedNames,
           ),
         };
@@ -103,7 +114,7 @@ export class DocsService {
     });
 
     if (!document) {
-      throw new NotFoundException('Private document not found.');
+      throw new NotFoundException('Privates Dokument wurde nicht gefunden.');
     }
 
     return document;
@@ -114,13 +125,17 @@ export class DocsService {
       const stats = await lstat(fullPath);
 
       if (!stats.isFile() || stats.isSymbolicLink()) {
-        throw new NotFoundException('Private document file not found.');
+        throw new NotFoundException(
+          'Datei des privaten Dokuments wurde nicht gefunden.',
+        );
       }
 
       return stats.size;
     } catch (error) {
       if ((error as NodeJS.ErrnoException).code === 'ENOENT') {
-        throw new NotFoundException('Private document file not found.');
+        throw new NotFoundException(
+          'Datei des privaten Dokuments wurde nicht gefunden.',
+        );
       }
 
       throw error;
@@ -133,7 +148,7 @@ export class DocsService {
       !STORED_PDF_FILE_NAME.test(storageName)
     ) {
       throw new InternalServerErrorException(
-        'Invalid private document storage name.',
+        'Ungültiger Speichername für ein privates Dokument.',
       );
     }
 
@@ -141,7 +156,7 @@ export class DocsService {
 
     if (!fullPath.startsWith(`${this.storageDirectory}${sep}`)) {
       throw new InternalServerErrorException(
-        'Invalid private document storage path.',
+        'Ungültiger Speicherpfad für ein privates Dokument.',
       );
     }
 
@@ -151,6 +166,7 @@ export class DocsService {
   private createUniqueArchiveName(
     originalName: string,
     id: number,
+    directory: string | undefined,
     usedNames: Set<string>,
   ): string {
     const safeName = basename(originalName)
@@ -159,11 +175,13 @@ export class DocsService {
     const initialName = safeName || `document-${id}.pdf`;
     const extension = extname(initialName);
     const baseName = basename(initialName, extension);
-    let archiveName = initialName;
+    let fileName = initialName;
+    let archiveName = directory ? `${directory}/${fileName}` : fileName;
     let suffix = 2;
 
     while (usedNames.has(archiveName.toLowerCase())) {
-      archiveName = `${baseName} (${suffix})${extension}`;
+      fileName = `${baseName} (${suffix})${extension}`;
+      archiveName = directory ? `${directory}/${fileName}` : fileName;
       suffix += 1;
     }
 
@@ -171,13 +189,22 @@ export class DocsService {
     return archiveName;
   }
 
+  private sortDocuments(documents: PrivateDocument[]): PrivateDocument[] {
+    return [...documents].sort(
+      (first, second) =>
+        DOCUMENT_TYPE_ORDER[first.type] - DOCUMENT_TYPE_ORDER[second.type] ||
+        first.createdAt.getTime() - second.createdAt.getTime() ||
+        first.id - second.id,
+    );
+  }
+
   private toResponse(document: PrivateDocument): DocumentResponse {
     return {
       id: document.id,
+      type: document.type,
       title: document.title,
       originalName: document.originalName,
       size: document.size,
-      createdAt: document.createdAt,
       viewPath: `/docs/${document.id}/view.pdf`,
       downloadPath: `/docs/${document.id}/download.pdf`,
     };

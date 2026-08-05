@@ -87,7 +87,11 @@ export class AdminPrivateDocumentsController {
     @Body() body: UploadPrivateDocumentDto,
     @UploadedFile() document: UploadedPrivateDocumentFile | undefined,
   ): Promise<AdminPrivateDocumentResponse> {
-    return this.privateDocumentsService.uploadPdf(body.title, document);
+    return this.privateDocumentsService.uploadPdf(
+      body.type,
+      body.title,
+      document,
+    );
   }
 
   @Delete(':id')

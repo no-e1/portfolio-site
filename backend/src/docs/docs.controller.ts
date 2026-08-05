@@ -17,7 +17,6 @@ import {
   type StoredDocumentFile,
 } from './docs.service';
 
-
 function createContentDisposition(
   disposition: 'inline' | 'attachment',
   fileName: string,
@@ -63,7 +62,7 @@ export class DocsController {
       'Content-Type': 'application/zip',
       'Content-Disposition': createContentDisposition(
         'attachment',
-        'documents.zip',
+        'documents-noel-kohn.zip',
       ),
       'Cache-Control': 'private, no-store',
       'X-Content-Type-Options': 'nosniff',

@@ -53,6 +53,22 @@ export function AboutContent({
         >
           <h2>{section.heading}</h2>
           <p>{section.body}</p>
+
+          {section.technologies && section.technologies.length > 0 && (
+            <ul
+              className={styles.technologyList}
+              aria-label={`Technologien – ${section.heading}`}
+            >
+              {section.technologies.map((technology) => (
+                <li
+                  className={styles.technologyItem}
+                  key={`${section.heading}-${technology}`}
+                >
+                  {technology}
+                </li>
+              ))}
+            </ul>
+          )}
         </section>
       ))}
     </article>

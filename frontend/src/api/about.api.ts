@@ -5,6 +5,7 @@ export type AboutContent = {
   sections: Array<{
     heading: string;
     body: string;
+    technologies?: string[];
   }>;
 };
 

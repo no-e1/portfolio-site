@@ -41,10 +41,10 @@ async function getErrorMessage(response: Response): Promise<string> {
   return `API-Request failed (Status ${response.status}).`;
 }
 
-export async function adminApiRequest<T>(
+async function performAdminApiRequest(
   path: string,
   options: ApiRequestOptions = {},
-): Promise<T> {
+): Promise<Response> {
   const {
     authenticated = true,
     body,
@@ -54,7 +54,9 @@ export async function adminApiRequest<T>(
   } = options;
   const requestHeaders = new Headers(headers);
 
-  requestHeaders.set("Accept", "application/json");
+  if (!requestHeaders.has("Accept")) {
+    requestHeaders.set("Accept", "application/json");
+  }
 
   if (authenticated) {
     const accessToken = getAdminAccessToken();
@@ -86,9 +88,27 @@ export async function adminApiRequest<T>(
     throw new ApiError(await getErrorMessage(response), response.status);
   }
 
+  return response;
+}
+
+export async function adminApiRequest<T>(
+  path: string,
+  options: ApiRequestOptions = {},
+): Promise<T> {
+  const response = await performAdminApiRequest(path, options);
+
   if (response.status === 204) {
     return undefined as T;
   }
 
   return (await response.json()) as T;
+}
+
+export async function adminApiBlobRequest(
+  path: string,
+  options: ApiRequestOptions = {},
+): Promise<Blob> {
+  const response = await performAdminApiRequest(path, options);
+
+  return response.blob();
 }

@@ -15,7 +15,9 @@ export function LoginPage({ onLogin }: LoginPageProps) {
 
   function handleLogin(accessToken: string) {
     onLogin(accessToken);
-    navigate(requestedPath ?? "/", { replace: true });
+    navigate(requestedPath && requestedPath !== "/" ? requestedPath : "/users", {
+      replace: true,
+    });
   }
 
   return (

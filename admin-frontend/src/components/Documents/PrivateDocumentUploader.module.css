@@ -1,0 +1,135 @@
+.backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  padding: 1.5rem;
+  display: grid;
+  place-items: center;
+  background: rgba(0, 0, 0, 0.78);
+}
+
+.dialog {
+  width: min(100%, 500px);
+  padding: 1.75rem;
+  border: 1px solid var(--light-text);
+  border-radius: 16px;
+  background: var(--surface);
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.45);
+}
+
+.heading h2 {
+  margin: 0 0 0.5rem;
+  font-family: var(--hfontfam);
+  font-size: 1.75rem;
+  font-weight: 400;
+}
+
+.heading p {
+  margin: 0;
+  color: var(--light-text);
+  line-height: 1.5;
+}
+
+.form {
+  margin-top: 1.5rem;
+  display: grid;
+  gap: 1.25rem;
+}
+
+.field {
+  display: grid;
+  gap: 0.45rem;
+  color: var(--light-text);
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.field input {
+  width: 100%;
+  min-width: 0;
+  padding: 0.8rem 0.9rem;
+  border: 1px solid rgba(166, 171, 179, 0.55);
+  border-radius: 8px;
+  outline: none;
+  background: var(--bg);
+  color: var(--text);
+}
+
+.field input:focus {
+  border-color: var(--text);
+  box-shadow: 0 0 0 3px rgba(244, 244, 245, 0.12);
+}
+
+.field small {
+  color: var(--light-text);
+  font-weight: 400;
+}
+
+.fileInput::file-selector-button {
+  margin-right: 0.75rem;
+  padding: 0.45rem 0.65rem;
+  border: 0;
+  border-radius: 6px;
+  background: var(--text);
+  color: var(--bg);
+  cursor: pointer;
+  font-weight: 700;
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.65rem;
+}
+
+.cancelButton,
+.uploadButton {
+  padding: 0.75rem 0.95rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 700;
+}
+
+.cancelButton {
+  border: 1px solid var(--light-text);
+  background: transparent;
+  color: var(--text);
+}
+
+.uploadButton {
+  border: 1px solid var(--text);
+  background: var(--text);
+  color: var(--bg);
+}
+
+.cancelButton:hover:not(:disabled),
+.uploadButton:hover:not(:disabled) {
+  border-color: var(--light-text);
+  background: var(--light-text);
+  color: var(--bg);
+}
+
+.error {
+  margin: 0;
+  padding: 0.75rem 0.9rem;
+  border: 1px solid var(--error);
+  border-radius: 8px;
+  color: var(--error);
+}
+
+.cancelButton:disabled,
+.uploadButton:disabled,
+.field input:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+@media (max-width: 440px) {
+  .dialog {
+    padding: 1.25rem;
+  }
+
+  .actions {
+    flex-direction: column-reverse;
+  }
+}

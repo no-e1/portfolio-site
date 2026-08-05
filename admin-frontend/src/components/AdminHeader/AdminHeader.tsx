@@ -13,15 +13,6 @@ export function AdminHeader({ onLogout }: AdminHeaderProps) {
           className={({ isActive }) =>
             `${styles.navLink} ${isActive ? styles.active : ""}`
           }
-          to="/"
-          end
-        >
-          dashboard
-        </NavLink>
-        <NavLink
-          className={({ isActive }) =>
-            `${styles.navLink} ${isActive ? styles.active : ""}`
-          }
           to="/users"
         >
           users
@@ -41,6 +32,14 @@ export function AdminHeader({ onLogout }: AdminHeaderProps) {
           to="/about"
         >
           about me
+        </NavLink>
+        <NavLink
+          className={({ isActive }) =>
+            `${styles.navLink} ${isActive ? styles.active : ""}`
+          }
+          to="/documents"
+        >
+          documents
         </NavLink>
       </nav>
       <button className={styles.logout} type="button" onClick={onLogout}>

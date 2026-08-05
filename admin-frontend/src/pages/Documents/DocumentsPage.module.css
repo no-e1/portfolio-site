@@ -1,0 +1,167 @@
+.page {
+  margin-top: clamp(2.5rem, 4vh, 7rem);
+}
+
+.pageHeader {
+  margin-bottom: 3rem;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1.5rem;
+}
+
+.pageHeader h1 {
+  margin: 0 0 0.4rem;
+  font-family: var(--hfontfam);
+  font-size: clamp(2.25rem, 4vw, 3rem);
+  font-weight: 400;
+}
+
+.pageHeader p {
+  margin: 0;
+  color: var(--light-text);
+}
+
+.addButton,
+.retryButton {
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--text);
+  border-radius: 8px;
+  background: var(--text);
+  color: var(--bg);
+  cursor: pointer;
+  font-weight: 700;
+}
+
+.addButton:hover,
+.retryButton:hover {
+  border-color: var(--light-text);
+  background: var(--light-text);
+}
+
+.documentList {
+  display: grid;
+  gap: 0.8rem;
+}
+
+.documentCard {
+  min-width: 0;
+  padding: 1rem 1.1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.25rem;
+  border: 1px solid rgba(166, 171, 179, 0.4);
+  border-radius: 12px;
+  background: var(--surface);
+}
+
+.documentDetails {
+  min-width: 0;
+}
+
+.documentDetails h2 {
+  margin: 0;
+  overflow-wrap: anywhere;
+  font-size: 1.15rem;
+}
+
+.fileName {
+  margin: 0.35rem 0 0;
+  overflow-wrap: anywhere;
+  color: var(--light-text);
+  font-size: 0.9rem;
+}
+
+.metadata {
+  margin: 0.55rem 0 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem 1rem;
+  color: var(--light-text);
+  font-size: 0.82rem;
+}
+
+.actions {
+  flex: 0 0 auto;
+  display: flex;
+  gap: 0.55rem;
+}
+
+.actions button {
+  padding: 0.6rem 0.75rem;
+  border: 1px solid var(--light-text);
+  border-radius: 8px;
+  background: transparent;
+  color: var(--text);
+  cursor: pointer;
+  font-weight: 700;
+}
+
+.actions button:hover:not(:disabled) {
+  background: rgba(244, 244, 245, 0.1);
+}
+
+.actions .deleteButton {
+  border-color: var(--error);
+  color: var(--error);
+}
+
+.actions .deleteButton:hover:not(:disabled) {
+  background: var(--error);
+  color: #260909;
+}
+
+.actions button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.empty {
+  margin: 0;
+  padding: 1.5rem;
+  border: 1px dashed rgba(166, 171, 179, 0.5);
+  border-radius: 12px;
+  color: var(--light-text);
+}
+
+.status {
+  margin: 3rem 0;
+  display: grid;
+  justify-items: center;
+  gap: 1rem;
+  color: var(--light-text);
+  text-align: center;
+}
+
+.status p {
+  margin: 0;
+}
+
+.error {
+  margin: 0 0 1.5rem;
+  padding: 0.8rem 1rem;
+  border: 1px solid var(--error);
+  border-radius: 8px;
+  color: var(--error);
+}
+
+@media (max-width: 620px) {
+  .pageHeader,
+  .documentCard {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .addButton {
+    align-self: flex-start;
+  }
+
+  .actions {
+    width: 100%;
+  }
+
+  .actions button {
+    flex: 1;
+  }
+}

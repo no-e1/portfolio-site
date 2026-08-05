@@ -1,0 +1,222 @@
+.page {
+  margin-top: clamp(2.5rem, 4vh, 7rem);
+}
+
+.pageHeader {
+  margin-bottom: 3rem;
+}
+
+.pageHeader h1 {
+  margin: 0 0 0.4rem;
+  font-family: var(--hfontfam);
+  font-size: clamp(2.25rem, 4vw, 3rem);
+  font-weight: 400;
+}
+
+.pageHeader p,
+.technologiesHeader p {
+  margin: 0;
+  color: var(--light-text);
+}
+
+.form,
+.sectionList,
+.sectionCard,
+.technologyList {
+  display: grid;
+}
+
+.form {
+  gap: 2rem;
+}
+
+.sectionList,
+.sectionCard {
+  gap: 1rem;
+}
+
+.sectionCard {
+  min-width: 0;
+  margin: 0;
+  padding: 1.25rem;
+  border: 1px solid rgba(166, 171, 179, 0.5);
+  border-radius: 12px;
+  background: var(--surface);
+}
+
+.sectionCard legend {
+  padding: 0 0.45rem;
+  font-weight: 700;
+}
+
+.sectionsHeader,
+.technologiesHeader,
+.formActions,
+.sectionActions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.sectionsHeader h2,
+.technologiesHeader h3 {
+  margin: 0;
+}
+
+.sectionActions,
+.formActions {
+  justify-content: flex-end;
+}
+
+.field {
+  display: grid;
+  gap: 0.45rem;
+  color: var(--light-text);
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.field input,
+.field textarea,
+.technologyRow input {
+  width: 100%;
+  min-width: 0;
+  padding: 0.8rem 0.9rem;
+  border: 1px solid rgba(166, 171, 179, 0.55);
+  border-radius: 8px;
+  outline: none;
+  background: var(--bg);
+  color: var(--text);
+}
+
+.field textarea {
+  resize: vertical;
+  line-height: 1.5;
+}
+
+.field input:focus,
+.field textarea:focus,
+.technologyRow input:focus {
+  border-color: var(--text);
+  box-shadow: 0 0 0 3px rgba(244, 244, 245, 0.12);
+}
+
+.technologyList {
+  gap: 0.5rem;
+}
+
+.technologyRow {
+  min-width: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto auto;
+  gap: 0.45rem;
+}
+
+.sectionActions button,
+.technologyRow button,
+.secondaryButton,
+.primaryButton {
+  padding: 0.6rem 0.75rem;
+  border: 1px solid var(--light-text);
+  border-radius: 8px;
+  background: transparent;
+  color: var(--text);
+  cursor: pointer;
+  font-weight: 700;
+}
+
+.primaryButton {
+  border-color: var(--text);
+  background: var(--text);
+  color: var(--bg);
+}
+
+.sectionActions button:hover:not(:disabled),
+.technologyRow button:hover:not(:disabled),
+.secondaryButton:hover:not(:disabled) {
+  background: rgba(244, 244, 245, 0.1);
+}
+
+.primaryButton:hover:not(:disabled) {
+  border-color: var(--light-text);
+  background: var(--light-text);
+}
+
+.sectionActions .dangerButton,
+.technologyRow .dangerButton {
+  border-color: var(--error);
+  color: var(--error);
+}
+
+.sectionActions .dangerButton:hover:not(:disabled),
+.technologyRow .dangerButton:hover:not(:disabled) {
+  background: var(--error);
+  color: #260909;
+}
+
+button:disabled,
+input:disabled,
+textarea:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.empty,
+.status {
+  color: var(--light-text);
+}
+
+.empty {
+  margin: 0;
+}
+
+.status {
+  margin: 3rem 0;
+  display: grid;
+  justify-items: center;
+  gap: 1rem;
+  text-align: center;
+}
+
+.status p {
+  margin: 0;
+}
+
+.error,
+.success {
+  margin: 0;
+  padding: 0.8rem 1rem;
+  border: 1px solid;
+  border-radius: 8px;
+}
+
+.error {
+  border-color: var(--error);
+  color: var(--error);
+}
+
+.success {
+  border-color: #70d69d;
+  color: #70d69d;
+}
+
+@media (max-width: 650px) {
+  .sectionsHeader,
+  .technologiesHeader {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .technologyRow {
+    grid-template-columns: minmax(0, 1fr) auto auto;
+  }
+
+  .technologyRow .dangerButton {
+    grid-column: 1 / -1;
+  }
+
+  .sectionActions {
+    flex-wrap: wrap;
+  }
+}

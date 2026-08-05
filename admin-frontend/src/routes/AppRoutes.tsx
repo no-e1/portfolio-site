@@ -4,6 +4,7 @@ import { LoginPage } from "../pages/Login/LoginPage";
 import { DashboardPage } from "../pages/Dashboard/DashboardPage";
 import { ProjectsPage } from "../pages/Projects/ProjectsPage";
 import { UsersPage } from "../pages/Users/UsersPage";
+import { AboutPage } from "../pages/About/AboutPage";
 import { ProtectedRoute } from "./ProtectedRoute";
 
 type AppRoutesProps = {
@@ -34,6 +35,7 @@ export function AppRoutes({ accessToken, onLogin, onLogout }: AppRoutesProps) {
             <Route index element={<DashboardPage />} />
             <Route path="users" element={<UsersPage />} />
             <Route path="projects" element={<ProjectsPage />} />
+            <Route path="about" element={<AboutPage />} />
           </Route>
         </Route>
 

@@ -34,6 +34,14 @@ export function AdminHeader({ onLogout }: AdminHeaderProps) {
         >
           projects
         </NavLink>
+        <NavLink
+          className={({ isActive }) =>
+            `${styles.navLink} ${isActive ? styles.active : ""}`
+          }
+          to="/about"
+        >
+          about me
+        </NavLink>
       </nav>
       <button className={styles.logout} type="button" onClick={onLogout}>
         logout

@@ -3,11 +3,13 @@
 }
 
 .mainheader {
+    margin: 0 0 0.1rem;
     font-family: var(--hfontfam);
-    font-size: var(--hfontsize);
+    font-size: clamp(2.25rem, 4vw, 3rem);
+    font-weight: 400;
 }
 
 .subheader {
     font-size: 1.2rem;
-    margin-top: -2rem;
+    margin-top: -0.7rem;
 }

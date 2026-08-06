@@ -15,7 +15,7 @@ export function AppRoutes() {
           <Route path="projects" element={<ProjectsPage />} />
           <Route path="about" element={<AboutPage />} />
           <Route path="docs" element={<DocsPage />} />
-          <Route path="privacy" element={<PrivacyPage />} />
+          <Route path="impressum" element={<PrivacyPage />} />
         </Route>
       </Routes>
     </BrowserRouter>

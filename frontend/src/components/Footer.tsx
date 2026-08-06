@@ -4,8 +4,7 @@ import contactIconsStyles from "./ContactIcons/ContactIcons.module.css";
 export default function Footer() {
     return (
         <footer>
-            <p className="footerText">© 2026 <a className="footerTextLink" href="/">Noel Kohn</a> | <a id="footerTextLinkPrivacy" className="footerTextLink" href="/privacy">Impressum</a></p>
-
+            <p className="footerText">© 2026 <a className="footerTextLink" href="/">Noel Kohn</a> | <a id="footerTextLinkPrivacy" className="footerTextLink" href="/impressum">Impressum</a></p>
             <ContactIcons className={contactIconsStyles.small} />
         </footer>
     );

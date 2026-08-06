@@ -39,11 +39,11 @@ export function AboutContent({
   }, [onUnauthorized]);
 
   if (!content) {
-    return <p>Inhalt wird geladen...</p>;
+    return <p className={styles.status}>Inhalt wird geladen...</p>;
   }
 
   return (
-    <article>
+    <article className={styles.content}>
       <p className={styles.intro}>{content.intro}</p>
 
       {content.sections.map((section) => (
@@ -51,8 +51,8 @@ export function AboutContent({
           className={styles.section}
           key={section.heading}
         >
-          <h2>{section.heading}</h2>
-          <p>{section.body}</p>
+          <h2 className={styles.sectionTitle}>{section.heading}</h2>
+          <p className={styles.sectionBody}>{section.body}</p>
 
           {section.technologies && section.technologies.length > 0 && (
             <ul

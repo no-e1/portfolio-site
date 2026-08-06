@@ -2,9 +2,13 @@
   --bg: #0B0B17;
   --text: #f4f4f5;
   --light-text: #a6abb3;
-  --mainfont: Arial, Helvetica, sans-serif, system-ui;
+  --mainfont: Arial, Helvetica, sans-serif;
   --hfontfam: "Calistoga", monospace, cursive, system-ui ;
   --hfontsize: 3rem;
+  --surface: #11111f;
+  --surface-hover: #151526;
+  --border: rgba(166, 171, 179, 0.24);
+  --accent: #b8c1ff;
 }
 
 html,
@@ -17,6 +21,15 @@ body {
   margin: 0;
   background: var(--bg);
   color: var(--text);
+  font-family: var(--mainfont);
+  line-height: 1.5;
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
 }
 
 /* Header */
@@ -35,6 +48,15 @@ header {
 
 .nav-link:hover {
   color: var(--text);
+}
+
+.nav-link-active {
+  color: var(--text);
+}
+
+.nav-link:focus-visible {
+  outline: 2px solid var(--text);
+  outline-offset: 4px;
 }
 
 /* Footer */

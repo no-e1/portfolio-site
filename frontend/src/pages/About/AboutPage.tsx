@@ -10,7 +10,7 @@ export function AboutPage() {
   );
 
   return (
-    <section>
+    <section className={styles.page}>
       <h1 className={styles.title}>über mich</h1>
       {isAuthenticated ? (
         <AboutContent

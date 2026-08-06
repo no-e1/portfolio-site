@@ -1,5 +1,7 @@
+import styles from './PrivacyPage.module.css';
+
 export function PrivacyPage() {
     return (
-        <h1>privacy</h1>
+        <h1 className={styles.title}>privacy</h1>
     );
 }

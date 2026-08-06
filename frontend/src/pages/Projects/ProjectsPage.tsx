@@ -12,7 +12,7 @@ export function ProjectsPage() {
     useInfiniteProjects();
 
   return (
-    <section>
+    <section className={styles.page}>
       <h1 className={styles.title}>meine Projekte</h1>
 
       <div className={styles.projectGrid}>

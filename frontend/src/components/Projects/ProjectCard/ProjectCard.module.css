@@ -1,15 +1,27 @@
 .card {
-  border: 1px solid var(--light-text);
-  border-radius: 25px;
+  border: 1px solid var(--border);
+  border-radius: 14px;
   overflow: hidden;
   min-height: 260px;
   display: flex;
   flex-direction: column;
+  background: linear-gradient(
+    145deg,
+    rgba(255, 255, 255, 0.04),
+    rgba(255, 255, 255, 0.012)
+  );
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12);
+  transition:
+    border-color 160ms ease,
+    background 160ms ease,
+    transform 160ms ease;
 }
 
-.card:hover {
-  background-color: #0a0a1a;
-  border: 1px solid white;
+.card:has(.image:hover),
+.card:has(.image:focus-visible) {
+  border-color: rgba(184, 193, 255, 0.45);
+  background: var(--surface-hover);
+  transform: translateY(-2px);
 }
 
 .image {

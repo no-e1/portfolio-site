@@ -10,7 +10,7 @@ const navItems = [
 export default function Header() {
   return (
     <header>
-      <nav>
+      <nav aria-label="Hauptnavigation">
         {navItems.map((item) => (
           <NavLink
             key={item.to}

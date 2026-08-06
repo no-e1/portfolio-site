@@ -19,6 +19,7 @@ export function ProjectModal({ project, onClose }: ProjectModalProps) {
 
     const [activeMediaIndex, setActiveMediaIndex] = useState(0);
     const activeMedia = project.media[activeMediaIndex];
+    const hasMultipleMedia = project.media.length > 1;
 
     const showPreviousMedia = useCallback(() => {
     setActiveMediaIndex((currentIndex) =>
@@ -33,6 +34,10 @@ export function ProjectModal({ project, onClose }: ProjectModalProps) {
     }, [project.media.length]);
 
     useEffect(() => {
+        if (!hasMultipleMedia) {
+            return;
+        }
+
         const intervalId = window.setInterval(() => {
             setActiveMediaIndex((currentIndex) =>
             currentIndex === project.media.length - 1 ? 0 : currentIndex + 1
@@ -42,7 +47,7 @@ export function ProjectModal({ project, onClose }: ProjectModalProps) {
         return () => {
             window.clearInterval(intervalId);
         };
-    }, [project.media.length]);
+    }, [hasMultipleMedia, project.media.length]);
     
     useEffect(() => {
     function handleKeyDown(event: KeyboardEvent) {
@@ -50,11 +55,11 @@ export function ProjectModal({ project, onClose }: ProjectModalProps) {
         onClose();
         }
 
-        if (event.key === "ArrowLeft") {
+        if (hasMultipleMedia && event.key === "ArrowLeft") {
         showPreviousMedia();
         }
 
-        if (event.key === "ArrowRight") {
+        if (hasMultipleMedia && event.key === "ArrowRight") {
         showNextMedia();
         }
     }
@@ -64,7 +69,7 @@ export function ProjectModal({ project, onClose }: ProjectModalProps) {
     return () => {
         document.removeEventListener("keydown", handleKeyDown);
     };
-    }, [onClose, showPreviousMedia, showNextMedia]);
+    }, [hasMultipleMedia, onClose, showPreviousMedia, showNextMedia]);
   
     return (
         <div className={styles.backdrop} onClick={onClose}>
@@ -74,9 +79,11 @@ export function ProjectModal({ project, onClose }: ProjectModalProps) {
                 </button>
 
                 <div className={styles.gallery}>
-                    <button onClick={showPreviousMedia} className={styles.galleryButton} tabIndex={-1}>
-                        ‹
-                    </button>
+                    {hasMultipleMedia && (
+                        <button onClick={showPreviousMedia} className={styles.galleryButton} tabIndex={-1}>
+                            ‹
+                        </button>
+                    )}
 
                     <img
                         className={styles.galleryImage}
@@ -84,21 +91,25 @@ export function ProjectModal({ project, onClose }: ProjectModalProps) {
                         alt=""
                     />
 
-                    <button onClick={showNextMedia} className={styles.galleryButton} tabIndex={-1}>
-                        ›
-                    </button>
+                    {hasMultipleMedia && (
+                        <button onClick={showNextMedia} className={styles.galleryButton} tabIndex={-1}>
+                            ›
+                        </button>
+                    )}
 
-                    <div className={styles.dots}>
-                        {project.media.map((media, index) => (
-                        <button
-                            key={media.src}
-                            className={
-                            index === activeMediaIndex ? styles.dotActive : styles.dot
-                            }
-                            onClick={() => setActiveMediaIndex(index)}
-                        />
-                        ))}
-                    </div>
+                    {hasMultipleMedia && (
+                        <div className={styles.dots}>
+                            {project.media.map((media, index) => (
+                            <button
+                                key={media.src}
+                                className={
+                                index === activeMediaIndex ? styles.dotActive : styles.dot
+                                }
+                                onClick={() => setActiveMediaIndex(index)}
+                            />
+                            ))}
+                        </div>
+                    )}
                 </div>
 
                 <div className={styles.projectHeader}>

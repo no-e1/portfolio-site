@@ -84,29 +84,11 @@
   margin: 0;
   padding: 0;
   list-style: none;
-  counter-reset: processing-item;
 }
 
 .processingList li {
   padding: 1.35rem 0;
-  display: grid;
-  grid-template-columns: 2rem minmax(0, 1fr);
-  gap: 1rem;
   border-top: 1px solid var(--border);
-  counter-increment: processing-item;
-}
-
-.processingList li::before {
-  width: 1.65rem;
-  height: 1.65rem;
-  display: grid;
-  place-items: center;
-  border: 1px solid rgba(166, 171, 179, 0.38);
-  border-radius: 50%;
-  color: var(--light-text);
-  content: counter(processing-item, decimal-leading-zero);
-  font-size: 0.65rem;
-  font-weight: 700;
 }
 
 .processingList h3 {

@@ -1,0 +1,76 @@
+.featured {
+  margin-top: 4.5rem;
+}
+
+.title {
+  margin: 0 0 1.25rem;
+  font-family: var(--mainfont);
+  font-size: 1.2rem;
+  font-weight: 700;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.5rem;
+}
+
+.status {
+  margin: 1.5rem 0 0;
+  color: var(--light-text);
+  text-align: center;
+}
+
+.status p {
+  margin: 0 0 0.75rem;
+}
+
+.status button {
+  padding: 0.55rem 0.7rem;
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  background: transparent;
+  color: var(--text);
+  cursor: pointer;
+}
+
+.allProjects {
+  width: fit-content;
+  margin-top: 1.25rem;
+  padding-bottom: 0.15rem;
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  border-bottom: 1px solid transparent;
+  color: var(--light-text);
+  font-size: 0.9rem;
+  font-weight: 700;
+  text-decoration: none;
+  transition:
+    border-color 160ms ease,
+    color 160ms ease;
+}
+
+.allProjects svg {
+  transition: transform 160ms ease;
+}
+
+.allProjects:hover {
+  border-color: rgba(244, 244, 245, 0.62);
+  color: var(--text);
+}
+
+.allProjects:hover svg {
+  transform: translateX(2px);
+}
+
+.allProjects:focus-visible {
+  outline: 2px solid var(--text);
+  outline-offset: 4px;
+}
+
+@media (max-width: 650px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+}

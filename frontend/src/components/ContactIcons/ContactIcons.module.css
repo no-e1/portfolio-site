@@ -55,3 +55,9 @@
   flex: 0 0 auto;
   font-size: 1.1rem;
 }
+
+.labeled .linkIcon {
+  margin-left: 0.1rem;
+  color: var(--light-text);
+  font-size: 0.85rem;
+}

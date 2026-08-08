@@ -50,8 +50,29 @@
 }
 
 .title {
+  position: relative;
+  width: fit-content;
   margin: 0 0 0.5rem;
+  padding-bottom: 0.2rem;
   font-family: var(--mainfont);
+}
+
+.title::after {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  height: 1px;
+  background: rgba(244, 244, 245, 0.62);
+  content: "";
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 180ms ease;
+}
+
+.card:hover .title::after,
+.card:focus-within .title::after {
+  transform: scaleX(1);
 }
 
 .description {

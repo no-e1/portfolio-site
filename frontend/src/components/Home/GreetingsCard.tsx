@@ -1,6 +1,6 @@
 import { ContactIcons } from "../ContactIcons/ContactIcons";
+import { FeaturedProjects } from "./FeaturedProjects";
 import styles from "./GreetingsCard.module.css";
-import { Link } from "react-router-dom";
 
 export function GreetingsCard() {
     return (
@@ -12,12 +12,7 @@ export function GreetingsCard() {
                 Willkommen auf meinem Portfolio. Hier findet man eine Übersicht über meine Projekte,
                 weitere Informationen über mich und meine Unterlagen.
             </p>
-
-            <nav className={styles.pageLinks} aria-label="Portfolio-Inhalte">
-                <Link to="/projects">projekte</Link>
-                <Link to="/about">über mich</Link>
-                <Link to="/docs">dokumente</Link>
-            </nav>
+            <FeaturedProjects />
         </article>
     );
 }

@@ -44,13 +44,25 @@ header {
   z-index: 100;
   margin: 0;
   padding: 30px 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
   background: rgba(11, 11, 23, 0.82);
   -webkit-backdrop-filter: blur(10px);
   backdrop-filter: blur(10px);
 }
 
+.site-header nav {
+  display: flex;
+  align-items: center;
+}
+
 .nav-link {
   margin-right: 35px;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
   color: var(--light-text);
   font-size: 1.2rem;
   font-family: var(--mainfont);
@@ -66,6 +78,30 @@ header {
 }
 
 .nav-link:focus-visible {
+  outline: 2px solid var(--text);
+  outline-offset: 4px;
+}
+
+.nav-lock-icon {
+  width: 0.65rem;
+  height: 0.65rem;
+}
+
+.logout {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--light-text);
+  cursor: pointer;
+  font-family: var(--mainfont);
+  font-size: 1.2rem;
+}
+
+.logout:hover {
+  color: var(--text);
+}
+
+.logout:focus-visible {
   outline: 2px solid var(--text);
   outline-offset: 4px;
 }

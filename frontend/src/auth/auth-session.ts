@@ -1,6 +1,7 @@
 import type { LoginResponse } from "../api/auth.api";
 
 const AUTH_SESSION_KEY = "portfolio-auth-session";
+const AUTH_SESSION_CHANGE_EVENT = "portfolio-auth-session-change";
 
 type StoredAuthSession = {
   accessToken: string;
@@ -14,6 +15,7 @@ export function saveAuthSession(loginResponse: LoginResponse): void {
   };
 
   sessionStorage.setItem(AUTH_SESSION_KEY, JSON.stringify(session));
+  window.dispatchEvent(new Event(AUTH_SESSION_CHANGE_EVENT));
 }
 
 export function getAccessToken(): string | null {
@@ -44,4 +46,13 @@ export function getAccessToken(): string | null {
 
 export function clearAuthSession(): void {
   sessionStorage.removeItem(AUTH_SESSION_KEY);
+  window.dispatchEvent(new Event(AUTH_SESSION_CHANGE_EVENT));
+}
+
+export function subscribeToAuthSession(
+  listener: () => void,
+): () => void {
+  window.addEventListener(AUTH_SESSION_CHANGE_EVENT, listener);
+
+  return () => window.removeEventListener(AUTH_SESSION_CHANGE_EVENT, listener);
 }

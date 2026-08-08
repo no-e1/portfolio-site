@@ -1,0 +1,14 @@
+.page {
+  margin-top: clamp(2.5rem, 4vh, 7rem);
+}
+
+.pageHeader {
+  margin-bottom: 3rem;
+}
+
+.pageHeader h1 {
+  margin: 0 0 0.4rem;
+  font-family: var(--hfontfam);
+  font-size: clamp(2.25rem, 4vw, 3rem);
+  font-weight: 400;
+}

@@ -37,6 +37,14 @@ export function AdminHeader({ onLogout }: AdminHeaderProps) {
           className={({ isActive }) =>
             `${styles.navLink} ${isActive ? styles.active : ""}`
           }
+          to="/hobbies"
+        >
+          hobbies
+        </NavLink>
+        <NavLink
+          className={({ isActive }) =>
+            `${styles.navLink} ${isActive ? styles.active : ""}`
+          }
           to="/documents"
         >
           documents

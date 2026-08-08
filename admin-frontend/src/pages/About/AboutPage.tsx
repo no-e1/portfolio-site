@@ -1,24 +1,44 @@
 import { useEffect, useState, type FormEvent } from "react";
 import { ApiError } from "../../api/api-client";
-import { getAdminAbout, saveAdminAbout } from "../../api/admin-about.api";
+import {
+  createAdminAbout,
+  deleteAdminAbout,
+  deleteAdminAboutBulletPoint,
+  deleteAdminAboutSection,
+  deleteAdminAboutTechnology,
+  getAdminAbout,
+  updateAdminAbout,
+} from "../../api/admin-about.api";
 import { ConfirmDialog } from "../../components/ConfirmDialog/ConfirmDialog";
-import type { AdminAboutContent } from "../../types/about";
+import type {
+  AdminAboutBulletPoint,
+  AdminAboutContent,
+  AdminAboutSection,
+  AdminAboutTechnology,
+  SaveAdminAboutContent,
+} from "../../types/about";
 import styles from "./AboutPage.module.css";
 
-type AboutSectionValue = {
-  heading: string;
-  body: string;
-  technologies: string[];
-};
+type DeleteTarget =
+  | { kind: "about" }
+  | { kind: "section"; sectionIndex: number; section: AdminAboutSection }
+  | {
+      kind: "bulletPoint";
+      sectionIndex: number;
+      bulletPointIndex: number;
+      section: AdminAboutSection;
+      bulletPoint: AdminAboutBulletPoint;
+    }
+  | {
+      kind: "technology";
+      technologyIndex: number;
+      technology: AdminAboutTechnology;
+    };
 
-type AboutEditorValue = {
-  intro: string;
-  sections: AboutSectionValue[];
-};
-
-const EMPTY_VALUE: AboutEditorValue = {
-  intro: "",
+const EMPTY_VALUE: AdminAboutContent = {
+  id: null,
   sections: [],
+  technologies: [],
 };
 
 function moveItem<T>(items: T[], index: number, offset: -1 | 1): T[] {
@@ -36,39 +56,70 @@ function moveItem<T>(items: T[], index: number, offset: -1 | 1): T[] {
   return nextItems;
 }
 
-function toEditorValue(content: AdminAboutContent): AboutEditorValue {
+function toApiValue(value: AdminAboutContent): SaveAdminAboutContent {
   return {
-    intro: content.intro,
-    sections: content.sections.map((section) => ({
-      heading: section.heading,
-      body: section.body,
-      technologies: section.technologies ?? [],
-    })),
-  };
-}
-
-function toApiValue(value: AboutEditorValue): AdminAboutContent {
-  return {
-    intro: value.intro.trim(),
     sections: value.sections.map((section) => ({
       heading: section.heading.trim(),
       body: section.body.trim(),
-      technologies: section.technologies
-        .map((technology) => technology.trim())
-        .filter(Boolean),
+      bulletPoints: section.bulletPoints.map((bulletPoint) => ({
+        heading: bulletPoint.heading.trim(),
+        body: bulletPoint.body.trim(),
+      })),
+    })),
+    technologies: value.technologies.map((technology) => ({
+      name: technology.name.trim(),
+      context: technology.context.trim(),
+      description: technology.description.trim(),
     })),
   };
 }
 
+function getDeleteDialog(target: DeleteTarget): {
+  title: string;
+  message: string;
+  confirmLabel: string;
+} {
+  switch (target.kind) {
+    case "about":
+      return {
+        title: "Delete all About content?",
+        message:
+          "All About sections, bullet points and technologies will be permanently deleted.",
+        confirmLabel: "delete all content",
+      };
+    case "section":
+      return {
+        title: "Delete section?",
+        message: `${target.section.heading || "This section"} and all its bullet points will be permanently deleted.`,
+        confirmLabel: "delete section",
+      };
+    case "bulletPoint":
+      return {
+        title: "Delete bullet point?",
+        message: `${target.bulletPoint.heading || "This bullet point"} will be permanently deleted.`,
+        confirmLabel: "delete bullet point",
+      };
+    case "technology":
+      return {
+        title: "Delete technology?",
+        message: `${target.technology.name || "This technology"} will be permanently deleted.`,
+        confirmLabel: "delete technology",
+      };
+  }
+}
+
 export function AboutPage() {
-  const [value, setValue] = useState<AboutEditorValue>(EMPTY_VALUE);
+  const [value, setValue] = useState<AdminAboutContent>(EMPTY_VALUE);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
   const [loadError, setLoadError] = useState(false);
-  const [saveError, setSaveError] = useState<string | null>(null);
+  const [actionError, setActionError] = useState<string | null>(null);
   const [saved, setSaved] = useState(false);
   const [confirmSave, setConfirmSave] = useState(false);
+  const [deleteTarget, setDeleteTarget] = useState<DeleteTarget | null>(null);
   const [requestVersion, setRequestVersion] = useState(0);
+  const isBusy = isSaving || isDeleting;
 
   useEffect(() => {
     const abortController = new AbortController();
@@ -78,8 +129,7 @@ export function AboutPage() {
       setLoadError(false);
 
       try {
-        const content = await getAdminAbout(abortController.signal);
-        setValue(toEditorValue(content));
+        setValue(await getAdminAbout(abortController.signal));
       } catch (error) {
         if (error instanceof Error && error.name === "AbortError") {
           return;
@@ -97,14 +147,33 @@ export function AboutPage() {
     return () => abortController.abort();
   }, [requestVersion]);
 
-  function updateSection(index: number, section: AboutSectionValue) {
+  function markChanged() {
+    setSaved(false);
+    setActionError(null);
+  }
+
+  function updateSection(index: number, section: AdminAboutSection) {
     setValue((current) => ({
       ...current,
       sections: current.sections.map((currentSection, currentIndex) =>
         currentIndex === index ? section : currentSection,
       ),
     }));
-    setSaved(false);
+    markChanged();
+  }
+
+  function updateTechnology(
+    index: number,
+    technology: AdminAboutTechnology,
+  ) {
+    setValue((current) => ({
+      ...current,
+      technologies: current.technologies.map(
+        (currentTechnology, currentIndex) =>
+          currentIndex === index ? technology : currentTechnology,
+      ),
+    }));
+    markChanged();
   }
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
@@ -114,16 +183,20 @@ export function AboutPage() {
 
   async function handleSave() {
     setConfirmSave(false);
-    setSaveError(null);
+    setActionError(null);
     setSaved(false);
     setIsSaving(true);
 
     try {
-      const savedContent = await saveAdminAbout(toApiValue(value));
-      setValue(toEditorValue(savedContent));
+      const payload = toApiValue(value);
+      const savedContent =
+        value.id === null
+          ? await createAdminAbout(payload)
+          : await updateAdminAbout(payload);
+      setValue(savedContent);
       setSaved(true);
     } catch (error) {
-      setSaveError(
+      setActionError(
         error instanceof ApiError
           ? error.message
           : "About content could not be saved.",
@@ -133,14 +206,94 @@ export function AboutPage() {
     }
   }
 
+  async function handleDelete() {
+    if (!deleteTarget) {
+      return;
+    }
+
+    const target = deleteTarget;
+    setDeleteTarget(null);
+    setActionError(null);
+    setSaved(false);
+    setIsDeleting(true);
+
+    try {
+      switch (target.kind) {
+        case "about":
+          if (value.id !== null) {
+            await deleteAdminAbout();
+          }
+          setValue(EMPTY_VALUE);
+          break;
+        case "section":
+          if (target.section.id !== undefined) {
+            await deleteAdminAboutSection(target.section.id);
+          }
+          setValue((current) => ({
+            ...current,
+            sections: current.sections.filter(
+              (_, index) => index !== target.sectionIndex,
+            ),
+          }));
+          break;
+        case "bulletPoint":
+          if (
+            target.section.id !== undefined &&
+            target.bulletPoint.id !== undefined
+          ) {
+            await deleteAdminAboutBulletPoint(
+              target.section.id,
+              target.bulletPoint.id,
+            );
+          }
+          setValue((current) => ({
+            ...current,
+            sections: current.sections.map((section, sectionIndex) =>
+              sectionIndex === target.sectionIndex
+                ? {
+                    ...section,
+                    bulletPoints: section.bulletPoints.filter(
+                      (_, bulletPointIndex) =>
+                        bulletPointIndex !== target.bulletPointIndex,
+                    ),
+                  }
+                : section,
+            ),
+          }));
+          break;
+        case "technology":
+          if (target.technology.id !== undefined) {
+            await deleteAdminAboutTechnology(target.technology.id);
+          }
+          setValue((current) => ({
+            ...current,
+            technologies: current.technologies.filter(
+              (_, index) => index !== target.technologyIndex,
+            ),
+          }));
+          break;
+      }
+    } catch (error) {
+      setActionError(
+        error instanceof ApiError
+          ? error.message
+          : "The selected About content could not be deleted.",
+      );
+    } finally {
+      setIsDeleting(false);
+    }
+  }
+
+  const deleteDialog = deleteTarget ? getDeleteDialog(deleteTarget) : null;
+
   return (
     <section className={styles.page}>
-      <div className={styles.pageHeader}>
+      <header className={styles.pageHeader}>
         <div>
           <h1>About me</h1>
-          <p>Manage the protected content shown after user login.</p>
+          <p>Manage profile sections, bullet points and technologies.</p>
         </div>
-      </div>
+      </header>
 
       {isLoading && <p className={styles.status}>Content is loading...</p>}
 
@@ -159,26 +312,11 @@ export function AboutPage() {
 
       {!isLoading && !loadError && (
         <form className={styles.form} onSubmit={handleSubmit}>
-          <label className={styles.field}>
-            <span>Intro</span>
-            <textarea
-              rows={7}
-              value={value.intro}
-              onChange={(event) => {
-                setValue((current) => ({
-                  ...current,
-                  intro: event.target.value,
-                }));
-                setSaved(false);
-              }}
-              maxLength={10000}
-              disabled={isSaving}
-              required
-            />
-          </label>
-
-          <div className={styles.sectionsHeader}>
-            <h2>Sections</h2>
+          <div className={styles.editorHeader}>
+            <div>
+              <h2>Sections</h2>
+              <p>Each section can contain up to three bullet points.</p>
+            </div>
             <button
               className={styles.secondaryButton}
               type="button"
@@ -187,72 +325,70 @@ export function AboutPage() {
                   ...current,
                   sections: [
                     ...current.sections,
-                    { heading: "", body: "", technologies: [] },
+                    { heading: "", body: "", bulletPoints: [] },
                   ],
                 }));
-                setSaved(false);
+                markChanged();
               }}
-              disabled={isSaving || value.sections.length >= 30}
+              disabled={isBusy || value.sections.length >= 30}
             >
               add section
             </button>
           </div>
 
+          {value.sections.length === 0 && (
+            <p className={styles.empty}>No sections added.</p>
+          )}
+
           <div className={styles.sectionList}>
             {value.sections.map((section, sectionIndex) => (
-              <fieldset className={styles.sectionCard} key={sectionIndex}>
+              <fieldset className={styles.sectionCard} key={section.id ?? sectionIndex}>
                 <legend>Section {sectionIndex + 1}</legend>
 
-                <div className={styles.sectionActions}>
+                <div className={styles.cardActions}>
                   <button
                     type="button"
-                    onClick={() =>
+                    onClick={() => {
                       setValue((current) => ({
                         ...current,
-                        sections: moveItem(
-                          current.sections,
-                          sectionIndex,
-                          -1,
-                        ),
-                      }))
-                    }
-                    disabled={isSaving || sectionIndex === 0}
+                        sections: moveItem(current.sections, sectionIndex, -1),
+                      }));
+                      markChanged();
+                    }}
+                    disabled={isBusy || sectionIndex === 0}
+                    aria-label={`Move section ${sectionIndex + 1} up`}
                   >
                     ↑
                   </button>
                   <button
                     type="button"
-                    onClick={() =>
+                    onClick={() => {
                       setValue((current) => ({
                         ...current,
-                        sections: moveItem(
-                          current.sections,
-                          sectionIndex,
-                          1,
-                        ),
-                      }))
-                    }
+                        sections: moveItem(current.sections, sectionIndex, 1),
+                      }));
+                      markChanged();
+                    }}
                     disabled={
-                      isSaving || sectionIndex === value.sections.length - 1
+                      isBusy || sectionIndex === value.sections.length - 1
                     }
+                    aria-label={`Move section ${sectionIndex + 1} down`}
                   >
                     ↓
                   </button>
                   <button
                     className={styles.dangerButton}
                     type="button"
-                    onClick={() => {
-                      setValue((current) => ({
-                        ...current,
-                        sections: current.sections.filter(
-                          (_, index) => index !== sectionIndex,
-                        ),
-                      }));
-                      setSaved(false);
-                    }}
-                    disabled={isSaving}
+                    onClick={() =>
+                      setDeleteTarget({
+                        kind: "section",
+                        sectionIndex,
+                        section,
+                      })
+                    }
+                    disabled={isBusy}
                   >
-                    remove section
+                    delete section
                   </button>
                 </div>
 
@@ -267,7 +403,7 @@ export function AboutPage() {
                       })
                     }
                     maxLength={160}
-                    disabled={isSaving}
+                    disabled={isBusy}
                     required
                   />
                 </label>
@@ -275,7 +411,7 @@ export function AboutPage() {
                 <label className={styles.field}>
                   <span>Body</span>
                   <textarea
-                    rows={7}
+                    rows={6}
                     value={section.body}
                     onChange={(event) =>
                       updateSection(sectionIndex, {
@@ -284,15 +420,15 @@ export function AboutPage() {
                       })
                     }
                     maxLength={50000}
-                    disabled={isSaving}
+                    disabled={isBusy}
                     required
                   />
                 </label>
 
-                <div className={styles.technologiesHeader}>
+                <div className={styles.nestedHeader}>
                   <div>
-                    <h3>Technologies</h3>
-                    <p>Optional</p>
+                    <h3>Bullet points</h3>
+                    <p>{section.bulletPoints.length} of 3</p>
                   </div>
                   <button
                     className={styles.secondaryButton}
@@ -300,105 +436,291 @@ export function AboutPage() {
                     onClick={() =>
                       updateSection(sectionIndex, {
                         ...section,
-                        technologies: [...section.technologies, ""],
+                        bulletPoints: [
+                          ...section.bulletPoints,
+                          { heading: "", body: "" },
+                        ],
                       })
                     }
-                    disabled={
-                      isSaving || section.technologies.length >= 100
-                    }
+                    disabled={isBusy || section.bulletPoints.length >= 3}
                   >
-                    add technology
+                    add bullet point
                   </button>
                 </div>
 
-                {section.technologies.length === 0 && (
-                  <p className={styles.empty}>No technologies added.</p>
+                {section.bulletPoints.length === 0 && (
+                  <p className={styles.empty}>No bullet points added.</p>
                 )}
 
-                <div className={styles.technologyList}>
-                  {section.technologies.map((technology, technologyIndex) => (
-                    <div
-                      className={styles.technologyRow}
-                      key={technologyIndex}
+                <div className={styles.bulletPointList}>
+                  {section.bulletPoints.map((bulletPoint, bulletPointIndex) => (
+                    <fieldset
+                      className={styles.nestedCard}
+                      key={bulletPoint.id ?? bulletPointIndex}
                     >
-                      <input
-                        aria-label={`Technology ${technologyIndex + 1}`}
-                        value={technology}
-                        onChange={(event) =>
-                          updateSection(sectionIndex, {
-                            ...section,
-                            technologies: section.technologies.map(
-                              (currentTechnology, index) =>
-                                index === technologyIndex
-                                  ? event.target.value
-                                  : currentTechnology,
-                            ),
-                          })
-                        }
-                        maxLength={100}
-                        disabled={isSaving}
-                        required
-                      />
-                      <button
-                        type="button"
-                        onClick={() =>
-                          updateSection(sectionIndex, {
-                            ...section,
-                            technologies: moveItem(
-                              section.technologies,
-                              technologyIndex,
-                              -1,
-                            ),
-                          })
-                        }
-                        disabled={isSaving || technologyIndex === 0}
-                      >
-                        ↑
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() =>
-                          updateSection(sectionIndex, {
-                            ...section,
-                            technologies: moveItem(
-                              section.technologies,
-                              technologyIndex,
-                              1,
-                            ),
-                          })
-                        }
-                        disabled={
-                          isSaving ||
-                          technologyIndex === section.technologies.length - 1
-                        }
-                      >
-                        ↓
-                      </button>
-                      <button
-                        className={styles.dangerButton}
-                        type="button"
-                        onClick={() =>
-                          updateSection(sectionIndex, {
-                            ...section,
-                            technologies: section.technologies.filter(
-                              (_, index) => index !== technologyIndex,
-                            ),
-                          })
-                        }
-                        disabled={isSaving}
-                      >
-                        remove
-                      </button>
-                    </div>
+                      <legend>Bullet point {bulletPointIndex + 1}</legend>
+                      <div className={styles.cardActions}>
+                        <button
+                          type="button"
+                          onClick={() =>
+                            updateSection(sectionIndex, {
+                              ...section,
+                              bulletPoints: moveItem(
+                                section.bulletPoints,
+                                bulletPointIndex,
+                                -1,
+                              ),
+                            })
+                          }
+                          disabled={isBusy || bulletPointIndex === 0}
+                          aria-label={`Move bullet point ${bulletPointIndex + 1} up`}
+                        >
+                          ↑
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() =>
+                            updateSection(sectionIndex, {
+                              ...section,
+                              bulletPoints: moveItem(
+                                section.bulletPoints,
+                                bulletPointIndex,
+                                1,
+                              ),
+                            })
+                          }
+                          disabled={
+                            isBusy ||
+                            bulletPointIndex === section.bulletPoints.length - 1
+                          }
+                          aria-label={`Move bullet point ${bulletPointIndex + 1} down`}
+                        >
+                          ↓
+                        </button>
+                        <button
+                          className={styles.dangerButton}
+                          type="button"
+                          onClick={() =>
+                            setDeleteTarget({
+                              kind: "bulletPoint",
+                              sectionIndex,
+                              bulletPointIndex,
+                              section,
+                              bulletPoint,
+                            })
+                          }
+                          disabled={isBusy}
+                        >
+                          delete
+                        </button>
+                      </div>
+
+                      <label className={styles.field}>
+                        <span>Heading</span>
+                        <input
+                          value={bulletPoint.heading}
+                          onChange={(event) =>
+                            updateSection(sectionIndex, {
+                              ...section,
+                              bulletPoints: section.bulletPoints.map(
+                                (currentBulletPoint, index) =>
+                                  index === bulletPointIndex
+                                    ? {
+                                        ...currentBulletPoint,
+                                        heading: event.target.value,
+                                      }
+                                    : currentBulletPoint,
+                              ),
+                            })
+                          }
+                          maxLength={160}
+                          disabled={isBusy}
+                          required
+                        />
+                      </label>
+
+                      <label className={styles.field}>
+                        <span>Content</span>
+                        <textarea
+                          rows={4}
+                          value={bulletPoint.body}
+                          onChange={(event) =>
+                            updateSection(sectionIndex, {
+                              ...section,
+                              bulletPoints: section.bulletPoints.map(
+                                (currentBulletPoint, index) =>
+                                  index === bulletPointIndex
+                                    ? {
+                                        ...currentBulletPoint,
+                                        body: event.target.value,
+                                      }
+                                    : currentBulletPoint,
+                              ),
+                            })
+                          }
+                          maxLength={10000}
+                          disabled={isBusy}
+                          required
+                        />
+                      </label>
+                    </fieldset>
                   ))}
                 </div>
               </fieldset>
             ))}
           </div>
 
-          {saveError && (
+          <div className={styles.editorHeader}>
+            <div>
+              <h2>Skills / technologies</h2>
+              <p>Technologies are displayed in this order and numbered.</p>
+            </div>
+            <button
+              className={styles.secondaryButton}
+              type="button"
+              onClick={() => {
+                setValue((current) => ({
+                  ...current,
+                  technologies: [
+                    ...current.technologies,
+                    { name: "", context: "", description: "" },
+                  ],
+                }));
+                markChanged();
+              }}
+              disabled={isBusy || value.technologies.length >= 100}
+            >
+              add technology
+            </button>
+          </div>
+
+          {value.technologies.length === 0 && (
+            <p className={styles.empty}>No technologies added.</p>
+          )}
+
+          <div className={styles.technologyList}>
+            {value.technologies.map((technology, technologyIndex) => (
+              <fieldset
+                className={styles.technologyCard}
+                key={technology.id ?? technologyIndex}
+              >
+                <legend>
+                  Technology {String(technologyIndex + 1).padStart(2, "0")}
+                </legend>
+
+                <div className={styles.cardActions}>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setValue((current) => ({
+                        ...current,
+                        technologies: moveItem(
+                          current.technologies,
+                          technologyIndex,
+                          -1,
+                        ),
+                      }));
+                      markChanged();
+                    }}
+                    disabled={isBusy || technologyIndex === 0}
+                    aria-label={`Move technology ${technologyIndex + 1} up`}
+                  >
+                    ↑
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setValue((current) => ({
+                        ...current,
+                        technologies: moveItem(
+                          current.technologies,
+                          technologyIndex,
+                          1,
+                        ),
+                      }));
+                      markChanged();
+                    }}
+                    disabled={
+                      isBusy || technologyIndex === value.technologies.length - 1
+                    }
+                    aria-label={`Move technology ${technologyIndex + 1} down`}
+                  >
+                    ↓
+                  </button>
+                  <button
+                    className={styles.dangerButton}
+                    type="button"
+                    onClick={() =>
+                      setDeleteTarget({
+                        kind: "technology",
+                        technologyIndex,
+                        technology,
+                      })
+                    }
+                    disabled={isBusy}
+                  >
+                    delete technology
+                  </button>
+                </div>
+
+                <div className={styles.technologyFields}>
+                  <label className={styles.field}>
+                    <span>Name</span>
+                    <input
+                      value={technology.name}
+                      onChange={(event) =>
+                        updateTechnology(technologyIndex, {
+                          ...technology,
+                          name: event.target.value,
+                        })
+                      }
+                      maxLength={160}
+                      disabled={isBusy}
+                      required
+                    />
+                  </label>
+
+                  <label className={styles.field}>
+                    <span>Context</span>
+                    <input
+                      value={technology.context}
+                      onChange={(event) =>
+                        updateTechnology(technologyIndex, {
+                          ...technology,
+                          context: event.target.value,
+                        })
+                      }
+                      maxLength={160}
+                      placeholder="2026 · Frontend"
+                      disabled={isBusy}
+                      required
+                    />
+                  </label>
+                </div>
+
+                <label className={styles.field}>
+                  <span>Description</span>
+                  <textarea
+                    rows={5}
+                    value={technology.description}
+                    onChange={(event) =>
+                      updateTechnology(technologyIndex, {
+                        ...technology,
+                        description: event.target.value,
+                      })
+                    }
+                    maxLength={50000}
+                    disabled={isBusy}
+                    required
+                  />
+                </label>
+              </fieldset>
+            ))}
+          </div>
+
+          {actionError && (
             <p className={styles.error} role="alert">
-              {saveError}
+              {actionError}
             </p>
           )}
           {saved && (
@@ -408,10 +730,20 @@ export function AboutPage() {
           )}
 
           <div className={styles.formActions}>
+            {value.id !== null && (
+              <button
+                className={styles.dangerButton}
+                type="button"
+                onClick={() => setDeleteTarget({ kind: "about" })}
+                disabled={isBusy}
+              >
+                delete all content
+              </button>
+            )}
             <button
               className={styles.primaryButton}
               type="submit"
-              disabled={isSaving}
+              disabled={isBusy}
             >
               {isSaving ? "saving..." : "save about content"}
             </button>
@@ -421,11 +753,22 @@ export function AboutPage() {
 
       {confirmSave && (
         <ConfirmDialog
-          title="Save about content?"
+          title="Save About content?"
           message="The protected About page will use this content immediately."
           confirmLabel="save content"
           onConfirm={() => void handleSave()}
           onCancel={() => setConfirmSave(false)}
+        />
+      )}
+
+      {deleteTarget && deleteDialog && (
+        <ConfirmDialog
+          title={deleteDialog.title}
+          message={deleteDialog.message}
+          confirmLabel={deleteDialog.confirmLabel}
+          tone="danger"
+          onConfirm={() => void handleDelete()}
+          onCancel={() => setDeleteTarget(null)}
         />
       )}
     </section>

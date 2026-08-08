@@ -2,94 +2,192 @@
   width: 100%;
 }
 
-.intro {
-  margin: 0;
-  padding: 0 0 2.5rem;
-  border-bottom: 1px solid var(--border);
-  color: #d5d7dc;
-  font-size: clamp(1.08rem, 2.5vw, 1.22rem);
-  font-weight: 400;
-  line-height: 1.85;
-  white-space: pre-line;
-}
-
-.section {
-  padding: 2.25rem 0;
+.profile {
+  padding: 2rem 0;
   display: grid;
-  grid-template-columns: minmax(145px, 0.36fr) minmax(0, 1fr);
-  column-gap: 2.5rem;
+  grid-template-columns: minmax(140px, 0.35fr) minmax(0, 1fr);
+  gap: 2.5rem;
+  border-top: 1px solid var(--border);
   border-bottom: 1px solid var(--border);
 }
 
-.sectionTitle {
+.profile + .profile {
+  border-top: 0;
+}
+
+.sectionLabel {
   margin: 0;
-  color: var(--text);
-  font-size: 0.82rem;
-  font-weight: 600;
-  line-height: 1.5;
-  letter-spacing: 0.09em;
+  color: var(--light-text);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.11em;
   text-transform: uppercase;
 }
 
-.sectionBody {
+.personalText {
+  max-width: 620px;
   margin: 0;
-  color: var(--light-text);
-  font-size: 1rem;
+  color: #d8d9de;
+  font-size: clamp(0.96rem, 2vw, 1.08rem);
   line-height: 1.8;
-  white-space: pre-line;
+}
+
+.profileFacts {
+  margin: 2rem 0 0;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1.25rem;
+}
+
+.profileFacts div {
+  min-width: 0;
+}
+
+.profileFacts dt {
+  margin-bottom: 0.35rem;
+  color: var(--light-text);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.profileFacts dd {
+  margin: 0;
+  color: var(--text);
+  font-size: 0.86rem;
+  font-weight: 600;
+  line-height: 1.5;
+}
+
+.experience {
+  padding-top: clamp(4.5rem, 9vw, 7rem);
+}
+
+.experienceHeader {
+  max-width: 630px;
+  margin-bottom: 3rem;
+}
+
+.experienceHeader h2 {
+  margin: 0;
+  font-family: var(--hfontfam);
+  font-size: clamp(1.9rem, 5vw, 3rem);
+  font-weight: 400;
+  letter-spacing: -0.025em;
+  line-height: 1.08;
+}
+
+.experienceHeader > p:last-child {
+  margin: 1rem 0 0;
+  color: var(--light-text);
+  font-size: 0.95rem;
+  line-height: 1.7;
 }
 
 .technologyList {
-  margin: 1.4rem 0 0;
+  margin: 0;
   padding: 0;
-  display: grid;
-  grid-column: 2;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 0.7rem 1.5rem;
+  border-top: 1px solid var(--border);
   list-style: none;
+  counter-reset: technology;
 }
 
-.technologyItem {
-  min-width: 0;
-  padding-left: 1rem;
-  position: relative;
-  color: #c6c9d0;
-  font-size: 0.9rem;
-  font-weight: 500;
-  line-height: 1.5;
-  overflow-wrap: anywhere;
+.technology {
+  padding: 1.8rem 0;
+  display: grid;
+  grid-template-columns: 2.25rem minmax(145px, 0.42fr) minmax(0, 1fr);
+  gap: 1.25rem;
+  border-bottom: 1px solid var(--border);
+  counter-increment: technology;
+  transition: border-color 160ms ease;
 }
 
-.technologyItem::before {
-  width: 4px;
-  height: 4px;
-  position: absolute;
-  top: 0.65em;
-  left: 0;
-  border-radius: 50%;
-  background: rgba(244, 244, 245, 0.62);
-  content: "";
+.technology:hover {
+  border-color: rgba(244, 244, 245, 0.4);
+}
+
+.technology::before {
+  padding-top: 0.15rem;
+  color: var(--light-text);
+  content: counter(technology, decimal-leading-zero);
+  font-size: 0.7rem;
+  font-weight: 700;
+}
+
+.technologyHeading h3 {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.technologyHeading p {
+  margin: 0.4rem 0 0;
+  color: var(--accent);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+}
+
+.technologyDescription {
+  margin: 0;
+  color: var(--light-text);
+  font-size: 0.92rem;
+  line-height: 1.75;
+}
+
+.technologyDescription strong {
+  color: var(--text);
+  font-weight: 600;
 }
 
 .status {
   margin: 2.5rem 0;
+  display: grid;
+  justify-items: center;
+  gap: 1rem;
   color: var(--light-text);
   text-align: center;
 }
 
-@media (max-width: 600px) {
-  .section {
-    padding: 1.75rem 0;
+.status p {
+  margin: 0;
+}
+
+.status button {
+  padding: 0.65rem 0.8rem;
+  border: 1px solid var(--text);
+  border-radius: 8px;
+  background: var(--text);
+  color: var(--bg);
+  cursor: pointer;
+  font-weight: 700;
+}
+
+.status button:hover {
+  border-color: var(--light-text);
+  background: var(--light-text);
+}
+
+@media (max-width: 650px) {
+  .profile {
     grid-template-columns: 1fr;
-    row-gap: 1rem;
+    gap: 1rem;
   }
 
-  .intro {
-    padding-bottom: 2rem;
+  .profileFacts {
+    grid-template-columns: 1fr;
+    gap: 1rem;
   }
 
-  .technologyList {
-    grid-column: 1;
-    grid-template-columns: 1fr;
+  .technology {
+    grid-template-columns: 2rem minmax(0, 1fr);
+    gap: 0.75rem 1rem;
+  }
+
+  .technologyDescription {
+    grid-column: 2;
   }
 }

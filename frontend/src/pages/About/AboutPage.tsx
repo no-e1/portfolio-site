@@ -13,9 +13,7 @@ export function AboutPage() {
     <section className={styles.page}>
       <h1 className={styles.title}>über mich</h1>
       {isAuthenticated ? (
-        <AboutContent
-          onUnauthorized={() => setIsAuthenticated(false)}
-        />
+        <AboutContent onUnauthorized={() => setIsAuthenticated(false)} />
       ) : (
         <LoginForm onLogin={() => setIsAuthenticated(true)} />
       )}

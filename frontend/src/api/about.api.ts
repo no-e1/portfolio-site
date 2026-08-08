@@ -1,18 +1,27 @@
 import { apiRequest } from './api-client';
 
 export type AboutContent = {
-  intro: string;
   sections: Array<{
     heading: string;
     body: string;
-    technologies?: string[];
+    bulletPoints: Array<{
+      heading: string;
+      body: string;
+    }>;
+  }>;
+  technologies: Array<{
+    name: string;
+    context: string;
+    description: string;
   }>;
 };
 
 export function getAbout(
   accessToken: string,
+  signal?: AbortSignal,
 ): Promise<AboutContent> {
   return apiRequest<AboutContent>('/about', {
     accessToken,
+    signal,
   });
 }

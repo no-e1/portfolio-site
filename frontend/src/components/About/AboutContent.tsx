@@ -14,29 +14,57 @@ type AboutContentProps = {
   onUnauthorized: () => void;
 };
 
-export function AboutContent({
-  onUnauthorized,
-}: AboutContentProps) {
-  const [content, setContent] =
-    useState<AboutContentData | null>(null);
+export function AboutContent({ onUnauthorized }: AboutContentProps) {
+  const [content, setContent] = useState<AboutContentData | null>(null);
+  const [loadError, setLoadError] = useState(false);
+  const [requestVersion, setRequestVersion] = useState(0);
 
   useEffect(() => {
-    const token = getAccessToken();
+    const accessToken = getAccessToken();
 
-    if (!token) {
+    if (!accessToken) {
       onUnauthorized();
       return;
     }
 
-    getAbout(token)
+    const abortController = new AbortController();
+
+    getAbout(accessToken, abortController.signal)
       .then(setContent)
       .catch((error) => {
+        if (error instanceof Error && error.name === 'AbortError') {
+          return;
+        }
+
         if (error instanceof ApiError && error.status === 401) {
           clearAuthSession();
           onUnauthorized();
+          return;
         }
+
+        setLoadError(true);
       });
-  }, [onUnauthorized]);
+
+    return () => abortController.abort();
+  }, [onUnauthorized, requestVersion]);
+
+  if (loadError) {
+    return (
+      <div className={styles.status}>
+        <p role="alert">Der Über-mich-Inhalt konnte nicht geladen werden.</p>
+        <button
+          type="button"
+          onClick={() => {
+            setLoadError(false);
+            setContent(null);
+            setRequestVersion((version) => version + 1);
+          }}
+        >
+          erneut versuchen
+        </button>
+      </div>
+    );
+  }
 
   if (!content) {
     return <p className={styles.status}>Inhalt wird geladen...</p>;
@@ -44,33 +72,58 @@ export function AboutContent({
 
   return (
     <article className={styles.content}>
-      <p className={styles.intro}>{content.intro}</p>
-
-      {content.sections.map((section) => (
+      {content.sections.map((section, sectionIndex) => (
         <section
-          className={styles.section}
-          key={section.heading}
+          className={styles.profile}
+          key={`${section.heading}-${sectionIndex}`}
         >
-          <h2 className={styles.sectionTitle}>{section.heading}</h2>
-          <p className={styles.sectionBody}>{section.body}</p>
+          <p className={styles.sectionLabel}>{section.heading}</p>
+          <div>
+            <p className={styles.personalText}>{section.body}</p>
 
-          {section.technologies && section.technologies.length > 0 && (
-            <ul
-              className={styles.technologyList}
-              aria-label={`Technologien – ${section.heading}`}
-            >
-              {section.technologies.map((technology) => (
-                <li
-                  className={styles.technologyItem}
-                  key={`${section.heading}-${technology}`}
-                >
-                  {technology}
-                </li>
-              ))}
-            </ul>
-          )}
+            {section.bulletPoints.length > 0 && (
+              <dl className={styles.profileFacts}>
+                {section.bulletPoints.map((bulletPoint, bulletPointIndex) => (
+                  <div
+                    key={`${bulletPoint.heading}-${bulletPointIndex}`}
+                  >
+                    <dt>{bulletPoint.heading}</dt>
+                    <dd>{bulletPoint.body}</dd>
+                  </div>
+                ))}
+              </dl>
+            )}
+          </div>
         </section>
       ))}
+
+      {content.technologies.length > 0 && (
+        <section className={styles.experience}>
+          <header className={styles.experienceHeader}>
+            <h2>Erfahrungen</h2>
+            <p>
+              Technologien, mit denen ich bereits Erfahrungen gesammelt habe
+            </p>
+          </header>
+
+          <ol className={styles.technologyList}>
+            {content.technologies.map((technology, technologyIndex) => (
+              <li
+                className={styles.technology}
+                key={`${technology.name}-${technologyIndex}`}
+              >
+                <div className={styles.technologyHeading}>
+                  <h3>{technology.name}</h3>
+                  <p>{technology.context}</p>
+                </div>
+                <p className={styles.technologyDescription}>
+                  {technology.description}
+                </p>
+              </li>
+            ))}
+          </ol>
+        </section>
+      )}
     </article>
   );
 }

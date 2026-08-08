@@ -4,6 +4,7 @@ const navItems = [
     { to: "/", label: "home", end: true},
     { to: "/projects", label: "projekte"},
     { to: "/about", label: "über mich"},
+    { to: "/hobbys", label: "hobbys"},
     { to: "/docs", label: "dokumente"},
 ];
 

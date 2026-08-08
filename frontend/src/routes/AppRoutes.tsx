@@ -5,6 +5,7 @@ import { AboutPage } from "../pages/About/AboutPage";
 import { ProjectsPage } from "../pages/Projects/ProjectsPage";
 import { DocsPage } from "../pages/Docs/DocsPage";
 import { PrivacyPage } from "../pages/Privacy/PrivacyPage";
+import { HobbysPage } from "../pages/Hobbys/HobbysPage";
 
 export function AppRoutes() {
   return (
@@ -14,6 +15,7 @@ export function AppRoutes() {
           <Route index element={<HomePage />} />
           <Route path="projects" element={<ProjectsPage />} />
           <Route path="about" element={<AboutPage />} />
+          <Route path="hobbys" element={<HobbysPage />} />
           <Route path="docs" element={<DocsPage />} />
           <Route path="impressum" element={<PrivacyPage />} />
         </Route>

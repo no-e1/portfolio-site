@@ -1,0 +1,10 @@
+.page {
+  font-family: var(--mainfont);
+}
+
+.title {
+  margin: 0 0 0.4rem;
+  font-family: var(--hfontfam);
+  font-size: clamp(2.25rem, 4vw, 3rem);
+  font-weight: 400;
+}

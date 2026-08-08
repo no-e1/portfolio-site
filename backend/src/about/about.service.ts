@@ -4,13 +4,30 @@ import { PrismaService } from '../prisma/prisma.service';
 import type { AboutResponse } from './about-response.type';
 
 export const ABOUT_PAGE_SELECT = {
-  intro: true,
+  id: true,
   sections: {
     orderBy: [{ sortOrder: 'asc' }, { id: 'asc' }],
     select: {
+      id: true,
       heading: true,
       body: true,
-      technologies: true,
+      bulletPoints: {
+        orderBy: [{ sortOrder: 'asc' }, { id: 'asc' }],
+        select: {
+          id: true,
+          heading: true,
+          body: true,
+        },
+      },
+    },
+  },
+  technologies: {
+    orderBy: [{ sortOrder: 'asc' }, { id: 'asc' }],
+    select: {
+      id: true,
+      name: true,
+      context: true,
+      description: true,
     },
   },
 } satisfies Prisma.AboutPageSelect;
@@ -21,25 +38,20 @@ export type AboutPageRecord = Prisma.AboutPageGetPayload<{
 
 export function toAboutResponse(page: AboutPageRecord): AboutResponse {
   return {
-    intro: page.intro ?? '',
     sections: page.sections.map((section) => ({
       heading: section.heading,
       body: section.body,
-      technologies: toTechnologies(section.technologies),
+      bulletPoints: section.bulletPoints.map((bulletPoint) => ({
+        heading: bulletPoint.heading,
+        body: bulletPoint.body,
+      })),
+    })),
+    technologies: page.technologies.map((technology) => ({
+      name: technology.name,
+      context: technology.context,
+      description: technology.description,
     })),
   };
-}
-
-function toTechnologies(value: Prisma.JsonValue): string[] | undefined {
-  if (!Array.isArray(value)) {
-    return undefined;
-  }
-
-  const technologies = value.filter(
-    (technology): technology is string => typeof technology === 'string',
-  );
-
-  return technologies.length > 0 ? technologies : undefined;
 }
 
 @Injectable()
@@ -54,7 +66,7 @@ export class AboutService {
     });
 
     if (!page) {
-      throw new NotFoundException('Der Über-mich-Inhalt ist nicht verfügbar.');
+      throw new NotFoundException('Über-mich-Inhalt ist nicht verfügbar.');
     }
 
     return toAboutResponse(page);

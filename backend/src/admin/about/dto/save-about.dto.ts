@@ -3,7 +3,6 @@ import {
   ArrayMaxSize,
   IsArray,
   IsNotEmpty,
-  IsOptional,
   IsString,
   MaxLength,
   ValidateNested,
@@ -13,13 +12,18 @@ function trimString(value: unknown): unknown {
   return typeof value === 'string' ? value.trim() : value;
 }
 
-function trimStringArray(value: unknown): unknown {
-  if (!Array.isArray(value)) {
-    return value;
-  }
+export class SaveAboutBulletPointDto {
+  @Transform(({ value }) => trimString(value))
+  @IsString()
+  @IsNotEmpty()
+  @MaxLength(160)
+  heading!: string;
 
-  const items: unknown[] = value;
-  return items.map((item) => trimString(item));
+  @Transform(({ value }) => trimString(value))
+  @IsString()
+  @IsNotEmpty()
+  @MaxLength(10000)
+  body!: string;
 }
 
 export class SaveAboutSectionDto {
@@ -29,30 +33,49 @@ export class SaveAboutSectionDto {
   @MaxLength(160)
   heading!: string;
 
+  @Transform(({ value }) => trimString(value))
   @IsString()
   @IsNotEmpty()
   @MaxLength(50000)
   body!: string;
 
-  @IsOptional()
   @IsArray()
-  @ArrayMaxSize(100)
-  @Transform(({ value }) => trimStringArray(value as unknown))
-  @IsString({ each: true })
-  @IsNotEmpty({ each: true })
-  @MaxLength(100, { each: true })
-  technologies?: string[];
+  @ArrayMaxSize(3)
+  @ValidateNested({ each: true })
+  @Type(() => SaveAboutBulletPointDto)
+  bulletPoints!: SaveAboutBulletPointDto[];
+}
+
+export class SaveAboutTechnologyDto {
+  @Transform(({ value }) => trimString(value))
+  @IsString()
+  @IsNotEmpty()
+  @MaxLength(160)
+  name!: string;
+
+  @Transform(({ value }) => trimString(value))
+  @IsString()
+  @IsNotEmpty()
+  @MaxLength(160)
+  context!: string;
+
+  @Transform(({ value }) => trimString(value))
+  @IsString()
+  @IsNotEmpty()
+  @MaxLength(50000)
+  description!: string;
 }
 
 export class SaveAboutDto {
-  @IsString()
-  @IsNotEmpty()
-  @MaxLength(10000)
-  intro!: string;
-
   @IsArray()
   @ArrayMaxSize(30)
   @ValidateNested({ each: true })
   @Type(() => SaveAboutSectionDto)
   sections!: SaveAboutSectionDto[];
+
+  @IsArray()
+  @ArrayMaxSize(100)
+  @ValidateNested({ each: true })
+  @Type(() => SaveAboutTechnologyDto)
+  technologies!: SaveAboutTechnologyDto[];
 }

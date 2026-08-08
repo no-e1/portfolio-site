@@ -109,22 +109,47 @@ model ProjectLink {
 }
 
 model AboutPage {
-  id          Int            @id @default(autoincrement())
-  title       String         @db.VarChar(160)
-  intro       String?        @db.Text
-  isPublished Boolean        @default(false)
-  createdAt   DateTime       @default(now())
-  updatedAt   DateTime       @updatedAt
-  sections    AboutSection[]
+  id           Int               @id @default(autoincrement())
+  title        String            @db.VarChar(160)
+  isPublished  Boolean           @default(false)
+  createdAt    DateTime          @default(now())
+  updatedAt    DateTime          @updatedAt
+  sections     AboutSection[]
+  technologies AboutTechnology[]
 }
 
 model AboutSection {
-  id           Int    @id @default(autoincrement())
+  id           Int                @id @default(autoincrement())
   aboutPageId  Int
-  heading      String @db.VarChar(160)
-  body         String @db.LongText
-  technologies Json?
-  sortOrder    Int    @default(0)
+  heading      String             @db.VarChar(160)
+  body         String             @db.LongText
+  sortOrder    Int                @default(0)
+  bulletPoints AboutBulletPoint[]
+
+  aboutPage AboutPage @relation(fields: [aboutPageId], references: [id], onDelete: Cascade)
+
+  @@index([aboutPageId, sortOrder])
+}
+
+model AboutBulletPoint {
+  id             Int    @id @default(autoincrement())
+  aboutSectionId Int
+  heading        String @db.VarChar(160)
+  body           String @db.LongText
+  sortOrder      Int    @default(0)
+
+  aboutSection AboutSection @relation(fields: [aboutSectionId], references: [id], onDelete: Cascade)
+
+  @@index([aboutSectionId, sortOrder])
+}
+
+model AboutTechnology {
+  id          Int    @id @default(autoincrement())
+  aboutPageId Int
+  name        String @db.VarChar(160)
+  context     String @db.VarChar(160)
+  description String @db.LongText
+  sortOrder   Int    @default(0)
 
   aboutPage AboutPage @relation(fields: [aboutPageId], references: [id], onDelete: Cascade)
 

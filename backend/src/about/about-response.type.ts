@@ -1,10 +1,21 @@
+export type AboutBulletPointResponse = {
+  heading: string;
+  body: string;
+};
+
 export type AboutSectionResponse = {
   heading: string;
   body: string;
-  technologies?: string[];
+  bulletPoints: AboutBulletPointResponse[];
+};
+
+export type AboutTechnologyResponse = {
+  name: string;
+  context: string;
+  description: string;
 };
 
 export type AboutResponse = {
-  intro: string;
   sections: AboutSectionResponse[];
+  technologies: AboutTechnologyResponse[];
 };

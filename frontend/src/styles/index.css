@@ -38,6 +38,17 @@ header {
   margin-bottom: 30px;
 }
 
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  margin: 0;
+  padding: 30px 0;
+  background: rgba(11, 11, 23, 0.82);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+}
+
 .nav-link {
   margin-right: 35px;
   color: var(--light-text);

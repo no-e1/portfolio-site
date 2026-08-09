@@ -1,11 +1,162 @@
 .content {
-  max-width: 620px;
-  color: var(--light-text);
+  width: 100%;
   font-family: var(--mainfont);
+}
+
+.introduction {
+  max-width: 620px;
+  margin: 0;
+  color: var(--light-text);
   font-size: 1rem;
   line-height: 1.75;
 }
 
-.content p {
+.hobbyList {
+  margin: 3.5rem 0 0;
+  padding: 0;
+  border-top: 1px solid var(--border);
+  list-style: none;
+}
+
+.hobby {
+  padding: 2rem 0;
+  display: grid;
+  grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr);
+  align-items: center;
+  gap: clamp(1.5rem, 5vw, 3rem);
+  border-bottom: 1px solid var(--border);
+}
+
+.hobby:nth-child(even) .imageFrame {
+  grid-column: 2;
+}
+
+.hobby:nth-child(even) .details {
+  grid-row: 1;
+  grid-column: 1;
+}
+
+.imageFrame {
+  aspect-ratio: 3 / 2;
+  min-width: 0;
+  overflow: hidden;
+  border: 1px solid rgba(166, 171, 179, 0.32);
+  border-radius: 10px;
+  background: var(--surface);
+}
+
+.imageFrame img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+  transition: transform 300ms ease;
+}
+
+.hobby:hover .imageFrame img {
+  transform: scale(1.025);
+}
+
+.details {
+  min-width: 0;
+}
+
+.number {
+  margin: 0 0 0.65rem;
+  color: var(--accent);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+}
+
+.details h2 {
   margin: 0;
+  color: var(--text);
+  font-size: clamp(1.25rem, 3vw, 1.55rem);
+  line-height: 1.25;
+}
+
+.description {
+  margin: 0.85rem 0 0;
+  color: var(--light-text);
+  font-size: 0.92rem;
+  line-height: 1.7;
+}
+
+.tags {
+  margin: 1.2rem 0 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  list-style: none;
+}
+
+.tags li {
+  padding: 0.25rem 0.55rem;
+  border-radius: 999px;
+  background: rgba(166, 171, 179, 0.14);
+  color: var(--text);
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+@media (max-width: 650px) {
+  .hobbyList {
+    margin-top: 2.75rem;
+  }
+
+  .hobby {
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
+  }
+
+  .hobby:nth-child(even) .imageFrame,
+  .hobby:nth-child(even) .details {
+    grid-row: auto;
+    grid-column: auto;
+  }
+
+  .details {
+    padding: 0 0.25rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .imageFrame img {
+    transition: none;
+  }
+
+  .hobby:hover .imageFrame img {
+    transform: none;
+  }
+}
+
+.status {
+  margin: 2.5rem 0;
+  display: grid;
+  justify-items: center;
+  gap: 1rem;
+  color: var(--light-text);
+  text-align: center;
+}
+
+.status p,
+p.status {
+  margin: 0;
+}
+
+.status button {
+  padding: 0.65rem 0.8rem;
+  border: 1px solid var(--text);
+  border-radius: 8px;
+  background: var(--text);
+  color: var(--bg);
+  cursor: pointer;
+  font-weight: 700;
+}
+
+.status button:hover {
+  border-color: var(--light-text);
+  background: var(--light-text);
 }

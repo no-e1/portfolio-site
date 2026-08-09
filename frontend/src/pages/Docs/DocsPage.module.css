@@ -1,6 +1,30 @@
+.page {
+  min-width: 0;
+}
+
 .title {
   margin: 0 0 0.4rem;
   font-family: var(--hfontfam);
   font-size: clamp(2.25rem, 4vw, 3rem);
   font-weight: 400;
+}
+
+@media (max-width: 700px) {
+  .page {
+    padding-right: 1rem;
+    padding-left: 1rem;
+  }
+}
+
+@media (max-width: 650px) {
+  .title {
+    line-height: 1.12;
+  }
+}
+
+@media (max-width: 380px) {
+  .page {
+    padding-right: 0.85rem;
+    padding-left: 0.85rem;
+  }
 }

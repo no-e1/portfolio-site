@@ -106,6 +106,175 @@ header {
   outline-offset: 4px;
 }
 
+.mobile-menu-toggle,
+.mobile-menu,
+.mobile-menu-backdrop {
+  display: none;
+}
+
+@media (max-width: 700px) {
+  .site-header {
+    box-sizing: border-box;
+    min-height: 4.75rem;
+    padding: 1.15rem 1rem;
+  }
+
+  .site-header .desktop-navigation,
+  .desktop-logout {
+    display: none;
+  }
+
+  .mobile-menu-toggle {
+    box-sizing: border-box;
+    width: 2.5rem;
+    height: 2.5rem;
+    margin-left: auto;
+    padding: 0.55rem;
+    display: block;
+    position: relative;
+    z-index: 3;
+    border: 1px solid rgba(166, 171, 179, 0.45);
+    border-radius: 7px;
+    background: transparent;
+    color: var(--light-text);
+    cursor: pointer;
+  }
+
+  .mobile-menu-toggle span {
+    width: 1.25rem;
+    height: 2px;
+    display: block;
+    position: absolute;
+    left: 50%;
+    border-radius: 99px;
+    background: currentColor;
+    transform: translateX(-50%);
+    transform-origin: center;
+    transition:
+      opacity 160ms ease,
+      top 160ms ease,
+      transform 160ms ease;
+  }
+
+  .mobile-menu-toggle span:first-child {
+    top: 0.7rem;
+  }
+
+  .mobile-menu-toggle span:nth-child(2) {
+    top: calc(50% - 1px);
+  }
+
+  .mobile-menu-toggle span:last-child {
+    top: calc(100% - 0.7rem - 2px);
+  }
+
+  .mobile-menu-toggle:hover {
+    color: var(--text);
+    border-color: var(--light-text);
+  }
+
+  .mobile-menu-toggle:focus-visible {
+    outline: 2px solid var(--text);
+    outline-offset: 3px;
+  }
+
+  .mobile-menu-toggle-open span:first-child {
+    top: 50%;
+    transform: translate(-50%, -50%) rotate(45deg);
+  }
+
+  .mobile-menu-toggle-open span:nth-child(2) {
+    opacity: 0;
+  }
+
+  .mobile-menu-toggle-open span:last-child {
+    top: 50%;
+    transform: translate(-50%, -50%) rotate(-45deg);
+  }
+
+  .site-header-mobile-open {
+    background: var(--bg);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+
+  .mobile-menu-backdrop {
+    padding: 0;
+    display: block;
+    position: fixed;
+    z-index: 1;
+    inset: 0;
+    border: 0;
+    background: rgba(4, 4, 10, 0.6);
+    cursor: default;
+  }
+
+  .mobile-menu {
+    box-sizing: border-box;
+    width: 100%;
+    padding: 5.25rem 1.25rem 1.25rem;
+    display: block;
+    position: fixed;
+    z-index: 2;
+    top: 0;
+    right: 0;
+    left: 0;
+    overflow-y: auto;
+    border-bottom: 1px solid rgba(166, 171, 179, 0.3);
+    background: rgba(11, 11, 23, 0.97);
+    box-shadow: 0 1rem 2.5rem rgba(0, 0, 0, 0.3);
+    -webkit-backdrop-filter: blur(14px);
+    backdrop-filter: blur(14px);
+  }
+
+  .site-header .mobile-navigation {
+    width: min(100%, 750px);
+    margin: 0 auto;
+    display: grid;
+    align-items: stretch;
+  }
+
+  .mobile-nav-link,
+  .mobile-logout {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0.7rem 0.25rem;
+    font-size: 1.15rem;
+    text-align: left;
+  }
+
+  .mobile-nav-link {
+    width: 100%;
+    min-height: 3.25rem;
+    justify-content: space-between;
+    border-bottom: 1px solid rgba(166, 171, 179, 0.18);
+  }
+
+  .mobile-menu-footer {
+    width: min(100%, 750px);
+    margin: 1rem auto 0;
+    display: flex;
+    justify-content: flex-end;
+  }
+
+  .mobile-logout {
+    width: auto;
+    min-height: auto;
+    padding: 0.45rem 0.25rem;
+    color: var(--light-text);
+  }
+
+  .mobile-logout:hover {
+    color: var(--text);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mobile-menu-toggle span {
+    transition: none;
+  }
+}
+
 /* Footer */
 footer {
   margin-top: 100px;
@@ -138,4 +307,34 @@ footer {
 
 #footerTextLinkPrivacy:hover {
   color: var(--text);
+}
+
+@media (max-width: 520px) {
+  footer {
+    box-sizing: border-box;
+    margin-top: 4rem;
+    margin-bottom: 2.5rem;
+    padding-right: 1rem;
+    padding-left: 1rem;
+    align-items: center;
+    justify-content: space-between;
+    flex-direction: row;
+    gap: 0.75rem;
+  }
+
+  .footerText {
+    margin: 0;
+    font-size: 0.8rem;
+    white-space: nowrap;
+  }
+
+  footer > div[class] {
+    margin-left: auto;
+    flex-shrink: 0;
+    gap: 0.75rem;
+  }
+
+  footer > div[class] a {
+    font-size: 1.1rem;
+  }
 }

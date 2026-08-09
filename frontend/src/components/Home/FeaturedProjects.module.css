@@ -70,7 +70,26 @@
 }
 
 @media (max-width: 650px) {
+  .featured {
+    margin-top: 3.25rem;
+  }
+
+  .title {
+    margin-bottom: 1rem;
+  }
+
   .grid {
     grid-template-columns: 1fr;
+    gap: 1.1rem;
+  }
+
+  .allProjects {
+    margin-top: 1rem;
+  }
+}
+
+@media (max-width: 380px) {
+  .featured {
+    margin-top: 2.75rem;
   }
 }

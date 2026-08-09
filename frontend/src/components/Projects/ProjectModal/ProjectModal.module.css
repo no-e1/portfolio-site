@@ -1,4 +1,5 @@
 .backdrop {
+  box-sizing: border-box;
   position: fixed;
   inset: 0;
   background: rgba(0, 0, 0, 0.600);
@@ -10,6 +11,7 @@
 }
 
 .modal {
+  box-sizing: border-box;
   width: min(900px, 100%);
   max-height: 85vh;
   overflow-y: auto;
@@ -134,6 +136,7 @@
 
 .title {
   margin: 0;
+  overflow-wrap: anywhere;
 }
 
 .links {
@@ -183,6 +186,46 @@
 }
 
 @media (max-width: 700px) {
+  .backdrop {
+    padding: 1rem;
+    align-items: flex-start;
+  }
+
+  .modal {
+    max-height: calc(100svh - 2rem);
+    padding: 1.25rem;
+    border-radius: 12px;
+  }
+
+  .closeButton {
+    top: 0.65rem;
+    right: 0.65rem;
+    width: 2.5rem;
+    height: 2.5rem;
+  }
+
+  .gallery {
+    margin-top: 2.25rem;
+  }
+
+  .galleryImage {
+    max-height: 42svh;
+  }
+
+  .galleryButton {
+    width: 2.5rem;
+    height: 2.5rem;
+    font-size: 2.25rem;
+  }
+
+  .galleryButton:first-of-type {
+    left: 0.25rem;
+  }
+
+  .galleryButton:nth-of-type(2) {
+    right: 0.25rem;
+  }
+
   .projectHeader {
     flex-direction: column;
     gap: 1rem;
@@ -190,5 +233,16 @@
 
   .links {
     justify-content: flex-start;
+  }
+}
+
+@media (max-width: 380px) {
+  .backdrop {
+    padding: 0.5rem;
+  }
+
+  .modal {
+    max-height: calc(100svh - 1rem);
+    padding: 1rem;
   }
 }

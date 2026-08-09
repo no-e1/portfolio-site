@@ -109,7 +109,7 @@ export function HobbysContent({ onUnauthorized }: HobbysContentProps) {
       )}
 
       <ol className={styles.hobbyList}>
-        {content.sections.map((hobby, index) => (
+        {content.sections.map((hobby) => (
           <li className={styles.hobby} key={hobby.id}>
             <div className={styles.imageFrame}>
               <img
@@ -119,9 +119,6 @@ export function HobbysContent({ onUnauthorized }: HobbysContentProps) {
             </div>
 
             <div className={styles.details}>
-              <p className={styles.number} aria-hidden="true">
-                {String(index + 1).padStart(2, "0")}
-              </p>
               <h2>{hobby.title}</h2>
               <p className={styles.description}>{hobby.description}</p>
               {hobby.tags.length > 0 && (

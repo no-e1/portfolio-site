@@ -21,3 +21,23 @@
     font-size: 1rem;
     line-height: 1.7;
 }
+
+@media (max-width: 650px) {
+    .mainheader {
+        font-size: clamp(2.2rem, 11vw, 2.75rem);
+        line-height: 1.12;
+    }
+
+    .subheader {
+        margin: 0.35rem 0 0;
+        font-size: clamp(1rem, 4.5vw, 1.1rem);
+        line-height: 1.4;
+        overflow-wrap: anywhere;
+    }
+
+    .description {
+        margin-top: 1.5rem;
+        font-size: 0.95rem;
+        line-height: 1.65;
+    }
+}

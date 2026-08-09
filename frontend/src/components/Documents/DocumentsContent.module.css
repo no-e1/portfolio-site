@@ -1,4 +1,5 @@
 .content {
+  min-width: 0;
   margin-top: 0;
   display: grid;
   gap: 1.4rem;
@@ -8,7 +9,7 @@
   padding-bottom: 1rem;
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-end;
   gap: 1rem;
   border-bottom: 1px solid rgba(166, 171, 179, 0.25);
 }
@@ -38,6 +39,7 @@
   font-family: var(--hfontfam);
   font-size: 1.45rem;
   font-weight: 400;
+  overflow-wrap: anywhere;
 }
 
 .documentList {
@@ -45,6 +47,8 @@
 }
 
 .documentCard {
+  box-sizing: border-box;
+  width: 100%;
   min-width: 0;
   padding: 1rem;
   display: grid;
@@ -141,6 +145,7 @@
 }
 
 .primaryButton {
+  max-width: 100%;
   border-color: var(--text);
   background: var(--text);
   color: var(--bg);
@@ -231,8 +236,12 @@
 
 @media (max-width: 650px) {
   .toolbar {
-    align-items: flex-start;
-    flex-direction: column;
+    padding-bottom: 0.85rem;
+    align-items: flex-end;
+  }
+
+  .documentGroups {
+    gap: 1.75rem;
   }
 
   .documentCard {
@@ -244,6 +253,10 @@
     height: 3.2rem;
   }
 
+  .metadata {
+    display: none;
+  }
+
   .actions {
     grid-column: 1 / -1;
     justify-content: flex-end;
@@ -253,6 +266,14 @@
 @media (max-width: 420px) {
   .documentCard {
     padding: 0.85rem;
+    gap: 0.85rem;
+  }
+
+  .documentDetails p {
+    overflow: visible;
+    text-overflow: clip;
+    white-space: normal;
+    overflow-wrap: anywhere;
   }
 
   .actions {
@@ -261,5 +282,31 @@
 
   .actions button:first-child {
     flex: 1;
+  }
+}
+
+@media (max-width: 380px) {
+  .documentGroup > h2 {
+    font-size: 1.25rem;
+  }
+
+  .documentCard {
+    padding: 0.75rem;
+    grid-template-columns: 2.45rem minmax(0, 1fr);
+    gap: 0.7rem;
+  }
+
+  .pdfBadge {
+    width: 2.45rem;
+    height: 2.85rem;
+  }
+
+  .actions {
+    gap: 0.4rem;
+  }
+
+  .actions button,
+  .primaryButton {
+    font-size: 0.84rem;
   }
 }

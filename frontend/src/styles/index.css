@@ -6,7 +6,7 @@
   --hfontfam: "Calistoga", monospace, cursive, system-ui ;
   --hfontsize: 3rem;
   --surface: #11111f;
-  --surface-hover: #151526;
+  --surface-hover: rgba(255, 255, 255, 0.012);
   --border: rgba(166, 171, 179, 0.24);
   --accent: #b8c1ff;
 }

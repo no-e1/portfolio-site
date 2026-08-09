@@ -107,6 +107,7 @@ header {
 }
 
 .mobile-menu-toggle,
+.mobile-brand,
 .mobile-menu,
 .mobile-menu-backdrop {
   display: none;
@@ -122,6 +123,28 @@ header {
   .site-header .desktop-navigation,
   .desktop-logout {
     display: none;
+  }
+
+  .mobile-brand {
+    display: inline-flex;
+    position: relative;
+    z-index: 3;
+    align-items: center;
+    color: var(--light-text);
+    font-family: var(--mainfont);
+    font-size: 1rem;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    text-decoration: none;
+  }
+
+  .mobile-brand:hover {
+    color: var(--light-text);
+  }
+
+  .mobile-brand:focus-visible {
+    outline: 2px solid var(--text);
+    outline-offset: 4px;
   }
 
   .mobile-menu-toggle {

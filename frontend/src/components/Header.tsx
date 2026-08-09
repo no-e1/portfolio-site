@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { FaLock } from "react-icons/fa";
-import { NavLink, useNavigate } from "react-router-dom";
+import { Link, NavLink, useNavigate } from "react-router-dom";
 import {
   clearAuthSession,
   getAccessToken,
@@ -96,6 +96,14 @@ export default function Header() {
           logout
         </button>
       )}
+
+      <Link
+        className="mobile-brand"
+        to="/"
+        onClick={() => setIsMobileMenuOpen(false)}
+      >
+        noelkohn.ch
+      </Link>
 
       <button
         className={`mobile-menu-toggle${isMobileMenuOpen ? " mobile-menu-toggle-open" : ""}`}

@@ -156,6 +156,46 @@ model AboutTechnology {
   @@index([aboutPageId, sortOrder])
 }
 
+model HobbyPage {
+  id           Int            @id @default(1)
+  introduction String         @db.Text
+  isPublished  Boolean        @default(true)
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+  sections     HobbySection[]
+}
+
+model HobbySection {
+  id                Int        @id @default(autoincrement())
+  hobbyPageId       Int
+  title             String     @db.VarChar(160)
+  description       String     @db.LongText
+  imageStorageName  String     @unique @db.VarChar(255)
+  imageOriginalName String     @db.VarChar(255)
+  imageMimeType     String     @db.VarChar(100)
+  imageSize         Int
+  sortOrder         Int        @default(0)
+  createdAt         DateTime   @default(now())
+  updatedAt         DateTime   @updatedAt
+  tags              HobbyTag[]
+
+  hobbyPage HobbyPage @relation(fields: [hobbyPageId], references: [id], onDelete: Cascade)
+
+  @@index([hobbyPageId, sortOrder])
+}
+
+model HobbyTag {
+  id             Int    @id @default(autoincrement())
+  hobbySectionId Int
+  label          String @db.VarChar(60)
+  sortOrder      Int    @default(0)
+
+  hobbySection HobbySection @relation(fields: [hobbySectionId], references: [id], onDelete: Cascade)
+
+  @@unique([hobbySectionId, label])
+  @@index([hobbySectionId, sortOrder])
+}
+
 model Document {
   id          Int      @id @default(autoincrement())
   slug        String   @unique @db.VarChar(191)

@@ -5,6 +5,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
 import { DocsModule } from './docs/docs.module';
+import { HobbiesModule } from './hobbies/hobbies.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { ProjectsModule } from './projects/projects.module';
 
@@ -15,6 +16,7 @@ import { ProjectsModule } from './projects/projects.module';
     AuthModule,
     ProjectsModule,
     AboutModule,
+    HobbiesModule,
     DocsModule,
   ],
   controllers: [AppController],

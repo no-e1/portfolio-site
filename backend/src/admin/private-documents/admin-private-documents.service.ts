@@ -17,10 +17,11 @@ import { PrismaService } from '../../prisma/prisma.service';
 const PDF_SIGNATURE = Buffer.from('%PDF-');
 const STORED_PDF_FILE_NAME = /^[0-9a-f-]{36}\.pdf$/;
 const DOCUMENT_TYPE_ORDER: Record<PrivateDocumentType, number> = {
-  [PrivateDocumentType.gibbCertificate]: 0,
-  [PrivateDocumentType.bwdCertificate]: 1,
-  [PrivateDocumentType.secondarySchoolCertificate]: 2,
-  [PrivateDocumentType.uekCompetenceRecord]: 3,
+  [PrivateDocumentType.curriculumVitae]: 0,
+  [PrivateDocumentType.gibbCertificate]: 1,
+  [PrivateDocumentType.bwdCertificate]: 2,
+  [PrivateDocumentType.secondarySchoolCertificate]: 3,
+  [PrivateDocumentType.uekCompetenceRecord]: 4,
 };
 
 export type UploadedPrivateDocumentFile = {

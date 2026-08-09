@@ -1,4 +1,5 @@
 export const PRIVATE_DOCUMENT_TYPES = [
+  "curriculumVitae",
   "gibbCertificate",
   "bwdCertificate",
   "secondarySchoolCertificate",
@@ -11,6 +12,7 @@ export const PRIVATE_DOCUMENT_TYPE_LABELS: Record<
   PrivateDocumentType,
   string
 > = {
+  curriculumVitae: "Lebenslauf",
   gibbCertificate: "GIBB-Zeugnis",
   bwdCertificate: "BWD-Zeugnis",
   secondarySchoolCertificate: "Oberstufenzeugnis",

@@ -25,6 +25,7 @@ enum ProjectLinkType {
 }
 
 enum PrivateDocumentType {
+  curriculumVitae
   gibbCertificate
   bwdCertificate
   secondarySchoolCertificate

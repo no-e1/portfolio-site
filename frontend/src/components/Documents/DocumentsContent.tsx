@@ -289,6 +289,9 @@ export function DocumentsContent({
   const certificateDocuments = CERTIFICATE_TYPES.flatMap((type) =>
     documents.filter((document) => document.type === type),
   );
+  const curriculumVitaeDocuments = documents.filter(
+    (document) => document.type === "curriculumVitae",
+  );
   const competenceRecords = documents
     .filter((document) => document.type === "uekCompetenceRecord")
     .sort((first, second) => first.id - second.id);
@@ -320,6 +323,13 @@ export function DocumentsContent({
         <p className={styles.empty}>Keine Dokumente vorhanden.</p>
       ) : (
         <div className={styles.documentGroups}>
+          {curriculumVitaeDocuments.length > 0 && (
+            <section className={styles.documentGroup}>
+              <h2>Lebenslauf</h2>
+              {renderDocumentList(curriculumVitaeDocuments)}
+            </section>
+          )}
+
           {certificateDocuments.length > 0 && (
             <section className={styles.documentGroup}>
               <h2>Zeugnisse</h2>

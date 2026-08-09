@@ -1,6 +1,7 @@
 import { apiBlobRequest, apiRequest } from "./api-client";
 
 export type ProtectedDocumentType =
+  | "curriculumVitae"
   | "gibbCertificate"
   | "bwdCertificate"
   | "secondarySchoolCertificate"

@@ -112,8 +112,8 @@ export function PrivateDocumentUploader({
               ))}
             </select>
             <small>
-              Certificates can only be uploaded once. UEK competence records
-              are unlimited.
+              The CV and certificates can only be uploaded once. UEK
+              competence records are unlimited.
             </small>
           </label>
 

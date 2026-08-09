@@ -4,6 +4,10 @@
 
 .pageHeader {
   margin-bottom: 3rem;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1.5rem;
 }
 
 .pageHeader h1 {
@@ -11,4 +15,251 @@
   font-family: var(--hfontfam);
   font-size: clamp(2.25rem, 4vw, 3rem);
   font-weight: 400;
+}
+
+.pageHeader p {
+  margin: 0;
+  color: var(--light-text);
+}
+
+.form,
+.sectionList,
+.sectionCard,
+.fields {
+  display: grid;
+}
+
+.form {
+  gap: 2rem;
+}
+
+.sectionList,
+.fields {
+  gap: 1rem;
+}
+
+.introductionField,
+.field,
+.fileField {
+  display: grid;
+  gap: 0.45rem;
+  color: var(--light-text);
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.introductionField {
+  padding: 1.25rem;
+  border: 1px solid rgba(166, 171, 179, 0.5);
+  border-radius: 12px;
+  background: var(--surface);
+}
+
+.introductionField textarea,
+.field input,
+.field textarea {
+  width: 100%;
+  min-width: 0;
+  padding: 0.8rem 0.9rem;
+  border: 1px solid rgba(166, 171, 179, 0.55);
+  border-radius: 8px;
+  outline: none;
+  background: var(--bg);
+  color: var(--text);
+  font: inherit;
+  font-weight: 400;
+}
+
+.introductionField textarea,
+.field textarea {
+  resize: vertical;
+  line-height: 1.5;
+}
+
+.introductionField textarea:focus,
+.field input:focus,
+.field textarea:focus {
+  border-color: var(--text);
+  box-shadow: 0 0 0 3px rgba(244, 244, 245, 0.12);
+}
+
+.field small,
+.fileField small {
+  color: var(--light-text);
+  font-size: 0.75rem;
+  font-weight: 400;
+  overflow-wrap: anywhere;
+}
+
+.sectionCard {
+  min-width: 0;
+  margin: 0;
+  padding: 1.25rem;
+  gap: 1rem;
+  border: 1px solid rgba(166, 171, 179, 0.5);
+  border-radius: 12px;
+  background: var(--surface);
+}
+
+.sectionCard legend {
+  padding: 0 0.45rem;
+  font-weight: 700;
+}
+
+.sectionEditor {
+  display: grid;
+  grid-template-columns: minmax(180px, 0.42fr) minmax(0, 1fr);
+  align-items: start;
+  gap: 1.25rem;
+}
+
+.imagePreview {
+  aspect-ratio: 3 / 2;
+  margin-bottom: 0.8rem;
+  overflow: hidden;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(166, 171, 179, 0.4);
+  border-radius: 9px;
+  background: var(--bg);
+}
+
+.imagePreview img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+}
+
+.imageStatus {
+  margin: 0;
+  padding: 1rem;
+  color: var(--light-text);
+  font-size: 0.8rem;
+  text-align: center;
+}
+
+.fileField input {
+  min-width: 0;
+  color: var(--light-text);
+  font-size: 0.8rem;
+  font-weight: 400;
+}
+
+.pageHeader button,
+.cardActions button,
+.primaryButton {
+  padding: 0.6rem 0.75rem;
+  border: 1px solid var(--light-text);
+  border-radius: 8px;
+  background: transparent;
+  color: var(--text);
+  cursor: pointer;
+  font-weight: 700;
+}
+
+.addButton,
+.primaryButton {
+  border-color: var(--text) !important;
+  background: var(--text) !important;
+  color: var(--bg) !important;
+}
+
+.pageHeader button:hover:not(:disabled),
+.cardActions button:hover:not(:disabled) {
+  background: rgba(244, 244, 245, 0.1);
+}
+
+.addButton:hover:not(:disabled),
+.primaryButton:hover:not(:disabled) {
+  border-color: var(--light-text) !important;
+  background: var(--light-text) !important;
+}
+
+.cardActions,
+.formActions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.75rem;
+}
+
+.cardActions .dangerButton {
+  border-color: var(--error);
+  color: var(--error);
+}
+
+.cardActions .dangerButton:hover:not(:disabled) {
+  background: var(--error);
+  color: #260909;
+}
+
+button:disabled,
+input:disabled,
+textarea:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.empty,
+.status {
+  color: var(--light-text);
+}
+
+.empty {
+  margin: 0;
+  padding: 1rem;
+  border: 1px dashed rgba(166, 171, 179, 0.35);
+  border-radius: 10px;
+}
+
+.status {
+  margin: 3rem 0;
+  display: grid;
+  justify-items: center;
+  gap: 1rem;
+  text-align: center;
+}
+
+.status p {
+  margin: 0;
+}
+
+.error,
+.success {
+  margin: 0;
+  padding: 0.8rem 1rem;
+  border: 1px solid;
+  border-radius: 8px;
+}
+
+.error {
+  border-color: var(--error);
+  color: var(--error);
+}
+
+.success {
+  border-color: #70d69d;
+  color: #70d69d;
+}
+
+@media (max-width: 650px) {
+  .pageHeader,
+  .sectionEditor {
+    grid-template-columns: 1fr;
+  }
+
+  .pageHeader {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .sectionCard {
+    padding: 1rem;
+  }
+
+  .cardActions,
+  .formActions {
+    flex-wrap: wrap;
+  }
 }

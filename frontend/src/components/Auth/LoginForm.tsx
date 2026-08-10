@@ -54,7 +54,7 @@ export function LoginForm({ onLogin }: LoginFormProps) {
     <section className={styles.card} aria-labelledby="login-title">
       <div className={styles.intro}>
         <h2 id="login-title" className={styles.title}>
-          login
+          Login
         </h2>
         <p className={styles.description}>
           Melden Sie sich an, um auf diese Inhalte zuzugreifen.
@@ -63,7 +63,7 @@ export function LoginForm({ onLogin }: LoginFormProps) {
 
       <form className={styles.form} onSubmit={handleSubmit}>
         <label className={styles.field}>
-          <span className={styles.label}>username</span>
+          <span className={styles.label}>Benutzername</span>
           <input
             className={styles.input}
             type="text"
@@ -78,7 +78,7 @@ export function LoginForm({ onLogin }: LoginFormProps) {
         </label>
 
         <label className={styles.field}>
-          <span className={styles.label}>password</span>
+          <span className={styles.label}>Passwort</span>
           <input
             className={styles.input}
             type="password"

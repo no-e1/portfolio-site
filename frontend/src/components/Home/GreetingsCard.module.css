@@ -2,13 +2,6 @@
     font-family: var(--mainfont);
 }
 
-.mainheader {
-    margin: 0 0 0.1rem;
-    font-family: var(--hfontfam);
-    font-size: clamp(2.25rem, 4vw, 3rem);
-    font-weight: 400;
-}
-
 .subheader {
     font-size: 1.2rem;
     margin-top: -0.7rem;
@@ -23,11 +16,6 @@
 }
 
 @media (max-width: 650px) {
-    .mainheader {
-        font-size: clamp(2.2rem, 11vw, 2.75rem);
-        line-height: 1.12;
-    }
-
     .subheader {
         margin: 0.35rem 0 0;
         font-size: clamp(1rem, 4.5vw, 1.1rem);

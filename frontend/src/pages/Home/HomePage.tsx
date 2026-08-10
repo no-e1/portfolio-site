@@ -4,7 +4,8 @@ import styles from "./HomePage.module.css"
 export function HomePage() {
     return (
         <main className={styles.page}>
-                <GreetingsCard />
+            <h1 className={styles.title}>Noel Kohn</h1>
+            <GreetingsCard />
         </main>
     )
 }

@@ -1,5 +1,5 @@
 .page {
-  margin-top: clamp(2.5rem, 4vh, 7rem);
+  margin-top: 0;
 }
 
 .pageHeader {
@@ -264,10 +264,6 @@
 }
 
 @media (max-width: 650px) {
-  .page {
-    margin-top: 2rem;
-  }
-
   .pageHeader {
     margin-bottom: 2rem;
     flex-direction: column;

@@ -1,5 +1,5 @@
 .page {
-  margin-top: clamp(2.5rem, 4vh, 7rem);
+  margin-top: 0;
 }
 
 .pageHeader {

@@ -1,6 +1,6 @@
-import { useEffect, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { FaLock } from "react-icons/fa";
-import { Link, NavLink, useNavigate } from "react-router-dom";
+import { Link, NavLink, useLocation, useNavigate } from "react-router-dom";
 import {
   clearAuthSession,
   getAccessToken,
@@ -8,15 +8,18 @@ import {
 } from "../auth/auth-session";
 
 const navItems = [
-  { to: "/", label: "home", end: true, requiresAuth: false },
-  { to: "/projects", label: "projekte", requiresAuth: false },
-  { to: "/about", label: "über mich", requiresAuth: true },
-  { to: "/hobbys", label: "hobbys", requiresAuth: true },
-  { to: "/docs", label: "dokumente", requiresAuth: true },
+  { to: "/", label: "Home", end: true, requiresAuth: false },
+  { to: "/projects", label: "Projekte", requiresAuth: false },
+  { to: "/about", label: "Über mich", requiresAuth: true },
+  { to: "/hobbys", label: "Hobbys", requiresAuth: true },
+  { to: "/docs", label: "Dokumente", requiresAuth: true },
 ];
 
 export default function Header() {
+  const location = useLocation();
   const navigate = useNavigate();
+  const desktopNavigationRef = useRef<HTMLElement>(null);
+  const desktopIndicatorRef = useRef<HTMLSpanElement>(null);
   const [isAuthenticated, setIsAuthenticated] = useState(
     () => getAccessToken() !== null,
   );
@@ -25,6 +28,41 @@ export default function Header() {
   useEffect(() => subscribeToAuthSession(() => {
     setIsAuthenticated(getAccessToken() !== null);
   }), []);
+
+  useLayoutEffect(() => {
+    const navigation = desktopNavigationRef.current;
+    const indicator = desktopIndicatorRef.current;
+
+    if (!navigation || !indicator) {
+      return;
+    }
+
+    const desktopNavigation = navigation;
+    const desktopIndicator = indicator;
+
+    function updateIndicator() {
+      const activeLink = desktopNavigation.querySelector<HTMLElement>(
+        ".nav-link-active",
+      );
+
+      if (!activeLink) {
+        desktopIndicator.style.opacity = "0";
+        return;
+      }
+
+      desktopIndicator.style.width = `${activeLink.offsetWidth}px`;
+      desktopIndicator.style.height = `${activeLink.offsetHeight}px`;
+      desktopIndicator.style.transform = `translate(${activeLink.offsetLeft}px, ${activeLink.offsetTop}px)`;
+      desktopIndicator.style.opacity = "1";
+    }
+
+    updateIndicator();
+
+    const resizeObserver = new ResizeObserver(updateIndicator);
+    resizeObserver.observe(desktopNavigation);
+
+    return () => resizeObserver.disconnect();
+  }, [isAuthenticated, location.pathname]);
 
   useEffect(() => {
     if (!isMobileMenuOpen) {
@@ -71,10 +109,10 @@ export default function Header() {
             : baseClassName;
         }}
       >
-        <span>{item.label}</span>
         {item.requiresAuth && !isAuthenticated && (
           <FaLock className="nav-lock-icon" aria-hidden="true" />
         )}
+        <span>{item.label}</span>
       </NavLink>
     ));
   }
@@ -83,7 +121,16 @@ export default function Header() {
     <header
       className={`site-header${isMobileMenuOpen ? " site-header-mobile-open" : ""}`}
     >
-      <nav className="desktop-navigation" aria-label="Hauptnavigation">
+      <nav
+        className="desktop-navigation"
+        aria-label="Hauptnavigation"
+        ref={desktopNavigationRef}
+      >
+        <span
+          className="desktop-nav-indicator"
+          aria-hidden="true"
+          ref={desktopIndicatorRef}
+        />
         {renderNavLinks()}
       </nav>
 

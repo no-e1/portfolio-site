@@ -13,7 +13,11 @@ export function ProjectsPage() {
 
   return (
     <section className={styles.page}>
-      <h1 className={styles.title}>meine Projekte</h1>
+      <h1 className={styles.title}>Projekte</h1>
+      <p className={styles.introduction}>
+        Eine Übersicht über meine Informatikprojekte und die Technologien, die
+        dabei zum Einsatz kamen.
+      </p>
 
       <div className={styles.projectGrid}>
         {projects.map((project) => (

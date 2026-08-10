@@ -1,6 +1,7 @@
 .content {
   width: 100%;
   min-width: 0;
+  margin-top: 2.5rem;
 }
 
 .profile {
@@ -81,10 +82,11 @@
 }
 
 .experienceHeader > p:last-child {
-  margin: 1rem 0 0;
+  max-width: 620px;
+  margin: 0.4rem 0 0;
   color: var(--light-text);
-  font-size: 0.95rem;
-  line-height: 1.7;
+  font-size: 1rem;
+  line-height: 1.75;
 }
 
 .technologyList {
@@ -177,6 +179,10 @@
 }
 
 @media (max-width: 650px) {
+  .content {
+    margin-top: 2rem;
+  }
+
   .profile {
     padding: 1.5rem 0;
     grid-template-columns: 1fr;
@@ -203,7 +209,9 @@
   }
 
   .experienceHeader > p:last-child {
-    margin-top: 0.75rem;
+    margin-top: 0.4rem;
+    font-size: 0.95rem;
+    line-height: 1.65;
   }
 
   .technology {

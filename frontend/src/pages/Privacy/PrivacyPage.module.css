@@ -1,5 +1,8 @@
 .page {
+  box-sizing: border-box;
+  width: 100%;
   max-width: 680px;
+  min-width: 0;
   font-family: var(--mainfont);
 }
 
@@ -23,6 +26,7 @@
 }
 
 .content {
+  min-width: 0;
   display: grid;
   gap: 3rem;
 }
@@ -63,6 +67,7 @@
   font-size: 0.9rem;
   text-decoration-color: rgba(244, 244, 245, 0.42);
   text-underline-offset: 0.2rem;
+  overflow-wrap: anywhere;
 }
 
 .rightsNotice {
@@ -96,6 +101,7 @@
   color: var(--text);
   font-size: 0.95rem;
   font-weight: 600;
+  overflow-wrap: anywhere;
 }
 
 .processingList p {
@@ -103,6 +109,7 @@
   color: var(--light-text);
   font-size: 0.92rem;
   line-height: 1.75;
+  overflow-wrap: anywhere;
 }
 
 .processingList code {
@@ -120,7 +127,19 @@
   outline-offset: 3px;
 }
 
+@media (max-width: 700px) {
+  .page {
+    padding-right: 1rem;
+    padding-left: 1rem;
+  }
+}
+
 @media (max-width: 520px) {
+  .title {
+    font-size: clamp(2.15rem, 10vw, 2.6rem);
+    line-height: 1.12;
+  }
+
   .pageHeader {
     margin-bottom: 2rem;
   }
@@ -130,6 +149,32 @@
   }
 
   .contactSection {
-    padding: 1.2rem;
+    padding: 1.1rem;
+  }
+
+  .contactSection address {
+    display: grid;
+    justify-items: start;
+    gap: 0.35rem;
+  }
+
+  .processingList li {
+    padding: 1.15rem 0;
+  }
+
+  .processingList p {
+    font-size: 0.9rem;
+    line-height: 1.7;
+  }
+}
+
+@media (max-width: 380px) {
+  .page {
+    padding-right: 0.85rem;
+    padding-left: 0.85rem;
+  }
+
+  .contactSection {
+    padding: 1rem;
   }
 }

@@ -44,30 +44,6 @@ export function PrivacyPage() {
 
                         <li>
                             <div>
-                                <h3>Login</h3>
-                                <p>
-                                    Auf dem privaten Homeserver werden Benutzername,
-                                    Passwort-Hash und die Anzahl
-                                    erfolgreicher Logins gespeichert.
-                                </p>
-                            </div>
-                        </li>
-
-                        <li>
-                            <div>
-                                <h3>Browsersitzung</h3>
-                                <p>
-                                    Nach dem Login werden Zugriffstoken und
-                                    Ablaufzeit im sessionStorage
-                                    gespeichert. Der Token gilt nur bis zu seiner
-                                    Ablaufzeit und wird beim Sitzungsende oder
-                                    nach erkannter Ablaufzeit entfernt.
-                                </p>
-                            </div>
-                        </li>
-
-                        <li>
-                            <div>
                                 <h3>Schriftart</h3>
                                 <p>
                                     Die Überschriftenschrift wird von Google

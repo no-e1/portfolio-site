@@ -205,8 +205,10 @@ export function UsersPage() {
                 return (
                   <Fragment key={user.id}>
                     <tr>
-                      <td className={styles.username}>{user.username}</td>
-                      <td>
+                      <td className={styles.username} data-label="Username">
+                        {user.username}
+                      </td>
+                      <td data-label="Active">
                         <span
                           className={`${styles.statusBadge} ${
                             user.isActive ? styles.active : styles.inactive
@@ -215,11 +217,13 @@ export function UsersPage() {
                           {user.isActive ? "active" : "inactive"}
                         </span>
                       </td>
-                      <td className={styles.loginCount}>{user.loginCount}</td>
-                      <td className={styles.date}>
+                      <td className={styles.loginCount} data-label="Logins">
+                        {user.loginCount}
+                      </td>
+                      <td className={styles.date} data-label="Created">
                         {formatDate(user.createdAt)}
                       </td>
-                      <td className={styles.date}>
+                      <td className={styles.date} data-label="Updated">
                         {formatDate(user.updatedAt)}
                       </td>
                       <td className={styles.menuCell}>

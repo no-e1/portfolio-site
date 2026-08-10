@@ -1,8 +1,6 @@
 import { clearAdminSession, getAdminAccessToken } from "../auth/admin-session";
 
-const ADMIN_API_BASE_URL = (
-  import.meta.env.VITE_ADMIN_API_BASE_URL ?? "/api/v1"
-).replace(/\/$/, "");
+const ADMIN_API_BASE_URL = "/api/v1";
 
 type ApiRequestOptions = RequestInit & {
   authenticated?: boolean;

@@ -10,6 +10,7 @@ type AdminLoginFormProps = {
 
 export function AdminLoginForm({ onLogin }: AdminLoginFormProps) {
   const [credentialsError, setCredentialsError] = useState(false);
+  const [rateLimitError, setRateLimitError] = useState(false);
   const [serviceError, setServiceError] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -25,6 +26,7 @@ export function AdminLoginForm({ onLogin }: AdminLoginFormProps) {
     }
 
     setCredentialsError(false);
+    setRateLimitError(false);
     setServiceError(false);
     setIsSubmitting(true);
 
@@ -40,6 +42,8 @@ export function AdminLoginForm({ onLogin }: AdminLoginFormProps) {
     } catch (loginError) {
       if (loginError instanceof ApiError && loginError.status === 401) {
         setCredentialsError(true);
+      } else if (loginError instanceof ApiError && loginError.status === 429) {
+        setRateLimitError(true);
       } else {
         setServiceError(true);
       }
@@ -94,6 +98,12 @@ export function AdminLoginForm({ onLogin }: AdminLoginFormProps) {
         {credentialsError && (
           <p id="admin-login-error" className={styles.error} role="alert">
             Benutzername oder Passwort falsch.
+          </p>
+        )}
+
+        {rateLimitError && (
+          <p className={styles.error} role="alert">
+            Too many requests, try again later
           </p>
         )}
 

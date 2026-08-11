@@ -1,15 +1,12 @@
-import {
-  INestApplication,
-  ValidationPipe,
-  VersioningType,
-} from '@nestjs/common';
+import { ValidationPipe, VersioningType } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { resolve } from 'path';
 import { AdminModule } from './admin/admin.module';
 import { AppModule } from './app.module';
 
-function configureApplication(app: INestApplication): void {
+function configureApplication(app: NestExpressApplication): void {
+  app.set('trust proxy', 1);
   app.setGlobalPrefix('api');
   app.enableVersioning({
     type: VersioningType.URI,

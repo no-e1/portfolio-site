@@ -11,6 +11,11 @@ import {
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import type { Request } from 'express';
+import {
+  AdminDeleteRateLimit,
+  AdminReadRateLimit,
+  AdminUploadRateLimit,
+} from '../../rate-limit/rate-limit.decorators';
 import { AdminJwtAuthGuard } from '../auth/admin-jwt-auth.guard';
 import {
   AdminDocumentsService,
@@ -51,11 +56,13 @@ export class AdminDocumentsController {
   constructor(private readonly adminDocumentsService: AdminDocumentsService) {}
 
   @Get()
+  @AdminReadRateLimit()
   findAll(): Promise<AdminDocumentResponse[]> {
     return this.adminDocumentsService.findAll();
   }
 
   @Post()
+  @AdminUploadRateLimit()
   @UseInterceptors(PdfDocumentInterceptor)
   upload(
     @UploadedFile() document: UploadedDocumentFile | undefined,
@@ -64,6 +71,7 @@ export class AdminDocumentsController {
   }
 
   @Delete(':fileName')
+  @AdminDeleteRateLimit()
   remove(
     @Param('fileName') fileName: string,
   ): Promise<{ link: string; deleted: true }> {

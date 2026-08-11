@@ -9,6 +9,11 @@ import {
   Post,
   UseGuards,
 } from '@nestjs/common';
+import {
+  AdminDeleteRateLimit,
+  AdminReadRateLimit,
+  AdminWriteRateLimit,
+} from '../../rate-limit/rate-limit.decorators';
 import { AdminJwtAuthGuard } from '../auth/admin-jwt-auth.guard';
 import {
   AdminUsersService,
@@ -24,16 +29,19 @@ export class AdminUsersController {
   constructor(private readonly adminUsersService: AdminUsersService) {}
 
   @Get()
+  @AdminReadRateLimit()
   findAll(): Promise<ManagedUserResponse[]> {
     return this.adminUsersService.findAll();
   }
 
   @Post()
+  @AdminWriteRateLimit()
   create(@Body() createUserDto: CreateUserDto): Promise<CreatedUserResponse> {
     return this.adminUsersService.create(createUserDto);
   }
 
   @Patch(':id')
+  @AdminWriteRateLimit()
   update(
     @Param('id', ParseIntPipe) id: number,
     @Body() updateUserDto: UpdateUserDto,
@@ -42,6 +50,7 @@ export class AdminUsersController {
   }
 
   @Patch(':id/activate')
+  @AdminWriteRateLimit()
   activate(
     @Param('id', ParseIntPipe) id: number,
   ): Promise<ManagedUserResponse> {
@@ -49,6 +58,7 @@ export class AdminUsersController {
   }
 
   @Patch(':id/deactivate')
+  @AdminWriteRateLimit()
   deactivate(
     @Param('id', ParseIntPipe) id: number,
   ): Promise<ManagedUserResponse> {
@@ -56,6 +66,7 @@ export class AdminUsersController {
   }
 
   @Delete(':id')
+  @AdminDeleteRateLimit()
   remove(
     @Param('id', ParseIntPipe) id: number,
   ): Promise<{ id: number; deleted: true }> {

@@ -11,6 +11,7 @@ type LoginFormProps = {
 
 export function LoginForm({ onLogin }: LoginFormProps) {
   const [credentialsError, setCredentialsError] = useState(false);
+  const [rateLimitError, setRateLimitError] = useState(false);
   const [serviceError, setServiceError] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -26,6 +27,7 @@ export function LoginForm({ onLogin }: LoginFormProps) {
     }
 
     setCredentialsError(false);
+    setRateLimitError(false);
     setServiceError(false);
     setIsSubmitting(true);
 
@@ -41,6 +43,8 @@ export function LoginForm({ onLogin }: LoginFormProps) {
     } catch (loginError) {
       if (loginError instanceof ApiError && loginError.status === 401) {
         setCredentialsError(true);
+      } else if (loginError instanceof ApiError && loginError.status === 429) {
+        setRateLimitError(true);
       } else {
         setServiceError(true);
       }
@@ -95,6 +99,12 @@ export function LoginForm({ onLogin }: LoginFormProps) {
         {credentialsError && (
           <p id="login-error" className={styles.error} role="alert">
             Benutzername oder Passwort ist falsch.
+          </p>
+        )}
+
+        {rateLimitError && (
+          <p className={styles.error} role="alert">
+            Too many requests, try again later
           </p>
         )}
 

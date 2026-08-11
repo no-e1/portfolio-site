@@ -12,6 +12,11 @@ import { ZipArchive } from 'archiver';
 import type { Response } from 'express';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import {
+  ArchiveRateLimit,
+  MediaReadRateLimit,
+  ProtectedReadRateLimit,
+} from '../rate-limit/rate-limit.decorators';
+import {
   DocsService,
   type DocumentResponse,
   type StoredDocumentFile,
@@ -44,6 +49,7 @@ function setPdfHeaders(
 }
 
 @UseGuards(JwtAuthGuard)
+@ProtectedReadRateLimit()
 @Controller('docs')
 export class DocsController {
   constructor(private readonly docsService: DocsService) {}
@@ -54,6 +60,7 @@ export class DocsController {
   }
 
   @Get('download-all.zip')
+  @ArchiveRateLimit()
   async downloadAll(@Res() response: Response): Promise<void> {
     const documents = await this.docsService.getArchiveDocuments();
     const archive = new ZipArchive({ store: true });
@@ -80,6 +87,7 @@ export class DocsController {
   }
 
   @Get(':id/view.pdf')
+  @MediaReadRateLimit()
   @Header('Cache-Control', 'private, no-store')
   @Header('X-Content-Type-Options', 'nosniff')
   async viewPdf(
@@ -93,6 +101,7 @@ export class DocsController {
   }
 
   @Get(':id/download.pdf')
+  @MediaReadRateLimit()
   @Header('Cache-Control', 'private, no-store')
   @Header('X-Content-Type-Options', 'nosniff')
   async downloadPdf(

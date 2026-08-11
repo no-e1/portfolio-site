@@ -19,6 +19,13 @@ import {
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import type { Request, Response } from 'express';
+import {
+  AdminDeleteRateLimit,
+  AdminReadRateLimit,
+  AdminUploadRateLimit,
+  AdminWriteRateLimit,
+  MediaReadRateLimit,
+} from '../../rate-limit/rate-limit.decorators';
 import { AdminJwtAuthGuard } from '../auth/admin-jwt-auth.guard';
 import type {
   AdminHobbyResponse,
@@ -69,11 +76,13 @@ export class AdminHobbiesController {
   constructor(private readonly adminHobbiesService: AdminHobbiesService) {}
 
   @Get()
+  @AdminReadRateLimit()
   getHobbies(): Promise<AdminHobbyResponse> {
     return this.adminHobbiesService.getHobbies();
   }
 
   @Put()
+  @AdminWriteRateLimit()
   savePage(
     @Body() saveHobbyPageDto: SaveHobbyPageDto,
   ): Promise<AdminHobbyResponse> {
@@ -81,6 +90,7 @@ export class AdminHobbiesController {
   }
 
   @Post('sections')
+  @AdminUploadRateLimit()
   @UseInterceptors(HobbyImageInterceptor)
   createSection(
     @Body() saveHobbySectionDto: SaveHobbySectionDto,
@@ -90,6 +100,7 @@ export class AdminHobbiesController {
   }
 
   @Put('sections/order')
+  @AdminWriteRateLimit()
   reorderSections(
     @Body() reorderHobbiesDto: ReorderHobbiesDto,
   ): Promise<AdminHobbyResponse> {
@@ -97,6 +108,7 @@ export class AdminHobbiesController {
   }
 
   @Get('sections/:id/image')
+  @MediaReadRateLimit()
   @Header('Cache-Control', 'private, no-store')
   @Header('X-Content-Type-Options', 'nosniff')
   async getImage(
@@ -115,6 +127,7 @@ export class AdminHobbiesController {
   }
 
   @Put('sections/:id')
+  @AdminUploadRateLimit()
   @UseInterceptors(HobbyImageInterceptor)
   updateSection(
     @Param('id', ParseIntPipe) id: number,
@@ -129,6 +142,7 @@ export class AdminHobbiesController {
   }
 
   @Delete('sections/:id')
+  @AdminDeleteRateLimit()
   @HttpCode(HttpStatus.NO_CONTENT)
   deleteSection(@Param('id', ParseIntPipe) id: number): Promise<void> {
     return this.adminHobbiesService.deleteSection(id);

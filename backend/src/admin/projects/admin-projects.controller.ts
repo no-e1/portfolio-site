@@ -14,6 +14,12 @@ import {
 } from '@nestjs/common';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import type { Request } from 'express';
+import {
+  AdminDeleteRateLimit,
+  AdminReadRateLimit,
+  AdminUploadRateLimit,
+  AdminWriteRateLimit,
+} from '../../rate-limit/rate-limit.decorators';
 import { AdminJwtAuthGuard } from '../auth/admin-jwt-auth.guard';
 import type { AdminProjectResponse } from './admin-project-response.type';
 import { AdminProjectsService } from './admin-projects.service';
@@ -64,11 +70,13 @@ export class AdminProjectsController {
   constructor(private readonly adminProjectsService: AdminProjectsService) {}
 
   @Get()
+  @AdminReadRateLimit()
   findAll(): Promise<AdminProjectResponse[]> {
     return this.adminProjectsService.findAll();
   }
 
   @Post()
+  @AdminUploadRateLimit()
   @UseInterceptors(ProjectFilesInterceptor)
   create(
     @Body() createProjectDto: CreateProjectDto,
@@ -78,6 +86,7 @@ export class AdminProjectsController {
   }
 
   @Patch(':id/unpublish')
+  @AdminWriteRateLimit()
   unpublish(
     @Param('id', ParseIntPipe) id: number,
   ): Promise<{ id: number; isPublished: false }> {
@@ -85,6 +94,7 @@ export class AdminProjectsController {
   }
 
   @Patch(':id')
+  @AdminUploadRateLimit()
   @UseInterceptors(ProjectFilesInterceptor)
   update(
     @Param('id', ParseIntPipe) id: number,
@@ -95,6 +105,7 @@ export class AdminProjectsController {
   }
 
   @Delete(':id')
+  @AdminDeleteRateLimit()
   remove(
     @Param('id', ParseIntPipe) id: number,
   ): Promise<{ id: number; deleted: true }> {
@@ -102,6 +113,7 @@ export class AdminProjectsController {
   }
 
   @Delete(':id/media/:mediaId')
+  @AdminDeleteRateLimit()
   removeMedia(
     @Param('id', ParseIntPipe) id: number,
     @Param('mediaId', ParseIntPipe) mediaId: number,

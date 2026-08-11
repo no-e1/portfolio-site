@@ -16,6 +16,12 @@ import {
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import type { Request, Response } from 'express';
+import {
+  AdminDeleteRateLimit,
+  AdminReadRateLimit,
+  AdminUploadRateLimit,
+  MediaReadRateLimit,
+} from '../../rate-limit/rate-limit.decorators';
 import { AdminJwtAuthGuard } from '../auth/admin-jwt-auth.guard';
 import {
   AdminPrivateDocumentsService,
@@ -58,11 +64,13 @@ export class AdminPrivateDocumentsController {
   ) {}
 
   @Get()
+  @AdminReadRateLimit()
   findAll(): Promise<AdminPrivateDocumentResponse[]> {
     return this.privateDocumentsService.findAll();
   }
 
   @Get(':id/file')
+  @MediaReadRateLimit()
   @Header('Cache-Control', 'private, no-store')
   @Header('X-Content-Type-Options', 'nosniff')
   async getFile(
@@ -82,6 +90,7 @@ export class AdminPrivateDocumentsController {
   }
 
   @Post()
+  @AdminUploadRateLimit()
   @UseInterceptors(PrivatePdfInterceptor)
   upload(
     @Body() body: UploadPrivateDocumentDto,
@@ -95,6 +104,7 @@ export class AdminPrivateDocumentsController {
   }
 
   @Delete(':id')
+  @AdminDeleteRateLimit()
   remove(
     @Param('id', ParseIntPipe) id: number,
   ): Promise<{ id: number; deleted: true }> {

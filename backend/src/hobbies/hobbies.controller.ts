@@ -10,10 +10,15 @@ import {
 } from '@nestjs/common';
 import type { Response } from 'express';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import {
+  MediaReadRateLimit,
+  ProtectedReadRateLimit,
+} from '../rate-limit/rate-limit.decorators';
 import type { HobbyResponse } from './hobby-response.type';
 import { HobbiesService } from './hobbies.service';
 
 @UseGuards(JwtAuthGuard)
+@ProtectedReadRateLimit()
 @Controller('hobbies')
 export class HobbiesController {
   constructor(private readonly hobbiesService: HobbiesService) {}
@@ -24,6 +29,7 @@ export class HobbiesController {
   }
 
   @Get(':id/image')
+  @MediaReadRateLimit()
   @Header('Cache-Control', 'private, no-store')
   @Header('X-Content-Type-Options', 'nosniff')
   async getImage(

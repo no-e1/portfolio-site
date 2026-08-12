@@ -1,11 +1,16 @@
-import { Module } from '@nestjs/common';
+import { Global, Module } from '@nestjs/common';
 import { APP_GUARD } from '@nestjs/core';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import {
   RATE_LIMIT_ERROR_MESSAGE,
   RATE_LIMIT_PROFILES,
 } from './rate-limit.constants';
+import {
+  UsernameThrottlerGuard,
+  UserThrottlerGuard,
+} from './rate-limit.guards';
 
+@Global()
 @Module({
   imports: [
     ThrottlerModule.forRoot({
@@ -23,10 +28,13 @@ import {
     }),
   ],
   providers: [
+    UsernameThrottlerGuard,
+    UserThrottlerGuard,
     {
       provide: APP_GUARD,
       useClass: ThrottlerGuard,
     },
   ],
+  exports: [UsernameThrottlerGuard, UserThrottlerGuard],
 })
 export class RateLimitModule {}

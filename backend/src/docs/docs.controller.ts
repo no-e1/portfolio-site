@@ -16,6 +16,7 @@ import {
   MediaReadRateLimit,
   ProtectedReadRateLimit,
 } from '../rate-limit/rate-limit.decorators';
+import { UserThrottlerGuard } from '../rate-limit/rate-limit.guards';
 import {
   DocsService,
   type DocumentResponse,
@@ -48,7 +49,7 @@ function setPdfHeaders(
   });
 }
 
-@UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard, UserThrottlerGuard)
 @ProtectedReadRateLimit()
 @Controller('docs')
 export class DocsController {

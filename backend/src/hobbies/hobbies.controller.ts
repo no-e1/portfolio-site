@@ -14,10 +14,11 @@ import {
   MediaReadRateLimit,
   ProtectedReadRateLimit,
 } from '../rate-limit/rate-limit.decorators';
+import { UserThrottlerGuard } from '../rate-limit/rate-limit.guards';
 import type { HobbyResponse } from './hobby-response.type';
 import { HobbiesService } from './hobbies.service';
 
-@UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard, UserThrottlerGuard)
 @ProtectedReadRateLimit()
 @Controller('hobbies')
 export class HobbiesController {

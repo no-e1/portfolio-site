@@ -1,0 +1,224 @@
+name: portfolio-site
+
+x-logging: &default-logging
+  driver: local
+  options:
+    max-size: "10m"
+    max-file: "3"
+
+x-database-environment: &database-environment
+  DATABASE_URL: "mysql://${MARIADB_USER:?Set MARIADB_USER in .env}:${MARIADB_PASSWORD:?Set MARIADB_PASSWORD in .env}@mariadb:3306/${MARIADB_DATABASE:?Set MARIADB_DATABASE in .env}"
+
+x-backend-security: &backend-security
+  read_only: true
+  tmpfs:
+    - /tmp:size=64m,mode=1777
+  security_opt:
+    - no-new-privileges:true
+  cap_drop:
+    - ALL
+  init: true
+  logging: *default-logging
+
+x-web-security: &web-security
+  read_only: true
+  tmpfs:
+    - /tmp:size=16m,mode=1777
+    - /var/cache/nginx:size=32m,mode=0755
+    - /var/run:size=1m,mode=0755
+  security_opt:
+    - no-new-privileges:true
+  logging: *default-logging
+
+services:
+  mariadb:
+    image: mariadb:11.8
+    restart: unless-stopped
+    environment:
+      MARIADB_DATABASE: ${MARIADB_DATABASE:?Set MARIADB_DATABASE in .env}
+      MARIADB_USER: ${MARIADB_USER:?Set MARIADB_USER in .env}
+      MARIADB_PASSWORD: ${MARIADB_PASSWORD:?Set MARIADB_PASSWORD in .env}
+      MARIADB_ROOT_PASSWORD: ${MARIADB_ROOT_PASSWORD:?Set MARIADB_ROOT_PASSWORD in .env}
+      TZ: ${TZ:-Europe/Zurich}
+    volumes:
+      - mariadb_data:/var/lib/mysql
+    networks:
+      - database
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+    stop_grace_period: 30s
+    logging: *default-logging
+
+  migrate:
+    image: ghcr.io/${GHCR_NAMESPACE:?Set GHCR_NAMESPACE in .env}/portfolio-backend:${IMAGE_TAG:?Set IMAGE_TAG in .env}
+    restart: "no"
+    command:
+      - node
+      - node_modules/prisma/build/index.js
+      - migrate
+      - deploy
+    environment:
+      <<: *database-environment
+      NODE_ENV: production
+    depends_on:
+      mariadb:
+        condition: service_healthy
+    networks:
+      - database
+    read_only: true
+    tmpfs:
+      - /tmp:size=64m,mode=1777
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    init: true
+    logging: *default-logging
+
+  public-backend:
+    image: ghcr.io/${GHCR_NAMESPACE:?Set GHCR_NAMESPACE in .env}/portfolio-backend:${IMAGE_TAG:?Set IMAGE_TAG in .env}
+    restart: unless-stopped
+    command: ["node", "dist/main-public.js"]
+    environment:
+      <<: *database-environment
+      NODE_ENV: production
+      PORT: 3000
+      JWT_SECRET: ${JWT_SECRET:?Set JWT_SECRET in .env}
+      PRIVATE_DOCUMENTS_DIR: /app/private-storage/documents
+      PRIVATE_HOBBY_IMAGES_DIR: /app/private-storage/hobbies
+    volumes:
+      - type: volume
+        source: public_uploads
+        target: /app/uploads
+        read_only: true
+      - type: volume
+        source: private_storage
+        target: /app/private-storage
+        read_only: true
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    networks:
+      - public-api
+      - database
+    healthcheck:
+      test:
+        - CMD
+        - node
+        - -e
+        - "const net=require('node:net');const socket=net.connect(3000,'127.0.0.1');socket.setTimeout(2000);socket.on('connect',()=>{socket.end();process.exit(0)});socket.on('timeout',()=>process.exit(1));socket.on('error',()=>process.exit(1))"
+      interval: 10s
+      timeout: 3s
+      retries: 5
+      start_period: 15s
+    <<: *backend-security
+
+  admin-backend:
+    image: ghcr.io/${GHCR_NAMESPACE:?Set GHCR_NAMESPACE in .env}/portfolio-backend:${IMAGE_TAG:?Set IMAGE_TAG in .env}
+    restart: unless-stopped
+    command: ["node", "dist/main-admin.js"]
+    environment:
+      <<: *database-environment
+      NODE_ENV: production
+      ADMIN_PORT: 3000
+      ADMIN_JWT_SECRET: ${ADMIN_JWT_SECRET:?Set ADMIN_JWT_SECRET in .env}
+      PRIVATE_DOCUMENTS_DIR: /app/private-storage/documents
+      PRIVATE_HOBBY_IMAGES_DIR: /app/private-storage/hobbies
+    volumes:
+      - public_uploads:/app/uploads
+      - private_storage:/app/private-storage
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    networks:
+      - admin-api
+      - database
+    healthcheck:
+      test:
+        - CMD
+        - node
+        - -e
+        - "const net=require('node:net');const socket=net.connect(3000,'127.0.0.1');socket.setTimeout(2000);socket.on('connect',()=>{socket.end();process.exit(0)});socket.on('timeout',()=>process.exit(1));socket.on('error',()=>process.exit(1))"
+      interval: 10s
+      timeout: 3s
+      retries: 5
+      start_period: 15s
+    <<: *backend-security
+
+  public-web:
+    image: ghcr.io/${GHCR_NAMESPACE:?Set GHCR_NAMESPACE in .env}/portfolio-frontend:${IMAGE_TAG:?Set IMAGE_TAG in .env}
+    restart: unless-stopped
+    depends_on:
+      public-backend:
+        condition: service_healthy
+    networks:
+      - public-edge
+      - public-api
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:8080/healthz"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+      start_period: 10s
+    <<: *web-security
+
+  admin-web:
+    image: ghcr.io/${GHCR_NAMESPACE:?Set GHCR_NAMESPACE in .env}/portfolio-admin-frontend:${IMAGE_TAG:?Set IMAGE_TAG in .env}
+    restart: unless-stopped
+    depends_on:
+      admin-backend:
+        condition: service_healthy
+    networks:
+      - admin-edge
+      - admin-api
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:8080/healthz"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+      start_period: 10s
+    <<: *web-security
+
+  cloudflared:
+    image: cloudflare/cloudflared:latest
+    restart: unless-stopped
+    command: ["tunnel", "--no-autoupdate", "run"]
+    environment:
+      TUNNEL_TOKEN: ${TUNNEL_TOKEN:?Set TUNNEL_TOKEN in .env}
+    depends_on:
+      public-web:
+        condition: service_healthy
+      admin-web:
+        condition: service_healthy
+    networks:
+      - tunnel-egress
+      - public-edge
+      - admin-edge
+    read_only: true
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    logging: *default-logging
+
+volumes:
+  mariadb_data:
+  public_uploads:
+  private_storage:
+
+networks:
+  tunnel-egress:
+  public-edge:
+    internal: true
+  public-api:
+    internal: true
+  admin-edge:
+    internal: true
+  admin-api:
+    internal: true
+  database:
+    internal: true

@@ -1,0 +1,11 @@
+# Deployment secrets
+.env
+.env.*
+!.env.example
+
+# Local deployment data and backups
+/backups/
+
+# OS and editor files
+.DS_Store
+Thumbs.db

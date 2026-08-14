@@ -295,11 +295,22 @@ export function DocumentsContent({
   const competenceRecords = documents
     .filter((document) => document.type === "uekCompetenceRecord")
     .sort((first, second) => first.id - second.id);
+  const firstDocumentGroup = curriculumVitaeDocuments.length > 0
+    ? "curriculumVitae"
+    : certificateDocuments.length > 0
+      ? "certificates"
+      : competenceRecords.length > 0
+        ? "competenceRecords"
+        : null;
 
-  return (
-    <div className={styles.content}>
-      <div className={styles.toolbar}>
-        {documents.length > 0 && (
+  function renderGroupHeader(
+    title: string,
+    group: "curriculumVitae" | "certificates" | "competenceRecords",
+  ) {
+    return (
+      <div className={styles.documentGroupHeader}>
+        <h2>{title}</h2>
+        {firstDocumentGroup === group && (
           <button
             className={styles.primaryButton}
             type="button"
@@ -312,7 +323,11 @@ export function DocumentsContent({
           </button>
         )}
       </div>
+    );
+  }
 
+  return (
+    <div className={styles.content}>
       {actionError && (
         <p className={styles.error} role="alert">
           {actionError}
@@ -325,21 +340,21 @@ export function DocumentsContent({
         <div className={styles.documentGroups}>
           {curriculumVitaeDocuments.length > 0 && (
             <section className={styles.documentGroup}>
-              <h2>Lebenslauf</h2>
+              {renderGroupHeader("Lebenslauf", "curriculumVitae")}
               {renderDocumentList(curriculumVitaeDocuments)}
             </section>
           )}
 
           {certificateDocuments.length > 0 && (
             <section className={styles.documentGroup}>
-              <h2>Zeugnisse</h2>
+              {renderGroupHeader("Zeugnisse", "certificates")}
               {renderDocumentList(certificateDocuments)}
             </section>
           )}
 
           {competenceRecords.length > 0 && (
             <section className={styles.documentGroup}>
-              <h2>UEK-Kompetenznachweise</h2>
+              {renderGroupHeader("UEK-Kompetenznachweise", "competenceRecords")}
               {renderDocumentList(competenceRecords)}
             </section>
           )}

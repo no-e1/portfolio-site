@@ -1,23 +1,8 @@
 .content {
   min-width: 0;
-  margin-top: 0;
+  margin-top: 1.4rem;
   display: grid;
   gap: 1.4rem;
-}
-
-.toolbar {
-  padding-bottom: 1rem;
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  gap: 1rem;
-  border-bottom: 1px solid rgba(166, 171, 179, 0.25);
-}
-
-.toolbar p {
-  margin: 0;
-  color: var(--light-text);
-  font-size: 0.95rem;
 }
 
 .documentGroups,
@@ -27,19 +12,34 @@
 }
 
 .documentGroups {
+  padding-top: 1rem;
   gap: 2.25rem;
+  border-top: 1px solid rgba(166, 171, 179, 0.25);
 }
 
 .documentGroup {
   gap: 0.85rem;
 }
 
-.documentGroup > h2 {
+.documentGroupHeader {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.75rem 1rem;
+}
+
+.documentGroupHeader h2 {
   margin: 0;
   font-family: var(--hfontfam);
   font-size: 1.45rem;
   font-weight: 400;
   overflow-wrap: anywhere;
+}
+
+.documentGroupHeader .primaryButton {
+  flex-shrink: 0;
 }
 
 .documentList {
@@ -235,12 +235,8 @@
 }
 
 @media (max-width: 650px) {
-  .toolbar {
-    padding-bottom: 0.85rem;
-    align-items: flex-end;
-  }
-
   .documentGroups {
+    padding-top: 0.85rem;
     gap: 1.75rem;
   }
 
@@ -286,7 +282,7 @@
 }
 
 @media (max-width: 380px) {
-  .documentGroup > h2 {
+  .documentGroupHeader h2 {
     font-size: 1.25rem;
   }
 

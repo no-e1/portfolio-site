@@ -16,6 +16,11 @@ export function DocsPage() {
   return (
     <section className={styles.page}>
       <h1 className={styles.title}>Dokumente</h1>
+      {isAuthenticated && (
+        <p className={styles.introduction}>
+          Mein Lebenslauf, Zeugnisse und weitere Ausbildungsnachweise als PDF.
+        </p>
+      )}
       {isAuthenticated ? (
         <DocumentsContent onUnauthorized={handleUnauthorized} />
       ) : (

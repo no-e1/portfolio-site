@@ -50,6 +50,40 @@ export function ProjectModal({ project, onClose }: ProjectModalProps) {
     }, [hasMultipleMedia, project.media.length]);
     
     useEffect(() => {
+        const body = document.body;
+        const scrollPosition = window.scrollY;
+        const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
+        const previousStyles = {
+            overflow: body.style.overflow,
+            position: body.style.position,
+            top: body.style.top,
+            left: body.style.left,
+            right: body.style.right,
+            paddingRight: body.style.paddingRight,
+        };
+
+        body.style.overflow = "hidden";
+        body.style.position = "fixed";
+        body.style.top = `-${scrollPosition}px`;
+        body.style.left = "0";
+        body.style.right = "0";
+
+        if (scrollbarWidth > 0) {
+            body.style.paddingRight = `${scrollbarWidth}px`;
+        }
+
+        return () => {
+            body.style.overflow = previousStyles.overflow;
+            body.style.position = previousStyles.position;
+            body.style.top = previousStyles.top;
+            body.style.left = previousStyles.left;
+            body.style.right = previousStyles.right;
+            body.style.paddingRight = previousStyles.paddingRight;
+            window.scrollTo(0, scrollPosition);
+        };
+    }, []);
+
+    useEffect(() => {
     function handleKeyDown(event: KeyboardEvent) {
         if (event.key === "Escape") {
         onClose();
@@ -137,7 +171,7 @@ export function ProjectModal({ project, onClose }: ProjectModalProps) {
                         })}
                     </div>
                 </div>
-                <p>{project.longDescription}</p>
+                <p className={styles.description}>{project.longDescription}</p>
 
                 <div className={styles.tags}>
                     {project.tags.map((tag) => (

@@ -8,6 +8,7 @@
 
 @media (max-width: 520px) {
   .page {
-    width: calc(100% - 1.5rem);
+    width: calc(100% - 1.25rem);
+    padding: 1rem 0;
   }
 }

@@ -96,6 +96,52 @@
 
 @media (max-width: 520px) {
   .card {
-    padding: 1.5rem;
+    width: min(100%, 380px);
+    margin-top: 1.25rem;
+    padding: 1.15rem;
+    border-radius: 12px;
+  }
+
+  .intro {
+    margin-bottom: 1.15rem;
+  }
+
+  .title {
+    margin-bottom: 0.3rem;
+    font-size: 1.3rem;
+  }
+
+  .description {
+    font-size: 0.9rem;
+    line-height: 1.4;
+  }
+
+  .form {
+    gap: 0.9rem;
+  }
+
+  .field {
+    gap: 0.35rem;
+  }
+
+  .label {
+    font-size: 0.85rem;
+  }
+
+  .input,
+  .submitButton {
+    min-height: 44px;
+  }
+
+  .input {
+    padding: 0.65rem 0.75rem;
+  }
+
+  .submitButton {
+    padding: 0.65rem 0.85rem;
+  }
+
+  .error {
+    font-size: 0.85rem;
   }
 }

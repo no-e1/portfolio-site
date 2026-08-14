@@ -10,6 +10,7 @@ export type LoginResponse = {
 };
 
 const INVALID_CREDENTIALS = 'Benutzername oder Passwort ist falsch.';
+const ACCESS_TOKEN_EXPIRES_IN = 6 * 60 * 60;
 
 @Injectable()
 export class AuthService {
@@ -58,7 +59,7 @@ export class AuthService {
       throw new UnauthorizedException(INVALID_CREDENTIALS);
     }
 
-    const expiresIn = 3600;
+    const expiresIn = ACCESS_TOKEN_EXPIRES_IN;
     const accessToken = await this.jwtService.signAsync(
       {
         sub: user.id,

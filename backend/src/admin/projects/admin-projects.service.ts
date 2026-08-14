@@ -22,6 +22,37 @@ import type {
 const PROJECT_UPLOAD_DIRECTORY = resolve(process.cwd(), 'uploads', 'projects');
 const PROJECT_UPLOAD_PREFIX = '/uploads/projects/';
 
+function getUniqueConstraintTarget(
+  error: Prisma.PrismaClientKnownRequestError,
+): string {
+  const target = error.meta?.target;
+
+  if (Array.isArray(target)) {
+    return target.join(',').toLowerCase();
+  }
+
+  return typeof target === 'string' ? target.toLowerCase() : '';
+}
+
+function createProjectUniqueConflict(
+  error: Prisma.PrismaClientKnownRequestError,
+): ConflictException {
+  const target = getUniqueConstraintTarget(error);
+  const isTagConstraint =
+    target.includes('projecttag') ||
+    (target.includes('projectid') && target.includes('label'));
+
+  if (isTagConstraint) {
+    return new ConflictException('Each tag can only be used once per project');
+  }
+
+  if (target.includes('slug')) {
+    return new ConflictException('This slug already exists');
+  }
+
+  return new ConflictException('A unique project value already exists');
+}
+
 const FILE_EXTENSION_BY_MIME_TYPE: Record<string, string> = {
   'image/gif': '.gif',
   'image/jpeg': '.jpg',
@@ -152,7 +183,7 @@ export class AdminProjectsService {
         error instanceof Prisma.PrismaClientKnownRequestError &&
         error.code === 'P2002'
       ) {
-        throw new ConflictException('This slug already exists');
+        throw createProjectUniqueConflict(error);
       }
 
       throw error;
@@ -345,7 +376,7 @@ export class AdminProjectsService {
         error instanceof Prisma.PrismaClientKnownRequestError &&
         error.code === 'P2002'
       ) {
-        throw new ConflictException('This slug already exists');
+        throw createProjectUniqueConflict(error);
       }
 
       if (

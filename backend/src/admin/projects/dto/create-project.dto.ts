@@ -2,6 +2,7 @@ import { ProjectLinkType } from '@prisma/client';
 import { plainToInstance, Transform, Type } from 'class-transformer';
 import {
   ArrayMaxSize,
+  ArrayUnique,
   IsArray,
   IsBoolean,
   IsEnum,
@@ -128,6 +129,10 @@ export class CreateProjectDto {
   @Transform(({ value }) => parseTags(value))
   @IsArray()
   @ArrayMaxSize(30)
+  @ArrayUnique(
+    (tag: unknown) => (typeof tag === 'string' ? tag.toLowerCase() : tag),
+    { message: 'Each tag can only be used once per project' },
+  )
   @IsString({ each: true })
   @IsNotEmpty({ each: true })
   @MaxLength(60, { each: true })

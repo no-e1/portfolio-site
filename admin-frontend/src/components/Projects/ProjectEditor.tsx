@@ -129,6 +129,14 @@ function formatFileSize(size: number): string {
   return `${(size / (1024 * 1024)).toFixed(1)} MB`;
 }
 
+function hasDuplicateTags(tags: string[]): boolean {
+  const normalizedTags = tags
+    .map((tag) => tag.trim().toLowerCase())
+    .filter(Boolean);
+
+  return new Set(normalizedTags).size !== normalizedTags.length;
+}
+
 export function ProjectEditor({
   project,
   onCancel,
@@ -433,6 +441,11 @@ export function ProjectEditor({
     const submitEvent = event.nativeEvent as SubmitEvent;
     const submitter = submitEvent.submitter as HTMLButtonElement | null;
     const publish = submitter?.dataset.intent === "publish";
+
+    if (hasDuplicateTags(value.tags)) {
+      setError("Each tag can only be added once per project");
+      return;
+    }
 
     if (isNewProject && !value.coverFile) {
       setError("New project requires cover-image");

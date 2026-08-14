@@ -1,5 +1,6 @@
 .shell {
   min-height: 100svh;
+  overflow-x: clip;
   display: flex;
   justify-content: center;
   background: var(--bg);

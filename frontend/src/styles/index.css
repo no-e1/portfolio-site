@@ -40,6 +40,7 @@ header {
 
 .site-header {
   position: sticky;
+  isolation: isolate;
   top: 0;
   z-index: 100;
   margin: 0;
@@ -48,9 +49,21 @@ header {
   align-items: center;
   justify-content: space-between;
   gap: 1.5rem;
+}
+
+.site-header::before {
+  width: 100vw;
+  position: absolute;
+  z-index: -1;
+  top: 0;
+  bottom: 0;
+  left: 50%;
   background: rgba(11, 11, 23, 0.82);
   -webkit-backdrop-filter: blur(10px);
   backdrop-filter: blur(10px);
+  content: "";
+  pointer-events: none;
+  transform: translateX(-50%);
 }
 
 .site-header nav {
@@ -80,6 +93,7 @@ header {
 }
 
 .desktop-nav-indicator {
+  box-sizing: border-box;
   position: absolute;
   z-index: 0;
   top: 0;
@@ -279,6 +293,10 @@ header {
   }
 
   .site-header-mobile-open {
+    background: transparent;
+  }
+
+  .site-header-mobile-open::before {
     background: var(--bg);
     -webkit-backdrop-filter: none;
     backdrop-filter: none;

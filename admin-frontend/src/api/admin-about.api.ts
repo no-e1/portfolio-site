@@ -55,3 +55,12 @@ export function deleteAdminAboutTechnology(
     method: "DELETE",
   });
 }
+
+export function deleteAdminAboutTechnologyGroup(
+  technologyGroupId: number,
+): Promise<void> {
+  return adminApiRequest<void>(
+    `/admin/about/technology-groups/${technologyGroupId}`,
+    { method: "DELETE" },
+  );
+}

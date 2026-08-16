@@ -15,7 +15,12 @@ export type AboutTechnologyResponse = {
   description: string;
 };
 
+export type AboutTechnologyGroupResponse = {
+  heading: string;
+  technologies: AboutTechnologyResponse[];
+};
+
 export type AboutResponse = {
   sections: AboutSectionResponse[];
-  technologies: AboutTechnologyResponse[];
+  technologyGroups: AboutTechnologyGroupResponse[];
 };

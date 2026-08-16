@@ -70,6 +70,10 @@ export function AboutContent({ onUnauthorized }: AboutContentProps) {
     return <p className={styles.status}>Inhalt wird geladen...</p>;
   }
 
+  const technologyGroups = content.technologyGroups.filter(
+    (technologyGroup) => technologyGroup.technologies.length > 0,
+  );
+
   return (
     <article className={styles.content}>
       {content.sections.map((section, sectionIndex) => (
@@ -97,7 +101,7 @@ export function AboutContent({ onUnauthorized }: AboutContentProps) {
         </section>
       ))}
 
-      {content.technologies.length > 0 && (
+      {technologyGroups.length > 0 && (
         <section className={styles.experience}>
           <header className={styles.experienceHeader}>
             <h2>Erfahrungen</h2>
@@ -106,22 +110,36 @@ export function AboutContent({ onUnauthorized }: AboutContentProps) {
             </p>
           </header>
 
-          <ol className={styles.technologyList}>
-            {content.technologies.map((technology, technologyIndex) => (
-              <li
-                className={styles.technology}
-                key={`${technology.name}-${technologyIndex}`}
+          <div className={styles.technologyGroups}>
+            {technologyGroups.map((technologyGroup, technologyGroupIndex) => (
+              <section
+                className={styles.technologyGroup}
+                key={`${technologyGroup.heading}-${technologyGroupIndex}`}
               >
-                <div className={styles.technologyHeading}>
-                  <h3>{technology.name}</h3>
-                  <p>{technology.context}</p>
-                </div>
-                <p className={styles.technologyDescription}>
-                  {technology.description}
-                </p>
-              </li>
+                <h3 className={styles.technologyGroupHeading}>
+                  {technologyGroup.heading}
+                </h3>
+                <ol className={styles.technologyList}>
+                  {technologyGroup.technologies.map(
+                    (technology, technologyIndex) => (
+                      <li
+                        className={styles.technology}
+                        key={`${technology.name}-${technologyIndex}`}
+                      >
+                        <div className={styles.technologyHeading}>
+                          <h4>{technology.name}</h4>
+                          <p>{technology.context}</p>
+                        </div>
+                        <p className={styles.technologyDescription}>
+                          {technology.description}
+                        </p>
+                      </li>
+                    ),
+                  )}
+                </ol>
+              </section>
             ))}
-          </ol>
+          </div>
         </section>
       )}
     </article>

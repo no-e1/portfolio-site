@@ -89,12 +89,24 @@
   line-height: 1.75;
 }
 
+.technologyGroup + .technologyGroup {
+  margin-top: clamp(2.25rem, 4vw, 3.25rem);
+}
+
+.technologyGroupHeading {
+  margin: 0 0 0.8rem;
+  color: var(--text);
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+
 .technologyList {
   margin: 0;
   padding: 0;
   border-top: 1px solid var(--border);
   list-style: none;
-  counter-reset: technology;
 }
 
 .technology {
@@ -103,7 +115,6 @@
   grid-template-columns: 2.25rem minmax(145px, 0.42fr) minmax(0, 1fr);
   gap: 1.25rem;
   border-bottom: 1px solid var(--border);
-  counter-increment: technology;
   transition: border-color 160ms ease;
 }
 
@@ -114,12 +125,12 @@
 .technology::before {
   padding-top: 0.15rem;
   color: var(--light-text);
-  content: counter(technology, decimal-leading-zero);
+  content: "</>";
   font-size: 0.7rem;
   font-weight: 700;
 }
 
-.technologyHeading h3 {
+.technologyHeading h4 {
   margin: 0;
   font-size: 1.05rem;
   font-weight: 700;

@@ -18,8 +18,14 @@ export type AdminAboutTechnologyResponse = {
   description: string;
 };
 
+export type AdminAboutTechnologyGroupResponse = {
+  id: number;
+  heading: string;
+  technologies: AdminAboutTechnologyResponse[];
+};
+
 export type AdminAboutResponse = {
   id: number | null;
   sections: AdminAboutSectionResponse[];
-  technologies: AdminAboutTechnologyResponse[];
+  technologyGroups: AdminAboutTechnologyGroupResponse[];
 };

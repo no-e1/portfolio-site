@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   ConflictException,
   Injectable,
   NotFoundException,
@@ -24,11 +25,15 @@ function toAdminAboutResponse(page: AboutPageRecord): AdminAboutResponse {
         body: bulletPoint.body,
       })),
     })),
-    technologies: page.technologies.map((technology) => ({
-      id: technology.id,
-      name: technology.name,
-      context: technology.context,
-      description: technology.description,
+    technologyGroups: page.technologyGroups.map((technologyGroup) => ({
+      id: technologyGroup.id,
+      heading: technologyGroup.heading,
+      technologies: technologyGroup.technologies.map((technology) => ({
+        id: technology.id,
+        name: technology.name,
+        context: technology.context,
+        description: technology.description,
+      })),
     })),
   };
 }
@@ -48,13 +53,34 @@ function createSections(saveAboutDto: SaveAboutDto) {
   }));
 }
 
-function createTechnologies(saveAboutDto: SaveAboutDto) {
-  return saveAboutDto.technologies.map((technology, index) => ({
-    name: technology.name,
-    context: technology.context,
-    description: technology.description,
-    sortOrder: index,
+function createTechnologyGroups(saveAboutDto: SaveAboutDto) {
+  return saveAboutDto.technologyGroups.map((technologyGroup, groupIndex) => ({
+    heading: technologyGroup.heading,
+    sortOrder: groupIndex,
+    technologies: {
+      create: technologyGroup.technologies.map(
+        (technology, technologyIndex) => ({
+          name: technology.name,
+          context: technology.context,
+          description: technology.description,
+          sortOrder: technologyIndex,
+        }),
+      ),
+    },
   }));
+}
+
+function validateTechnologyCount(saveAboutDto: SaveAboutDto): void {
+  const technologyCount = saveAboutDto.technologyGroups.reduce(
+    (count, group) => count + group.technologies.length,
+    0,
+  );
+
+  if (technologyCount > 100) {
+    throw new BadRequestException(
+      'About content cannot contain more than 100 technologies.',
+    );
+  }
 }
 
 @Injectable()
@@ -69,10 +95,12 @@ export class AdminAboutService {
 
     return page
       ? toAdminAboutResponse(page)
-      : { id: null, sections: [], technologies: [] };
+      : { id: null, sections: [], technologyGroups: [] };
   }
 
   async createAbout(saveAboutDto: SaveAboutDto): Promise<AdminAboutResponse> {
+    validateTechnologyCount(saveAboutDto);
+
     const existingPage = await this.prisma.aboutPage.findFirst({
       select: { id: true },
     });
@@ -86,7 +114,7 @@ export class AdminAboutService {
         title: 'about',
         isPublished: true,
         sections: { create: createSections(saveAboutDto) },
-        technologies: { create: createTechnologies(saveAboutDto) },
+        technologyGroups: { create: createTechnologyGroups(saveAboutDto) },
       },
       select: ABOUT_PAGE_SELECT,
     });
@@ -95,6 +123,8 @@ export class AdminAboutService {
   }
 
   async updateAbout(saveAboutDto: SaveAboutDto): Promise<AdminAboutResponse> {
+    validateTechnologyCount(saveAboutDto);
+
     const existingPage = await this.prisma.aboutPage.findFirst({
       orderBy: { id: 'asc' },
       select: { id: true },
@@ -112,9 +142,9 @@ export class AdminAboutService {
           deleteMany: {},
           create: createSections(saveAboutDto),
         },
-        technologies: {
+        technologyGroups: {
           deleteMany: {},
-          create: createTechnologies(saveAboutDto),
+          create: createTechnologyGroups(saveAboutDto),
         },
       },
       select: ABOUT_PAGE_SELECT,
@@ -182,6 +212,21 @@ export class AdminAboutService {
 
     await this.prisma.aboutTechnology.delete({
       where: { id: technology.id },
+    });
+  }
+
+  async deleteTechnologyGroup(technologyGroupId: number): Promise<void> {
+    const technologyGroup = await this.prisma.aboutTechnologyGroup.findUnique({
+      where: { id: technologyGroupId },
+      select: { id: true },
+    });
+
+    if (!technologyGroup) {
+      throw new NotFoundException('About technology group was not found.');
+    }
+
+    await this.prisma.aboutTechnologyGroup.delete({
+      where: { id: technologyGroup.id },
     });
   }
 }

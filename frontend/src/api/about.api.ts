@@ -9,10 +9,13 @@ export type AboutContent = {
       body: string;
     }>;
   }>;
-  technologies: Array<{
-    name: string;
-    context: string;
-    description: string;
+  technologyGroups: Array<{
+    heading: string;
+    technologies: Array<{
+      name: string;
+      context: string;
+      description: string;
+    }>;
   }>;
 };
 

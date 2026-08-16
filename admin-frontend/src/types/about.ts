@@ -18,10 +18,16 @@ export type AdminAboutTechnology = {
   description: string;
 };
 
+export type AdminAboutTechnologyGroup = {
+  id?: number;
+  heading: string;
+  technologies: AdminAboutTechnology[];
+};
+
 export type AdminAboutContent = {
   id: number | null;
   sections: AdminAboutSection[];
-  technologies: AdminAboutTechnology[];
+  technologyGroups: AdminAboutTechnologyGroup[];
 };
 
 export type SaveAdminAboutContent = Omit<AdminAboutContent, "id">;

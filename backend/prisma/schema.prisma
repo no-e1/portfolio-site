@@ -110,13 +110,13 @@ model ProjectLink {
 }
 
 model AboutPage {
-  id           Int               @id @default(autoincrement())
-  title        String            @db.VarChar(160)
-  isPublished  Boolean           @default(false)
-  createdAt    DateTime          @default(now())
-  updatedAt    DateTime          @updatedAt
-  sections     AboutSection[]
-  technologies AboutTechnology[]
+  id               Int                    @id @default(autoincrement())
+  title            String                 @db.VarChar(160)
+  isPublished      Boolean                @default(false)
+  createdAt        DateTime               @default(now())
+  updatedAt        DateTime               @updatedAt
+  sections         AboutSection[]
+  technologyGroups AboutTechnologyGroup[]
 }
 
 model AboutSection {
@@ -144,17 +144,29 @@ model AboutBulletPoint {
   @@index([aboutSectionId, sortOrder])
 }
 
-model AboutTechnology {
-  id          Int    @id @default(autoincrement())
-  aboutPageId Int
-  name        String @db.VarChar(160)
-  context     String @db.VarChar(160)
-  description String @db.LongText
-  sortOrder   Int    @default(0)
+model AboutTechnologyGroup {
+  id           Int               @id @default(autoincrement())
+  aboutPageId  Int
+  heading      String            @db.VarChar(160)
+  sortOrder    Int               @default(0)
+  technologies AboutTechnology[]
 
   aboutPage AboutPage @relation(fields: [aboutPageId], references: [id], onDelete: Cascade)
 
   @@index([aboutPageId, sortOrder])
+}
+
+model AboutTechnology {
+  id                     Int    @id @default(autoincrement())
+  aboutTechnologyGroupId Int
+  name                   String @db.VarChar(160)
+  context                String @db.VarChar(160)
+  description            String @db.LongText
+  sortOrder              Int    @default(0)
+
+  aboutTechnologyGroup AboutTechnologyGroup @relation(fields: [aboutTechnologyGroupId], references: [id], onDelete: Cascade)
+
+  @@index([aboutTechnologyGroupId, sortOrder])
 }
 
 model HobbyPage {

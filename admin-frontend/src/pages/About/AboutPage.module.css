@@ -23,9 +23,11 @@
 .form,
 .sectionList,
 .bulletPointList,
+.technologyGroupList,
 .technologyList,
 .sectionCard,
 .nestedCard,
+.technologyGroupCard,
 .technologyCard {
   display: grid;
 }
@@ -35,16 +37,17 @@
 }
 
 .sectionList,
-.technologyList {
+.technologyGroupList {
   gap: 1rem;
 }
 
-.bulletPointList {
+.bulletPointList,
+.technologyList {
   gap: 0.75rem;
 }
 
 .sectionCard,
-.technologyCard {
+.technologyGroupCard {
   min-width: 0;
   margin: 0;
   padding: 1.25rem;
@@ -54,7 +57,8 @@
   background: var(--surface);
 }
 
-.nestedCard {
+.nestedCard,
+.technologyCard {
   min-width: 0;
   margin: 0;
   padding: 1rem;
@@ -65,8 +69,10 @@
 }
 
 .sectionCard legend,
+.technologyGroupCard legend,
 .technologyCard legend,
-.nestedCard legend {
+.nestedCard legend,
+.technologyCard legend {
   padding: 0 0.45rem;
   font-weight: 700;
 }
@@ -113,7 +119,8 @@
 }
 
 .field input,
-.field textarea {
+.field textarea,
+.field select {
   width: 100%;
   min-width: 0;
   padding: 0.8rem 0.9rem;
@@ -132,14 +139,15 @@
 }
 
 .field input:focus,
-.field textarea:focus {
+.field textarea:focus,
+.field select:focus {
   border-color: var(--text);
   box-shadow: 0 0 0 3px rgba(244, 244, 245, 0.12);
 }
 
 .technologyFields {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 1rem;
 }
 
@@ -186,7 +194,8 @@
 
 button:disabled,
 input:disabled,
-textarea:disabled {
+textarea:disabled,
+select:disabled {
   cursor: not-allowed;
   opacity: 0.55;
 }
@@ -250,6 +259,7 @@ textarea:disabled {
   }
 
   .sectionCard,
+  .technologyGroupCard,
   .technologyCard {
     padding: 1rem;
   }

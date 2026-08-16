@@ -21,13 +21,20 @@ export const ABOUT_PAGE_SELECT = {
       },
     },
   },
-  technologies: {
+  technologyGroups: {
     orderBy: [{ sortOrder: 'asc' }, { id: 'asc' }],
     select: {
       id: true,
-      name: true,
-      context: true,
-      description: true,
+      heading: true,
+      technologies: {
+        orderBy: [{ sortOrder: 'asc' }, { id: 'asc' }],
+        select: {
+          id: true,
+          name: true,
+          context: true,
+          description: true,
+        },
+      },
     },
   },
 } satisfies Prisma.AboutPageSelect;
@@ -46,10 +53,13 @@ export function toAboutResponse(page: AboutPageRecord): AboutResponse {
         body: bulletPoint.body,
       })),
     })),
-    technologies: page.technologies.map((technology) => ({
-      name: technology.name,
-      context: technology.context,
-      description: technology.description,
+    technologyGroups: page.technologyGroups.map((technologyGroup) => ({
+      heading: technologyGroup.heading,
+      technologies: technologyGroup.technologies.map((technology) => ({
+        name: technology.name,
+        context: technology.context,
+        description: technology.description,
+      })),
     })),
   };
 }

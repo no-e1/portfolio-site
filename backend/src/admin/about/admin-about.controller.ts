@@ -78,4 +78,13 @@ export class AdminAboutController {
   ): Promise<void> {
     return this.adminAboutService.deleteTechnology(technologyId);
   }
+
+  @Delete('technology-groups/:technologyGroupId')
+  @AdminDeleteRateLimit()
+  @HttpCode(HttpStatus.NO_CONTENT)
+  deleteTechnologyGroup(
+    @Param('technologyGroupId', ParseIntPipe) technologyGroupId: number,
+  ): Promise<void> {
+    return this.adminAboutService.deleteTechnologyGroup(technologyGroupId);
+  }
 }

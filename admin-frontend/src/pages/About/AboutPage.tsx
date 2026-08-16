@@ -6,6 +6,7 @@ import {
   deleteAdminAboutBulletPoint,
   deleteAdminAboutSection,
   deleteAdminAboutTechnology,
+  deleteAdminAboutTechnologyGroup,
   getAdminAbout,
   updateAdminAbout,
 } from "../../api/admin-about.api";
@@ -15,6 +16,7 @@ import type {
   AdminAboutContent,
   AdminAboutSection,
   AdminAboutTechnology,
+  AdminAboutTechnologyGroup,
   SaveAdminAboutContent,
 } from "../../types/about";
 import styles from "./AboutPage.module.css";
@@ -30,7 +32,13 @@ type DeleteTarget =
       bulletPoint: AdminAboutBulletPoint;
     }
   | {
+      kind: "technologyGroup";
+      technologyGroupIndex: number;
+      technologyGroup: AdminAboutTechnologyGroup;
+    }
+  | {
       kind: "technology";
+      technologyGroupIndex: number;
       technologyIndex: number;
       technology: AdminAboutTechnology;
     };
@@ -38,7 +46,7 @@ type DeleteTarget =
 const EMPTY_VALUE: AdminAboutContent = {
   id: null,
   sections: [],
-  technologies: [],
+  technologyGroups: [],
 };
 
 function moveItem<T>(items: T[], index: number, offset: -1 | 1): T[] {
@@ -66,10 +74,13 @@ function toApiValue(value: AdminAboutContent): SaveAdminAboutContent {
         body: bulletPoint.body.trim(),
       })),
     })),
-    technologies: value.technologies.map((technology) => ({
-      name: technology.name.trim(),
-      context: technology.context.trim(),
-      description: technology.description.trim(),
+    technologyGroups: value.technologyGroups.map((technologyGroup) => ({
+      heading: technologyGroup.heading.trim(),
+      technologies: technologyGroup.technologies.map((technology) => ({
+        name: technology.name.trim(),
+        context: technology.context.trim(),
+        description: technology.description.trim(),
+      })),
     })),
   };
 }
@@ -98,6 +109,12 @@ function getDeleteDialog(target: DeleteTarget): {
         title: "Delete bullet point?",
         message: `${target.bulletPoint.heading || "This bullet point"} will be permanently deleted.`,
         confirmLabel: "delete bullet point",
+      };
+    case "technologyGroup":
+      return {
+        title: "Delete technology group?",
+        message: `${target.technologyGroup.heading || "This technology group"} and all its technologies will be permanently deleted.`,
+        confirmLabel: "delete group",
       };
     case "technology":
       return {
@@ -162,17 +179,89 @@ export function AboutPage() {
     markChanged();
   }
 
-  function updateTechnology(
+  function updateTechnologyGroup(
     index: number,
+    technologyGroup: AdminAboutTechnologyGroup,
+  ) {
+    setValue((current) => ({
+      ...current,
+      technologyGroups: current.technologyGroups.map(
+        (currentTechnologyGroup, currentIndex) =>
+          currentIndex === index ? technologyGroup : currentTechnologyGroup,
+      ),
+    }));
+    markChanged();
+  }
+
+  function updateTechnology(
+    technologyGroupIndex: number,
+    technologyIndex: number,
     technology: AdminAboutTechnology,
   ) {
     setValue((current) => ({
       ...current,
-      technologies: current.technologies.map(
-        (currentTechnology, currentIndex) =>
-          currentIndex === index ? technology : currentTechnology,
+      technologyGroups: current.technologyGroups.map(
+        (technologyGroup, currentTechnologyGroupIndex) =>
+          currentTechnologyGroupIndex === technologyGroupIndex
+            ? {
+                ...technologyGroup,
+                technologies: technologyGroup.technologies.map(
+                  (currentTechnology, currentTechnologyIndex) =>
+                    currentTechnologyIndex === technologyIndex
+                      ? technology
+                      : currentTechnology,
+                ),
+              }
+            : technologyGroup,
       ),
     }));
+    markChanged();
+  }
+
+  function moveTechnologyToGroup(
+    sourceGroupIndex: number,
+    technologyIndex: number,
+    targetGroupIndex: number,
+  ) {
+    if (sourceGroupIndex === targetGroupIndex) {
+      return;
+    }
+
+    setValue((current) => {
+      const technology =
+        current.technologyGroups[sourceGroupIndex]?.technologies[
+          technologyIndex
+        ];
+
+      if (!technology || !current.technologyGroups[targetGroupIndex]) {
+        return current;
+      }
+
+      return {
+        ...current,
+        technologyGroups: current.technologyGroups.map(
+          (technologyGroup, groupIndex) => {
+            if (groupIndex === sourceGroupIndex) {
+              return {
+                ...technologyGroup,
+                technologies: technologyGroup.technologies.filter(
+                  (_, index) => index !== technologyIndex,
+                ),
+              };
+            }
+
+            if (groupIndex === targetGroupIndex) {
+              return {
+                ...technologyGroup,
+                technologies: [...technologyGroup.technologies, technology],
+              };
+            }
+
+            return technologyGroup;
+          },
+        ),
+      };
+    });
     markChanged();
   }
 
@@ -261,14 +350,33 @@ export function AboutPage() {
             ),
           }));
           break;
+        case "technologyGroup":
+          if (target.technologyGroup.id !== undefined) {
+            await deleteAdminAboutTechnologyGroup(target.technologyGroup.id);
+          }
+          setValue((current) => ({
+            ...current,
+            technologyGroups: current.technologyGroups.filter(
+              (_, index) => index !== target.technologyGroupIndex,
+            ),
+          }));
+          break;
         case "technology":
           if (target.technology.id !== undefined) {
             await deleteAdminAboutTechnology(target.technology.id);
           }
           setValue((current) => ({
             ...current,
-            technologies: current.technologies.filter(
-              (_, index) => index !== target.technologyIndex,
+            technologyGroups: current.technologyGroups.map(
+              (technologyGroup, technologyGroupIndex) =>
+                technologyGroupIndex === target.technologyGroupIndex
+                  ? {
+                      ...technologyGroup,
+                      technologies: technologyGroup.technologies.filter(
+                        (_, index) => index !== target.technologyIndex,
+                      ),
+                    }
+                  : technologyGroup,
             ),
           }));
           break;
@@ -285,6 +393,10 @@ export function AboutPage() {
   }
 
   const deleteDialog = deleteTarget ? getDeleteDialog(deleteTarget) : null;
+  const technologyCount = value.technologyGroups.reduce(
+    (count, technologyGroup) => count + technologyGroup.technologies.length,
+    0,
+  );
 
   return (
     <section className={styles.page}>
@@ -573,7 +685,7 @@ export function AboutPage() {
           <div className={styles.editorHeader}>
             <div>
               <h2>Skills / technologies</h2>
-              <p>Technologies are displayed in this order and numbered.</p>
+              <p>Group related technologies under an editable subheading.</p>
             </div>
             <button
               className={styles.secondaryButton}
@@ -581,31 +693,32 @@ export function AboutPage() {
               onClick={() => {
                 setValue((current) => ({
                   ...current,
-                  technologies: [
-                    ...current.technologies,
-                    { name: "", context: "", description: "" },
+                  technologyGroups: [
+                    ...current.technologyGroups,
+                    { heading: "", technologies: [] },
                   ],
                 }));
                 markChanged();
               }}
-              disabled={isBusy || value.technologies.length >= 100}
+              disabled={isBusy || value.technologyGroups.length >= 30}
             >
-              add technology
+              add group
             </button>
           </div>
 
-          {value.technologies.length === 0 && (
-            <p className={styles.empty}>No technologies added.</p>
+          {value.technologyGroups.length === 0 && (
+            <p className={styles.empty}>No technology groups added.</p>
           )}
 
-          <div className={styles.technologyList}>
-            {value.technologies.map((technology, technologyIndex) => (
-              <fieldset
-                className={styles.technologyCard}
-                key={technology.id ?? technologyIndex}
-              >
+          <div className={styles.technologyGroupList}>
+            {value.technologyGroups.map(
+              (technologyGroup, technologyGroupIndex) => (
+                <fieldset
+                  className={styles.technologyGroupCard}
+                  key={technologyGroup.id ?? technologyGroupIndex}
+                >
                 <legend>
-                  Technology {String(technologyIndex + 1).padStart(2, "0")}
+                  Group {String(technologyGroupIndex + 1).padStart(2, "0")}
                 </legend>
 
                 <div className={styles.cardActions}>
@@ -614,16 +727,16 @@ export function AboutPage() {
                     onClick={() => {
                       setValue((current) => ({
                         ...current,
-                        technologies: moveItem(
-                          current.technologies,
-                          technologyIndex,
+                        technologyGroups: moveItem(
+                          current.technologyGroups,
+                          technologyGroupIndex,
                           -1,
                         ),
                       }));
                       markChanged();
                     }}
-                    disabled={isBusy || technologyIndex === 0}
-                    aria-label={`Move technology ${technologyIndex + 1} up`}
+                    disabled={isBusy || technologyGroupIndex === 0}
+                    aria-label={`Move technology group ${technologyGroupIndex + 1} up`}
                   >
                     ↑
                   </button>
@@ -632,18 +745,19 @@ export function AboutPage() {
                     onClick={() => {
                       setValue((current) => ({
                         ...current,
-                        technologies: moveItem(
-                          current.technologies,
-                          technologyIndex,
+                        technologyGroups: moveItem(
+                          current.technologyGroups,
+                          technologyGroupIndex,
                           1,
                         ),
                       }));
                       markChanged();
                     }}
                     disabled={
-                      isBusy || technologyIndex === value.technologies.length - 1
+                      isBusy ||
+                      technologyGroupIndex === value.technologyGroups.length - 1
                     }
-                    aria-label={`Move technology ${technologyIndex + 1} down`}
+                    aria-label={`Move technology group ${technologyGroupIndex + 1} down`}
                   >
                     ↓
                   </button>
@@ -652,70 +766,225 @@ export function AboutPage() {
                     type="button"
                     onClick={() =>
                       setDeleteTarget({
-                        kind: "technology",
-                        technologyIndex,
-                        technology,
+                        kind: "technologyGroup",
+                        technologyGroupIndex,
+                        technologyGroup,
                       })
                     }
                     disabled={isBusy}
                   >
-                    delete technology
+                    delete group
                   </button>
                 </div>
 
-                <div className={styles.technologyFields}>
-                  <label className={styles.field}>
-                    <span>Name</span>
-                    <input
-                      value={technology.name}
-                      onChange={(event) =>
-                        updateTechnology(technologyIndex, {
-                          ...technology,
-                          name: event.target.value,
-                        })
-                      }
-                      maxLength={160}
-                      disabled={isBusy}
-                      required
-                    />
-                  </label>
-
-                  <label className={styles.field}>
-                    <span>Context</span>
-                    <input
-                      value={technology.context}
-                      onChange={(event) =>
-                        updateTechnology(technologyIndex, {
-                          ...technology,
-                          context: event.target.value,
-                        })
-                      }
-                      maxLength={160}
-                      placeholder="2026 · Frontend"
-                      disabled={isBusy}
-                      required
-                    />
-                  </label>
-                </div>
-
                 <label className={styles.field}>
-                  <span>Description</span>
-                  <textarea
-                    rows={5}
-                    value={technology.description}
+                  <span>Subheading</span>
+                  <input
+                    value={technologyGroup.heading}
                     onChange={(event) =>
-                      updateTechnology(technologyIndex, {
-                        ...technology,
-                        description: event.target.value,
+                      updateTechnologyGroup(technologyGroupIndex, {
+                        ...technologyGroup,
+                        heading: event.target.value,
                       })
                     }
-                    maxLength={50000}
+                    maxLength={160}
+                    placeholder="Frontend / Web"
                     disabled={isBusy}
                     required
                   />
                 </label>
-              </fieldset>
-            ))}
+
+                <div className={styles.nestedHeader}>
+                  <div>
+                    <h3>Technologies</h3>
+                    <p>{technologyGroup.technologies.length} in this group</p>
+                  </div>
+                  <button
+                    className={styles.secondaryButton}
+                    type="button"
+                    onClick={() =>
+                      updateTechnologyGroup(technologyGroupIndex, {
+                        ...technologyGroup,
+                        technologies: [
+                          ...technologyGroup.technologies,
+                          { name: "", context: "", description: "" },
+                        ],
+                      })
+                    }
+                    disabled={isBusy || technologyCount >= 100}
+                  >
+                    add technology
+                  </button>
+                </div>
+
+                {technologyGroup.technologies.length === 0 && (
+                  <p className={styles.empty}>No technologies in this group.</p>
+                )}
+
+                <div className={styles.technologyList}>
+                  {technologyGroup.technologies.map(
+                    (technology, technologyIndex) => (
+                      <fieldset
+                        className={styles.technologyCard}
+                        key={technology.id ?? technologyIndex}
+                      >
+                        <legend>
+                          Technology{" "}
+                          {String(technologyIndex + 1).padStart(2, "0")}
+                        </legend>
+
+                        <div className={styles.cardActions}>
+                          <button
+                            type="button"
+                            onClick={() =>
+                              updateTechnologyGroup(technologyGroupIndex, {
+                                ...technologyGroup,
+                                technologies: moveItem(
+                                  technologyGroup.technologies,
+                                  technologyIndex,
+                                  -1,
+                                ),
+                              })
+                            }
+                            disabled={isBusy || technologyIndex === 0}
+                            aria-label={`Move technology ${technologyIndex + 1} up`}
+                          >
+                            ↑
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() =>
+                              updateTechnologyGroup(technologyGroupIndex, {
+                                ...technologyGroup,
+                                technologies: moveItem(
+                                  technologyGroup.technologies,
+                                  technologyIndex,
+                                  1,
+                                ),
+                              })
+                            }
+                            disabled={
+                              isBusy ||
+                              technologyIndex ===
+                                technologyGroup.technologies.length - 1
+                            }
+                            aria-label={`Move technology ${technologyIndex + 1} down`}
+                          >
+                            ↓
+                          </button>
+                          <button
+                            className={styles.dangerButton}
+                            type="button"
+                            onClick={() =>
+                              setDeleteTarget({
+                                kind: "technology",
+                                technologyGroupIndex,
+                                technologyIndex,
+                                technology,
+                              })
+                            }
+                            disabled={isBusy}
+                          >
+                            delete technology
+                          </button>
+                        </div>
+
+                        <div className={styles.technologyFields}>
+                          <label className={styles.field}>
+                            <span>Name</span>
+                            <input
+                              value={technology.name}
+                              onChange={(event) =>
+                                updateTechnology(
+                                  technologyGroupIndex,
+                                  technologyIndex,
+                                  { ...technology, name: event.target.value },
+                                )
+                              }
+                              maxLength={160}
+                              disabled={isBusy}
+                              required
+                            />
+                          </label>
+
+                          <label className={styles.field}>
+                            <span>Context</span>
+                            <input
+                              value={technology.context}
+                              onChange={(event) =>
+                                updateTechnology(
+                                  technologyGroupIndex,
+                                  technologyIndex,
+                                  {
+                                    ...technology,
+                                    context: event.target.value,
+                                  },
+                                )
+                              }
+                              maxLength={160}
+                              placeholder="2026 · Frontend"
+                              disabled={isBusy}
+                              required
+                            />
+                          </label>
+
+                          <label className={styles.field}>
+                            <span>Group</span>
+                            <select
+                              value={technologyGroupIndex}
+                              onChange={(event) =>
+                                moveTechnologyToGroup(
+                                  technologyGroupIndex,
+                                  technologyIndex,
+                                  Number(event.target.value),
+                                )
+                              }
+                              disabled={
+                                isBusy || value.technologyGroups.length < 2
+                              }
+                            >
+                              {value.technologyGroups.map(
+                                (groupOption, groupOptionIndex) => (
+                                  <option
+                                    key={groupOption.id ?? groupOptionIndex}
+                                    value={groupOptionIndex}
+                                  >
+                                    {groupOption.heading ||
+                                      `Group ${groupOptionIndex + 1}`}
+                                  </option>
+                                ),
+                              )}
+                            </select>
+                          </label>
+                        </div>
+
+                        <label className={styles.field}>
+                          <span>Description</span>
+                          <textarea
+                            rows={5}
+                            value={technology.description}
+                            onChange={(event) =>
+                              updateTechnology(
+                                technologyGroupIndex,
+                                technologyIndex,
+                                {
+                                  ...technology,
+                                  description: event.target.value,
+                                },
+                              )
+                            }
+                            maxLength={50000}
+                            disabled={isBusy}
+                            required
+                          />
+                        </label>
+                      </fieldset>
+                    ),
+                  )}
+                </div>
+                </fieldset>
+              ),
+            )}
           </div>
 
           {actionError && (

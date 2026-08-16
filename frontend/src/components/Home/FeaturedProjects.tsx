@@ -44,7 +44,7 @@ export function FeaturedProjects() {
 
   return (
     <section className={styles.featured} aria-label="Ausgewählte Projekte">
-      <h2 className={styles.title}>meine Projekte</h2>
+      <h2 className={styles.title}>Meine Projekte</h2>
 
       <div className={styles.grid}>
         {projects.map((project) => (

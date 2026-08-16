@@ -67,7 +67,7 @@ export function FeaturedProjects() {
       )}
 
       <Link className={styles.allProjects} to="/projects">
-        <span>alle Projekte</span>
+        <span>Alle meine Projekte</span>
         <FiArrowRight aria-hidden="true" />
       </Link>
 

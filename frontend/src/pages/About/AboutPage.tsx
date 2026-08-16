@@ -11,7 +11,7 @@ export function AboutPage() {
 
   return (
     <section className={styles.page}>
-      <h1 className={styles.title}>über mich</h1>
+      <h1 className={styles.title}>Über mich</h1>
       {isAuthenticated && (
         <p className={styles.introduction}>
           Allgemeine Informationen über mich und meine bisherigen Erfahrungen

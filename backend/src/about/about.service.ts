@@ -21,6 +21,14 @@ export const ABOUT_PAGE_SELECT = {
       },
     },
   },
+  competencies: {
+    orderBy: [{ sortOrder: 'asc' }, { id: 'asc' }],
+    select: {
+      id: true,
+      title: true,
+      description: true,
+    },
+  },
   technologyGroups: {
     orderBy: [{ sortOrder: 'asc' }, { id: 'asc' }],
     select: {
@@ -52,6 +60,10 @@ export function toAboutResponse(page: AboutPageRecord): AboutResponse {
         heading: bulletPoint.heading,
         body: bulletPoint.body,
       })),
+    })),
+    competencies: page.competencies.map((competency) => ({
+      title: competency.title,
+      description: competency.description,
     })),
     technologyGroups: page.technologyGroups.map((technologyGroup) => ({
       heading: technologyGroup.heading,

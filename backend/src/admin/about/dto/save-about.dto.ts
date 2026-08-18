@@ -46,6 +46,20 @@ export class SaveAboutSectionDto {
   bulletPoints!: SaveAboutBulletPointDto[];
 }
 
+export class SaveAboutCompetencyDto {
+  @Transform(({ value }) => trimString(value))
+  @IsString()
+  @IsNotEmpty()
+  @MaxLength(160)
+  title!: string;
+
+  @Transform(({ value }) => trimString(value))
+  @IsString()
+  @IsNotEmpty()
+  @MaxLength(50000)
+  description!: string;
+}
+
 export class SaveAboutTechnologyDto {
   @Transform(({ value }) => trimString(value))
   @IsString()
@@ -86,6 +100,12 @@ export class SaveAboutDto {
   @ValidateNested({ each: true })
   @Type(() => SaveAboutSectionDto)
   sections!: SaveAboutSectionDto[];
+
+  @IsArray()
+  @ArrayMaxSize(30)
+  @ValidateNested({ each: true })
+  @Type(() => SaveAboutCompetencyDto)
+  competencies!: SaveAboutCompetencyDto[];
 
   @IsArray()
   @ArrayMaxSize(30)

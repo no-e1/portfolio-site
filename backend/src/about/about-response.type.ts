@@ -9,6 +9,11 @@ export type AboutSectionResponse = {
   bulletPoints: AboutBulletPointResponse[];
 };
 
+export type AboutCompetencyResponse = {
+  title: string;
+  description: string;
+};
+
 export type AboutTechnologyResponse = {
   name: string;
   context: string;
@@ -22,5 +27,6 @@ export type AboutTechnologyGroupResponse = {
 
 export type AboutResponse = {
   sections: AboutSectionResponse[];
+  competencies: AboutCompetencyResponse[];
   technologyGroups: AboutTechnologyGroupResponse[];
 };

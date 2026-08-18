@@ -116,6 +116,7 @@ model AboutPage {
   createdAt        DateTime               @default(now())
   updatedAt        DateTime               @updatedAt
   sections         AboutSection[]
+  competencies     AboutCompetency[]
   technologyGroups AboutTechnologyGroup[]
 }
 
@@ -142,6 +143,18 @@ model AboutBulletPoint {
   aboutSection AboutSection @relation(fields: [aboutSectionId], references: [id], onDelete: Cascade)
 
   @@index([aboutSectionId, sortOrder])
+}
+
+model AboutCompetency {
+  id          Int    @id @default(autoincrement())
+  aboutPageId Int
+  title       String @db.VarChar(160)
+  description String @db.LongText
+  sortOrder   Int    @default(0)
+
+  aboutPage AboutPage @relation(fields: [aboutPageId], references: [id], onDelete: Cascade)
+
+  @@index([aboutPageId, sortOrder])
 }
 
 model AboutTechnologyGroup {

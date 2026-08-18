@@ -48,6 +48,14 @@ export function deleteAdminAboutBulletPoint(
   );
 }
 
+export function deleteAdminAboutCompetency(
+  competencyId: number,
+): Promise<void> {
+  return adminApiRequest<void>(`/admin/about/competencies/${competencyId}`, {
+    method: "DELETE",
+  });
+}
+
 export function deleteAdminAboutTechnology(
   technologyId: number,
 ): Promise<void> {

@@ -23,9 +23,11 @@
 .form,
 .sectionList,
 .bulletPointList,
+.competencyList,
 .technologyGroupList,
 .technologyList,
 .sectionCard,
+.competencyCard,
 .nestedCard,
 .technologyGroupCard,
 .technologyCard {
@@ -37,6 +39,7 @@
 }
 
 .sectionList,
+.competencyList,
 .technologyGroupList {
   gap: 1rem;
 }
@@ -47,6 +50,7 @@
 }
 
 .sectionCard,
+.competencyCard,
 .technologyGroupCard {
   min-width: 0;
   margin: 0;
@@ -69,6 +73,7 @@
 }
 
 .sectionCard legend,
+.competencyCard legend,
 .technologyGroupCard legend,
 .technologyCard legend,
 .nestedCard legend,
@@ -259,6 +264,7 @@ select:disabled {
   }
 
   .sectionCard,
+  .competencyCard,
   .technologyGroupCard,
   .technologyCard {
     padding: 1rem;

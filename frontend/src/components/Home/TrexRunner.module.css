@@ -1,0 +1,160 @@
+.runner {
+  margin-top: clamp(4rem, 9vw, 6.5rem);
+  font-family: var(--mainfont);
+}
+
+.header {
+  margin: 0 0 1.25rem;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.header h2 {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.status {
+  padding: 0.28rem 0.55rem;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  color: var(--light-text);
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+.gameShell {
+  overflow: hidden;
+  border: 1px solid rgba(166, 171, 179, 0.38);
+  border-radius: 14px;
+  background: var(--bg);
+  box-shadow: inset 0 1px 0 rgba(244, 244, 245, 0.035);
+}
+
+.gameViewport {
+  position: relative;
+  background: var(--bg);
+}
+
+.canvas {
+  width: 100%;
+  height: 180px;
+  display: block;
+  outline: none;
+  cursor: pointer;
+  touch-action: none;
+  -webkit-user-select: none;
+  user-select: none;
+  background: transparent;
+  image-rendering: pixelated;
+}
+
+.canvas:focus-visible {
+  box-shadow: inset 0 0 0 2px var(--accent);
+}
+
+.overlay {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: 0.75rem;
+  background: rgba(11, 11, 23, 0.82);
+  pointer-events: none;
+}
+
+.overlay p {
+  margin: 0;
+  color: var(--text);
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.overlay button {
+  padding: 0.58rem 0.8rem;
+  border: 1px solid rgba(244, 244, 245, 0.68);
+  border-radius: 8px;
+  background: var(--text);
+  color: var(--bg);
+  cursor: pointer;
+  font-size: 0.82rem;
+  font-weight: 700;
+  pointer-events: auto;
+  transition:
+    border-color 160ms ease,
+    background 160ms ease,
+    transform 160ms ease;
+}
+
+.overlay button:hover {
+  border-color: var(--light-text);
+  background: var(--light-text);
+  transform: translateY(-1px);
+}
+
+.overlay button:disabled {
+  cursor: wait;
+  opacity: 0.6;
+}
+
+.overlay button:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+
+.credit {
+  margin: 0.75rem 0 0;
+  color: var(--light-text);
+  font-size: 0.72rem;
+  text-align: right;
+}
+
+.credit a {
+  color: inherit;
+  text-underline-offset: 0.2rem;
+}
+
+.credit a:hover {
+  color: var(--text);
+}
+
+.credit a:focus-visible {
+  outline: 2px solid var(--text);
+  outline-offset: 3px;
+}
+
+@media (max-width: 650px) {
+  .runner {
+    margin-top: 3.5rem;
+  }
+
+  .header {
+    margin-bottom: 1rem;
+  }
+
+  .gameShell {
+    border-radius: 12px;
+  }
+
+}
+
+@media (max-width: 380px) {
+  .runner {
+    margin-top: 3rem;
+  }
+
+  .header h2 {
+    font-size: 1.15rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .overlay button {
+    transition: none;
+  }
+}

@@ -1,5 +1,5 @@
 .runner {
-  margin-top: clamp(4rem, 9vw, 6.5rem);
+  margin-top: clamp(2.5rem, 5vw, 4rem);
   font-family: var(--mainfont);
 }
 
@@ -130,7 +130,7 @@
 
 @media (max-width: 650px) {
   .runner {
-    margin-top: 3.5rem;
+    margin-top: 2.5rem;
   }
 
   .header {
@@ -145,7 +145,7 @@
 
 @media (max-width: 380px) {
   .runner {
-    margin-top: 3rem;
+    margin-top: 2.1rem;
   }
 
   .header h2 {

@@ -1,5 +1,5 @@
 .interests {
-  margin-top: clamp(3.5rem, 7vw, 5.5rem);
+  margin-top: clamp(2.25rem, 4.5vw, 3.5rem);
   font-family: var(--mainfont);
 }
 
@@ -14,21 +14,27 @@
 }
 
 .list {
-  border-top: 1px solid rgba(166, 171, 179, 0.34);
+  display: grid;
+  gap: 0.85rem;
 }
 
 .item {
   min-width: 0;
-  padding: 1.8rem 0;
+  padding: 1.35rem;
   display: grid;
   grid-template-columns: minmax(145px, 0.42fr) minmax(0, 1fr);
   gap: 1.25rem;
-  border-bottom: 1px solid rgba(166, 171, 179, 0.34);
-  transition: border-color 160ms ease;
+  border: 1px solid rgba(166, 171, 179, 0.34);
+  border-radius: 10px;
+  background: rgba(244, 244, 245, 0.025);
+  transition:
+    border-color 160ms ease,
+    background 160ms ease;
 }
 
 .item:hover {
   border-color: rgba(244, 244, 245, 0.45);
+  background: rgba(244, 244, 245, 0.055);
 }
 
 .item h3 {
@@ -46,17 +52,23 @@
   line-height: 1.75;
 }
 
-@media (max-width: 650px) {
-  .interests {
-    margin-top: 3.5rem;
+@media (max-width: 800px) {
+  .header h2 {
+    margin-bottom: 0;
   }
 
-  .header h2 {
-    margin-bottom: 1rem;
+  .list {
+    margin-top: -0.65rem;
+  }
+}
+
+@media (max-width: 650px) {
+  .interests {
+    margin-top: 2.25rem;
   }
 
   .item {
-    padding: 1.4rem 0;
+    padding: 1.15rem;
     grid-template-columns: 1fr;
     gap: 0.5rem;
   }
@@ -64,6 +76,6 @@
 
 @media (max-width: 380px) {
   .interests {
-    margin-top: 2.75rem;
+    margin-top: 2rem;
   }
 }

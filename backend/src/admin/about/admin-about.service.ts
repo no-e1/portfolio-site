@@ -85,6 +85,9 @@ function createInterests(saveAboutDto: SaveAboutDto) {
     title: interest.title,
     description: interest.description,
     sortOrder: index,
+  }));
+}
+
 function createCompetencies(saveAboutDto: SaveAboutDto) {
   return saveAboutDto.competencies.map((competency, competencyIndex) => ({
     title: competency.title,

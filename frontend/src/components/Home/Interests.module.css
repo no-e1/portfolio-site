@@ -1,0 +1,69 @@
+.interests {
+  margin-top: clamp(3.5rem, 7vw, 5.5rem);
+  font-family: var(--mainfont);
+}
+
+.layout {
+  width: 100%;
+}
+
+.header h2 {
+  margin: 0 0 1.25rem;
+  font-size: 1.2rem;
+  font-weight: 700;
+}
+
+.list {
+  border-top: 1px solid rgba(166, 171, 179, 0.34);
+}
+
+.item {
+  min-width: 0;
+  padding: 1.8rem 0;
+  display: grid;
+  grid-template-columns: minmax(145px, 0.42fr) minmax(0, 1fr);
+  gap: 1.25rem;
+  border-bottom: 1px solid rgba(166, 171, 179, 0.34);
+  transition: border-color 160ms ease;
+}
+
+.item:hover {
+  border-color: rgba(244, 244, 245, 0.45);
+}
+
+.item h3 {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.item p {
+  margin: 0;
+  max-width: 43rem;
+  color: var(--light-text);
+  font-size: 0.92rem;
+  line-height: 1.75;
+}
+
+@media (max-width: 650px) {
+  .interests {
+    margin-top: 3.5rem;
+  }
+
+  .header h2 {
+    margin-bottom: 1rem;
+  }
+
+  .item {
+    padding: 1.4rem 0;
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+  }
+}
+
+@media (max-width: 380px) {
+  .interests {
+    margin-top: 2.75rem;
+  }
+}

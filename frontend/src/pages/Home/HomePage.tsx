@@ -1,6 +1,6 @@
 import { FeaturedProjects } from "../../components/Home/FeaturedProjects"
 import { GreetingsCard } from "../../components/Home/GreetingsCard"
-import { TrexRunner } from "../../components/Home/TrexRunner"
+import { Interests } from "../../components/Home/Interests"
 import styles from "./HomePage.module.css"
 
 export function HomePage() {
@@ -8,7 +8,7 @@ export function HomePage() {
         <main className={styles.page}>
             <h1 className={styles.title}>Noel Kohn</h1>
             <GreetingsCard />
-            <TrexRunner />
+            <Interests />
             <FeaturedProjects />
         </main>
     )

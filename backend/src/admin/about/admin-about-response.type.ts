@@ -30,9 +30,16 @@ export type AdminAboutTechnologyGroupResponse = {
   technologies: AdminAboutTechnologyResponse[];
 };
 
+export type AdminAboutInterestResponse = {
+  id: number;
+  title: string;
+  description: string;
+};
+
 export type AdminAboutResponse = {
   id: number | null;
   sections: AdminAboutSectionResponse[];
   competencies: AdminAboutCompetencyResponse[];
   technologyGroups: AdminAboutTechnologyGroupResponse[];
+  interests: AdminAboutInterestResponse[];
 };

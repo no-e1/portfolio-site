@@ -6,6 +6,7 @@ import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
 import { DocsModule } from './docs/docs.module';
 import { HobbiesModule } from './hobbies/hobbies.module';
+import { InterestsModule } from './interests/interests.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { ProjectsModule } from './projects/projects.module';
 import { RateLimitModule } from './rate-limit/rate-limit.module';
@@ -19,6 +20,7 @@ import { RateLimitModule } from './rate-limit/rate-limit.module';
     ProjectsModule,
     AboutModule,
     HobbiesModule,
+    InterestsModule,
     DocsModule,
   ],
   controllers: [AppController],

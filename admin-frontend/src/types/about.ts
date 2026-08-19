@@ -30,11 +30,18 @@ export type AdminAboutTechnologyGroup = {
   technologies: AdminAboutTechnology[];
 };
 
+export type AdminAboutInterest = {
+  id?: number;
+  title: string;
+  description: string;
+};
+
 export type AdminAboutContent = {
   id: number | null;
   sections: AdminAboutSection[];
   competencies: AdminAboutCompetency[];
   technologyGroups: AdminAboutTechnologyGroup[];
+  interests: AdminAboutInterest[];
 };
 
 export type SaveAdminAboutContent = Omit<AdminAboutContent, "id">;

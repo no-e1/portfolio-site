@@ -1,5 +1,4 @@
 import { ContactIcons } from "../ContactIcons/ContactIcons";
-import { FeaturedProjects } from "./FeaturedProjects";
 import styles from "./GreetingsCard.module.css";
 
 export function GreetingsCard() {
@@ -11,7 +10,6 @@ export function GreetingsCard() {
                 weitere Informationen über mich. Bei Fragen und Anliegen bin ich hier erreichbar:
             </p>
             <ContactIcons showLabels />
-            <FeaturedProjects />
         </article>
     );
 }

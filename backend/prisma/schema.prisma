@@ -117,6 +117,7 @@ model AboutPage {
   updatedAt        DateTime               @updatedAt
   sections         AboutSection[]
   technologyGroups AboutTechnologyGroup[]
+  interests        AboutInterest[]
 }
 
 model AboutSection {
@@ -167,6 +168,18 @@ model AboutTechnology {
   aboutTechnologyGroup AboutTechnologyGroup @relation(fields: [aboutTechnologyGroupId], references: [id], onDelete: Cascade)
 
   @@index([aboutTechnologyGroupId, sortOrder])
+}
+
+model AboutInterest {
+  id          Int      @id @default(autoincrement())
+  aboutPageId Int
+  title       String   @db.VarChar(160)
+  description String   @db.Text
+  sortOrder   Int      @default(0)
+
+  aboutPage AboutPage @relation(fields: [aboutPageId], references: [id], onDelete: Cascade)
+
+  @@index([aboutPageId, sortOrder])
 }
 
 model HobbyPage {

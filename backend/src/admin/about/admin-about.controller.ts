@@ -87,4 +87,13 @@ export class AdminAboutController {
   ): Promise<void> {
     return this.adminAboutService.deleteTechnologyGroup(technologyGroupId);
   }
+
+  @Delete('interests/:interestId')
+  @AdminDeleteRateLimit()
+  @HttpCode(HttpStatus.NO_CONTENT)
+  deleteInterest(
+    @Param('interestId', ParseIntPipe) interestId: number,
+  ): Promise<void> {
+    return this.adminAboutService.deleteInterest(interestId);
+  }
 }

@@ -35,6 +35,11 @@ function toAdminAboutResponse(page: AboutPageRecord): AdminAboutResponse {
         description: technology.description,
       })),
     })),
+    interests: page.interests.map((interest) => ({
+      id: interest.id,
+      title: interest.title,
+      description: interest.description,
+    })),
   };
 }
 
@@ -70,6 +75,14 @@ function createTechnologyGroups(saveAboutDto: SaveAboutDto) {
   }));
 }
 
+function createInterests(saveAboutDto: SaveAboutDto) {
+  return saveAboutDto.interests.map((interest, index) => ({
+    title: interest.title,
+    description: interest.description,
+    sortOrder: index,
+  }));
+}
+
 function validateTechnologyCount(saveAboutDto: SaveAboutDto): void {
   const technologyCount = saveAboutDto.technologyGroups.reduce(
     (count, group) => count + group.technologies.length,
@@ -95,7 +108,7 @@ export class AdminAboutService {
 
     return page
       ? toAdminAboutResponse(page)
-      : { id: null, sections: [], technologyGroups: [] };
+      : { id: null, sections: [], technologyGroups: [], interests: [] };
   }
 
   async createAbout(saveAboutDto: SaveAboutDto): Promise<AdminAboutResponse> {
@@ -115,6 +128,7 @@ export class AdminAboutService {
         isPublished: true,
         sections: { create: createSections(saveAboutDto) },
         technologyGroups: { create: createTechnologyGroups(saveAboutDto) },
+        interests: { create: createInterests(saveAboutDto) },
       },
       select: ABOUT_PAGE_SELECT,
     });
@@ -145,6 +159,10 @@ export class AdminAboutService {
         technologyGroups: {
           deleteMany: {},
           create: createTechnologyGroups(saveAboutDto),
+        },
+        interests: {
+          deleteMany: {},
+          create: createInterests(saveAboutDto),
         },
       },
       select: ABOUT_PAGE_SELECT,
@@ -228,5 +246,18 @@ export class AdminAboutService {
     await this.prisma.aboutTechnologyGroup.delete({
       where: { id: technologyGroup.id },
     });
+  }
+
+  async deleteInterest(interestId: number): Promise<void> {
+    const interest = await this.prisma.aboutInterest.findUnique({
+      where: { id: interestId },
+      select: { id: true },
+    });
+
+    if (!interest) {
+      throw new NotFoundException('About interest was not found.');
+    }
+
+    await this.prisma.aboutInterest.delete({ where: { id: interest.id } });
   }
 }

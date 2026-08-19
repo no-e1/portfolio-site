@@ -9,6 +9,10 @@ export type AboutContent = {
       body: string;
     }>;
   }>;
+  competencies: Array<{
+    title: string;
+    description: string;
+  }>;
   technologyGroups: Array<{
     heading: string;
     technologies: Array<{

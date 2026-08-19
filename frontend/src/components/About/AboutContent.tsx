@@ -101,6 +101,25 @@ export function AboutContent({ onUnauthorized }: AboutContentProps) {
         </section>
       ))}
 
+      {content.competencies.length > 0 && (
+        <section className={styles.profile}>
+          <p className={styles.sectionLabel}>Kompetenzen</p>
+          <ul className={styles.competencyList}>
+            {content.competencies.map((competency, competencyIndex) => (
+              <li
+                className={styles.competency}
+                key={`${competency.title}-${competencyIndex}`}
+              >
+                <h3 className={styles.competencyTitle}>{competency.title}</h3>
+                <p className={styles.competencyDescription}>
+                  {competency.description}
+                </p>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
+
       {technologyGroups.length > 0 && (
         <section className={styles.experience}>
           <header className={styles.experienceHeader}>

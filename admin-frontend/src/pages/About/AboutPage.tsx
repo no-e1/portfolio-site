@@ -3,8 +3,9 @@ import { ApiError } from "../../api/api-client";
 import {
   createAdminAbout,
   deleteAdminAbout,
-  deleteAdminAboutBulletPoint,
+  deleteAdminAboutBulletPoint,  
   deleteAdminAboutInterest,
+  deleteAdminAboutCompetency,
   deleteAdminAboutSection,
   deleteAdminAboutTechnology,
   deleteAdminAboutTechnologyGroup,
@@ -14,6 +15,7 @@ import {
 import { ConfirmDialog } from "../../components/ConfirmDialog/ConfirmDialog";
 import type {
   AdminAboutBulletPoint,
+  AdminAboutCompetency,
   AdminAboutContent,
   AdminAboutInterest,
   AdminAboutSection,
@@ -34,6 +36,11 @@ type DeleteTarget =
       bulletPoint: AdminAboutBulletPoint;
     }
   | {
+      kind: "competency";
+      competencyIndex: number;
+      competency: AdminAboutCompetency;
+    }
+  | {
       kind: "technologyGroup";
       technologyGroupIndex: number;
       technologyGroup: AdminAboutTechnologyGroup;
@@ -49,6 +56,7 @@ type DeleteTarget =
 const EMPTY_VALUE: AdminAboutContent = {
   id: null,
   sections: [],
+  competencies: [],
   technologyGroups: [],
   interests: [],
 };
@@ -78,6 +86,10 @@ function toApiValue(value: AdminAboutContent): SaveAdminAboutContent {
         body: bulletPoint.body.trim(),
       })),
     })),
+    competencies: value.competencies.map((competency) => ({
+      title: competency.title.trim(),
+      description: competency.description.trim(),
+    })),
     technologyGroups: value.technologyGroups.map((technologyGroup) => ({
       heading: technologyGroup.heading.trim(),
       technologies: technologyGroup.technologies.map((technology) => ({
@@ -103,7 +115,7 @@ function getDeleteDialog(target: DeleteTarget): {
       return {
         title: "Delete all About content?",
         message:
-          "All About sections, bullet points, technologies and interests will be permanently deleted.",
+          "All About sections, bullet points, technologies, technologies and interests will be permanently deleted.",
         confirmLabel: "delete all content",
       };
     case "section":
@@ -117,6 +129,12 @@ function getDeleteDialog(target: DeleteTarget): {
         title: "Delete bullet point?",
         message: `${target.bulletPoint.heading || "This bullet point"} will be permanently deleted.`,
         confirmLabel: "delete bullet point",
+      };
+    case "competency":
+      return {
+        title: "Delete competency?",
+        message: `${target.competency.title || "This competency"} will be permanently deleted.`,
+        confirmLabel: "delete competency",
       };
     case "technologyGroup":
       return {
@@ -188,6 +206,20 @@ export function AboutPage() {
       ...current,
       sections: current.sections.map((currentSection, currentIndex) =>
         currentIndex === index ? section : currentSection,
+      ),
+    }));
+    markChanged();
+  }
+
+  function updateCompetency(
+    index: number,
+    competency: AdminAboutCompetency,
+  ) {
+    setValue((current) => ({
+      ...current,
+      competencies: current.competencies.map(
+        (currentCompetency, currentIndex) =>
+          currentIndex === index ? competency : currentCompetency,
       ),
     }));
     markChanged();
@@ -374,6 +406,17 @@ export function AboutPage() {
             ),
           }));
           break;
+        case "competency":
+          if (target.competency.id !== undefined) {
+            await deleteAdminAboutCompetency(target.competency.id);
+          }
+          setValue((current) => ({
+            ...current,
+            competencies: current.competencies.filter(
+              (_, index) => index !== target.competencyIndex,
+            ),
+          }));
+          break;
         case "technologyGroup":
           if (target.technologyGroup.id !== undefined) {
             await deleteAdminAboutTechnologyGroup(target.technologyGroup.id);
@@ -438,7 +481,7 @@ export function AboutPage() {
       <header className={styles.pageHeader}>
         <div>
           <h1>About me</h1>
-          <p>Manage profile sections, interests, bullet points and technologies.</p>
+          <p>Manage profile sections, interests, competencies, bullet points and technologies.</p>
         </div>
       </header>
 
@@ -833,6 +876,136 @@ export function AboutPage() {
                     </fieldset>
                   ))}
                 </div>
+              </fieldset>
+            ))}
+          </div>
+
+          <div className={styles.editorHeader}>
+            <div>
+              <h2>Competencies</h2>
+              <p>
+                Add soft skills with a title and description. The public
+                heading is fixed.
+              </p>
+            </div>
+            <button
+              className={styles.secondaryButton}
+              type="button"
+              onClick={() => {
+                setValue((current) => ({
+                  ...current,
+                  competencies: [
+                    ...current.competencies,
+                    { title: "", description: "" },
+                  ],
+                }));
+                markChanged();
+              }}
+              disabled={isBusy || value.competencies.length >= 30}
+            >
+              add competency
+            </button>
+          </div>
+
+          {value.competencies.length === 0 && (
+            <p className={styles.empty}>No competencies added.</p>
+          )}
+
+          <div className={styles.competencyList}>
+            {value.competencies.map((competency, competencyIndex) => (
+              <fieldset
+                className={styles.competencyCard}
+                key={competency.id ?? competencyIndex}
+              >
+                <legend>Competency {competencyIndex + 1}</legend>
+
+                <div className={styles.cardActions}>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setValue((current) => ({
+                        ...current,
+                        competencies: moveItem(
+                          current.competencies,
+                          competencyIndex,
+                          -1,
+                        ),
+                      }));
+                      markChanged();
+                    }}
+                    disabled={isBusy || competencyIndex === 0}
+                    aria-label={`Move competency ${competencyIndex + 1} up`}
+                  >
+                    ↑
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setValue((current) => ({
+                        ...current,
+                        competencies: moveItem(
+                          current.competencies,
+                          competencyIndex,
+                          1,
+                        ),
+                      }));
+                      markChanged();
+                    }}
+                    disabled={
+                      isBusy || competencyIndex === value.competencies.length - 1
+                    }
+                    aria-label={`Move competency ${competencyIndex + 1} down`}
+                  >
+                    ↓
+                  </button>
+                  <button
+                    className={styles.dangerButton}
+                    type="button"
+                    onClick={() =>
+                      setDeleteTarget({
+                        kind: "competency",
+                        competencyIndex,
+                        competency,
+                      })
+                    }
+                    disabled={isBusy}
+                  >
+                    delete competency
+                  </button>
+                </div>
+
+                <label className={styles.field}>
+                  <span>Title</span>
+                  <input
+                    value={competency.title}
+                    onChange={(event) =>
+                      updateCompetency(competencyIndex, {
+                        ...competency,
+                        title: event.target.value,
+                      })
+                    }
+                    maxLength={160}
+                    disabled={isBusy}
+                    required
+                  />
+                </label>
+
+                <label className={styles.field}>
+                  <span>Description</span>
+                  <textarea
+                    rows={5}
+                    value={competency.description}
+                    onChange={(event) =>
+                      updateCompetency(competencyIndex, {
+                        ...competency,
+                        description: event.target.value,
+                      })
+                    }
+                    maxLength={50000}
+                    disabled={isBusy}
+                    required
+                  />
+                </label>
               </fieldset>
             ))}
           </div>

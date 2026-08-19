@@ -70,6 +70,15 @@ export class AdminAboutController {
     return this.adminAboutService.deleteBulletPoint(sectionId, bulletPointId);
   }
 
+  @Delete('competencies/:competencyId')
+  @AdminDeleteRateLimit()
+  @HttpCode(HttpStatus.NO_CONTENT)
+  deleteCompetency(
+    @Param('competencyId', ParseIntPipe) competencyId: number,
+  ): Promise<void> {
+    return this.adminAboutService.deleteCompetency(competencyId);
+  }
+
   @Delete('technologies/:technologyId')
   @AdminDeleteRateLimit()
   @HttpCode(HttpStatus.NO_CONTENT)

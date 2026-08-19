@@ -25,6 +25,11 @@ function toAdminAboutResponse(page: AboutPageRecord): AdminAboutResponse {
         body: bulletPoint.body,
       })),
     })),
+    competencies: page.competencies.map((competency) => ({
+      id: competency.id,
+      title: competency.title,
+      description: competency.description,
+    })),
     technologyGroups: page.technologyGroups.map((technologyGroup) => ({
       id: technologyGroup.id,
       heading: technologyGroup.heading,
@@ -80,6 +85,11 @@ function createInterests(saveAboutDto: SaveAboutDto) {
     title: interest.title,
     description: interest.description,
     sortOrder: index,
+function createCompetencies(saveAboutDto: SaveAboutDto) {
+  return saveAboutDto.competencies.map((competency, competencyIndex) => ({
+    title: competency.title,
+    description: competency.description,
+    sortOrder: competencyIndex,
   }));
 }
 
@@ -108,7 +118,13 @@ export class AdminAboutService {
 
     return page
       ? toAdminAboutResponse(page)
-      : { id: null, sections: [], technologyGroups: [], interests: [] };
+      : {
+          id: null,
+          sections: [],
+          competencies: [],
+          technologyGroups: [],
+          interests: []
+        };
   }
 
   async createAbout(saveAboutDto: SaveAboutDto): Promise<AdminAboutResponse> {
@@ -127,6 +143,7 @@ export class AdminAboutService {
         title: 'about',
         isPublished: true,
         sections: { create: createSections(saveAboutDto) },
+        competencies: { create: createCompetencies(saveAboutDto) },
         technologyGroups: { create: createTechnologyGroups(saveAboutDto) },
         interests: { create: createInterests(saveAboutDto) },
       },
@@ -155,6 +172,10 @@ export class AdminAboutService {
         sections: {
           deleteMany: {},
           create: createSections(saveAboutDto),
+        },
+        competencies: {
+          deleteMany: {},
+          create: createCompetencies(saveAboutDto),
         },
         technologyGroups: {
           deleteMany: {},
@@ -230,6 +251,21 @@ export class AdminAboutService {
 
     await this.prisma.aboutTechnology.delete({
       where: { id: technology.id },
+    });
+  }
+
+  async deleteCompetency(competencyId: number): Promise<void> {
+    const competency = await this.prisma.aboutCompetency.findUnique({
+      where: { id: competencyId },
+      select: { id: true },
+    });
+
+    if (!competency) {
+      throw new NotFoundException('About competency was not found.');
+    }
+
+    await this.prisma.aboutCompetency.delete({
+      where: { id: competency.id },
     });
   }
 

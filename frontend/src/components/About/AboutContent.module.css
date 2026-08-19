@@ -161,6 +161,45 @@
   font-weight: 600;
 }
 
+.competencyList {
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.competency {
+  padding-bottom: 1.25rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.competency + .competency {
+  padding-top: 1.25rem;
+}
+
+.competency:last-child {
+  padding-bottom: 0;
+  border-bottom: 0;
+}
+
+.competencyTitle {
+  margin: 0;
+  color: var(--text);
+  font-size: 0.95rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  overflow-wrap: anywhere;
+}
+
+.competencyDescription {
+  max-width: 620px;
+  margin: 0.4rem 0 0;
+  color: var(--light-text);
+  font-size: 0.86rem;
+  line-height: 1.65;
+  overflow-wrap: anywhere;
+}
+
 .status {
   margin: 2.5rem 0;
   display: grid;

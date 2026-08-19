@@ -11,6 +11,12 @@ export type AdminAboutSectionResponse = {
   bulletPoints: AdminAboutBulletPointResponse[];
 };
 
+export type AdminAboutCompetencyResponse = {
+  id: number;
+  title: string;
+  description: string;
+};
+
 export type AdminAboutTechnologyResponse = {
   id: number;
   name: string;
@@ -33,6 +39,7 @@ export type AdminAboutInterestResponse = {
 export type AdminAboutResponse = {
   id: number | null;
   sections: AdminAboutSectionResponse[];
+  competencies: AdminAboutCompetencyResponse[];
   technologyGroups: AdminAboutTechnologyGroupResponse[];
   interests: AdminAboutInterestResponse[];
 };

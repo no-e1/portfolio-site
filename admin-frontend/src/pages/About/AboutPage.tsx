@@ -4,6 +4,7 @@ import {
   createAdminAbout,
   deleteAdminAbout,
   deleteAdminAboutBulletPoint,
+  deleteAdminAboutInterest,
   deleteAdminAboutSection,
   deleteAdminAboutTechnology,
   deleteAdminAboutTechnologyGroup,
@@ -14,6 +15,7 @@ import { ConfirmDialog } from "../../components/ConfirmDialog/ConfirmDialog";
 import type {
   AdminAboutBulletPoint,
   AdminAboutContent,
+  AdminAboutInterest,
   AdminAboutSection,
   AdminAboutTechnology,
   AdminAboutTechnologyGroup,
@@ -41,12 +43,14 @@ type DeleteTarget =
       technologyGroupIndex: number;
       technologyIndex: number;
       technology: AdminAboutTechnology;
-    };
+    }
+  | { kind: "interest"; interestIndex: number; interest: AdminAboutInterest };
 
 const EMPTY_VALUE: AdminAboutContent = {
   id: null,
   sections: [],
   technologyGroups: [],
+  interests: [],
 };
 
 function moveItem<T>(items: T[], index: number, offset: -1 | 1): T[] {
@@ -82,6 +86,10 @@ function toApiValue(value: AdminAboutContent): SaveAdminAboutContent {
         description: technology.description.trim(),
       })),
     })),
+    interests: value.interests.map((interest) => ({
+      title: interest.title.trim(),
+      description: interest.description.trim(),
+    })),
   };
 }
 
@@ -95,7 +103,7 @@ function getDeleteDialog(target: DeleteTarget): {
       return {
         title: "Delete all About content?",
         message:
-          "All About sections, bullet points and technologies will be permanently deleted.",
+          "All About sections, bullet points, technologies and interests will be permanently deleted.",
         confirmLabel: "delete all content",
       };
     case "section":
@@ -121,6 +129,12 @@ function getDeleteDialog(target: DeleteTarget): {
         title: "Delete technology?",
         message: `${target.technology.name || "This technology"} will be permanently deleted.`,
         confirmLabel: "delete technology",
+      };
+    case "interest":
+      return {
+        title: "Delete interest?",
+        message: `${target.interest.title || "This interest"} will be permanently deleted.`,
+        confirmLabel: "delete interest",
       };
   }
 }
@@ -213,6 +227,16 @@ export function AboutPage() {
                 ),
               }
             : technologyGroup,
+      ),
+    }));
+    markChanged();
+  }
+
+  function updateInterest(index: number, interest: AdminAboutInterest) {
+    setValue((current) => ({
+      ...current,
+      interests: current.interests.map((currentInterest, currentIndex) =>
+        currentIndex === index ? interest : currentInterest,
       ),
     }));
     markChanged();
@@ -380,6 +404,17 @@ export function AboutPage() {
             ),
           }));
           break;
+        case "interest":
+          if (target.interest.id !== undefined) {
+            await deleteAdminAboutInterest(target.interest.id);
+          }
+          setValue((current) => ({
+            ...current,
+            interests: current.interests.filter(
+              (_, index) => index !== target.interestIndex,
+            ),
+          }));
+          break;
       }
     } catch (error) {
       setActionError(
@@ -403,7 +438,7 @@ export function AboutPage() {
       <header className={styles.pageHeader}>
         <div>
           <h1>About me</h1>
-          <p>Manage profile sections, bullet points and technologies.</p>
+          <p>Manage profile sections, interests, bullet points and technologies.</p>
         </div>
       </header>
 
@@ -424,6 +459,126 @@ export function AboutPage() {
 
       {!isLoading && !loadError && (
         <form className={styles.form} onSubmit={handleSubmit}>
+          <div className={styles.editorHeader}>
+            <div>
+              <h2>Computer science interests</h2>
+              <p>Add the IT topics you are especially interested in.</p>
+            </div>
+            <button
+              className={styles.secondaryButton}
+              type="button"
+              onClick={() => {
+                setValue((current) => ({
+                  ...current,
+                  interests: [
+                    ...current.interests,
+                    { title: "", description: "" },
+                  ],
+                }));
+                markChanged();
+              }}
+              disabled={isBusy}
+            >
+              add interest
+            </button>
+          </div>
+
+          {value.interests.length === 0 && (
+            <p className={styles.empty}>No interests added.</p>
+          )}
+
+          <div className={styles.interestList}>
+            {value.interests.map((interest, interestIndex) => (
+              <fieldset
+                className={styles.interestCard}
+                key={interest.id ?? interestIndex}
+              >
+                <legend>Interest {interestIndex + 1}</legend>
+
+                <div className={styles.cardActions}>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setValue((current) => ({
+                        ...current,
+                        interests: moveItem(current.interests, interestIndex, -1),
+                      }));
+                      markChanged();
+                    }}
+                    disabled={isBusy || interestIndex === 0}
+                    aria-label={`Move interest ${interestIndex + 1} up`}
+                  >
+                    ↑
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setValue((current) => ({
+                        ...current,
+                        interests: moveItem(current.interests, interestIndex, 1),
+                      }));
+                      markChanged();
+                    }}
+                    disabled={
+                      isBusy || interestIndex === value.interests.length - 1
+                    }
+                    aria-label={`Move interest ${interestIndex + 1} down`}
+                  >
+                    ↓
+                  </button>
+                  <button
+                    className={styles.dangerButton}
+                    type="button"
+                    onClick={() =>
+                      setDeleteTarget({
+                        kind: "interest",
+                        interestIndex,
+                        interest,
+                      })
+                    }
+                    disabled={isBusy}
+                  >
+                    delete interest
+                  </button>
+                </div>
+
+                <label className={styles.field}>
+                  <span>Title</span>
+                  <input
+                    value={interest.title}
+                    onChange={(event) =>
+                      updateInterest(interestIndex, {
+                        ...interest,
+                        title: event.target.value,
+                      })
+                    }
+                    maxLength={160}
+                    placeholder="Homelabbing"
+                    disabled={isBusy}
+                    required
+                  />
+                </label>
+
+                <label className={styles.field}>
+                  <span>Description</span>
+                  <textarea
+                    rows={4}
+                    value={interest.description}
+                    onChange={(event) =>
+                      updateInterest(interestIndex, {
+                        ...interest,
+                        description: event.target.value,
+                      })
+                    }
+                    maxLength={5000}
+                    disabled={isBusy}
+                    required
+                  />
+                </label>
+              </fieldset>
+            ))}
+          </div>
+
           <div className={styles.editorHeader}>
             <div>
               <h2>Sections</h2>
@@ -1023,7 +1178,7 @@ export function AboutPage() {
       {confirmSave && (
         <ConfirmDialog
           title="Save About content?"
-          message="The protected About page will use this content immediately."
+          message="The About page and homepage will use this content immediately."
           confirmLabel="save content"
           onConfirm={() => void handleSave()}
           onCancel={() => setConfirmSave(false)}

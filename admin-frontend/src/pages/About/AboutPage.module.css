@@ -41,6 +41,12 @@
   gap: 1rem;
 }
 
+.interestList {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
 .bulletPointList,
 .technologyList {
   gap: 0.75rem;
@@ -58,7 +64,8 @@
 }
 
 .nestedCard,
-.technologyCard {
+.technologyCard,
+.interestCard {
   min-width: 0;
   margin: 0;
   padding: 1rem;
@@ -72,7 +79,7 @@
 .technologyGroupCard legend,
 .technologyCard legend,
 .nestedCard legend,
-.technologyCard legend {
+.interestCard legend {
   padding: 0 0.45rem;
   font-weight: 700;
 }
@@ -253,6 +260,10 @@ select:disabled {
     grid-template-columns: 1fr;
   }
 
+  .interestList {
+    grid-template-columns: 1fr;
+  }
+
   .cardActions,
   .formActions {
     flex-wrap: wrap;
@@ -260,7 +271,8 @@ select:disabled {
 
   .sectionCard,
   .technologyGroupCard,
-  .technologyCard {
+  .technologyCard,
+  .interestCard {
     padding: 1rem;
   }
 }

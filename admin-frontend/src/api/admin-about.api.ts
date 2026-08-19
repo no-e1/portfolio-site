@@ -64,3 +64,9 @@ export function deleteAdminAboutTechnologyGroup(
     { method: "DELETE" },
   );
 }
+
+export function deleteAdminAboutInterest(interestId: number): Promise<void> {
+  return adminApiRequest<void>(`/admin/about/interests/${interestId}`, {
+    method: "DELETE",
+  });
+}

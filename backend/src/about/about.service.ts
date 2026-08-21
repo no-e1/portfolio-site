@@ -45,6 +45,14 @@ export const ABOUT_PAGE_SELECT = {
       },
     },
   },
+  interests: {
+    orderBy: [{ sortOrder: 'asc' }, { id: 'asc' }],
+    select: {
+      id: true,
+      title: true,
+      description: true,
+    },
+  },
 } satisfies Prisma.AboutPageSelect;
 
 export type AboutPageRecord = Prisma.AboutPageGetPayload<{

@@ -94,6 +94,20 @@ export class SaveAboutTechnologyGroupDto {
   technologies!: SaveAboutTechnologyDto[];
 }
 
+export class SaveAboutInterestDto {
+  @Transform(({ value }) => trimString(value))
+  @IsString()
+  @IsNotEmpty()
+  @MaxLength(160)
+  title!: string;
+
+  @Transform(({ value }) => trimString(value))
+  @IsString()
+  @IsNotEmpty()
+  @MaxLength(5000)
+  description!: string;
+}
+
 export class SaveAboutDto {
   @IsArray()
   @ArrayMaxSize(30)
@@ -112,4 +126,9 @@ export class SaveAboutDto {
   @ValidateNested({ each: true })
   @Type(() => SaveAboutTechnologyGroupDto)
   technologyGroups!: SaveAboutTechnologyGroupDto[];
+
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => SaveAboutInterestDto)
+  interests!: SaveAboutInterestDto[];
 }
